@@ -6,9 +6,11 @@ const WRITE: u8 = 0b0010; // Write data, starting at the selected address.
 const READ: u8 = 0b0011; // Read data, starting at the selected address.
 const RDSR: u8 = 0b0101; // Read the STATUS register.
 const WREN: u8 = 0b0110; // Set the write enable latch (enable write operations).
-
 const WIP: u8 = 1; // Write-In-Process bit mask for the STATUS register.
+
 /// The HX711 can run in three modes:
+#[derive(Copy, Clone)]
+#[repr(u8)]
 pub enum HX711Mode {
     /// Chanel A with factor 128 gain
     ChAGain128 = 0x80,
@@ -40,12 +42,12 @@ impl Hx711
         )
     }
 
-    pub fn readout(&self, nr_values: u8) -> Result<i32, Box<dyn Error>>
+    pub fn readout(&mut self, nr_values: u8) -> Result<i32, Box<dyn Error>>
     {
-        // "write" transfers are also reads at the same time with
-        // the read having the same length as the write
-        let tx_buf = [0xaa, 0xaa, 0xaa, self.mode as u8];
-        let mut rx_buf = [0; 4];
+        // the read has the same length as the write.
+        // MOSI provides clock to the HX711's shift register (binary 1010...)
+        let tx_buf: [u8; 4] = [0b10101010, 0b10101010, 0b10101010, self.mode as u8];
+        let mut rx_buf: [u8; 4] = [0; 4];
         let mut values: Vec<i32> = Vec::new();
         let mut result: i32 = 0;
 
@@ -56,7 +58,7 @@ impl Hx711
             let transfer = Segment::new(&mut rx_buf, &tx_buf);
             self.spi.transfer_segments(&[transfer])?;
             println!("{:?}", rx_buf);
-            values.push(i32::from_be_bytes(rx_buf));
+            values.push(i32::from_be_bytes(rx_buf) / 0x100); // upper 24 bits only
         }
 
         // arithmetic average over the values
@@ -65,10 +67,13 @@ impl Hx711
             result = result + element;
         }
         result = result / nr_values as i32;
-        Ok(result / 0x100)                                 // return value (upper 24 bits)
+        Ok(result)                                 // return value
     }
 }
 
-fn main() {
-    println!("Hello, world!");
+fn main()
+{
+        let mut test = Hx711::new().unwrap();
+        let v = test.readout(1).unwrap();
+        println!("value = {}", v);
 }
