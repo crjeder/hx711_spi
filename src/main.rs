@@ -1,9 +1,15 @@
-extern crate spidev;
-use spidev::{Spidev, SpidevOptions, SpidevTransfer, SpiModeFlags};
+use std::error::Error;
+use rppal::spi::{Bus, Mode, SlaveSelect, Spi, Segment};
 
+// constants from rppal documentation / example
+const WRITE: u8 = 0b0010; // Write data, starting at the selected address.
+const READ: u8 = 0b0011; // Read data, starting at the selected address.
+const RDSR: u8 = 0b0101; // Read the STATUS register.
+const WREN: u8 = 0b0110; // Set the write enable latch (enable write operations).
+
+const WIP: u8 = 1; // Write-In-Process bit mask for the STATUS register.
 /// The HX711 can run in three modes:
-#[derive(Copy, Clone)]
-pub enum Mode {
+pub enum HX711Mode {
     /// Chanel A with factor 128 gain
     ChAGain128 = 0x80,
     /// Chanel B with factor 64 gain
@@ -14,30 +20,27 @@ pub enum Mode {
 
 pub struct Hx711
 {
-    device: Spidev,
-    mode: Mode
+    spi: Spi,
+    mode: HX711Mode
 }
 
 impl Hx711
 {
-    pub fn new(path: &String) -> Hx711
+    pub fn new(/*bus: Bus*/) -> Result<Hx711, Box<dyn Error>>
     {
-        let options = SpidevOptions::new()
-             .bits_per_word(32)
-             .max_speed_hz(10000)
-             .mode(SpiModeFlags::SPI_MODE_0)
-             .build();
-        let mut dev = Spidev::open(path).unwrap();
-        dev.configure(&options).unwrap();
+        let dev = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
 
-        Hx711
-        {
-            device: dev,
-            mode: Mode::ChAGain128
-        }
+        Ok
+        (
+            Hx711
+            {
+                spi: dev,
+                mode: HX711Mode::ChAGain128
+            }
+        )
     }
 
-    pub fn readout(&self, nr_values: u8) -> i32
+    pub fn readout(&self, nr_values: u8) -> Result<i32, Box<dyn Error>>
     {
         // "write" transfers are also reads at the same time with
         // the read having the same length as the write
@@ -48,8 +51,10 @@ impl Hx711
 
         for _i in 1..=nr_values
         {
-            let mut transfer = SpidevTransfer::read_write(&tx_buf, &mut rx_buf);
-            self.device.transfer(&mut transfer).unwrap();
+            self.spi.write(&[WREN])?;                        // write enable
+
+            let transfer = Segment::new(&mut rx_buf, &tx_buf);
+            self.spi.transfer_segments(&[transfer])?;
             println!("{:?}", rx_buf);
             values.push(i32::from_be_bytes(rx_buf));
         }
@@ -59,7 +64,8 @@ impl Hx711
         {
             result = result + element;
         }
-        result / nr_values as i32         // return value
+        result = result / nr_values as i32;
+        Ok(result / 0x100)                                 // return value (upper 24 bits)
     }
 }
 
