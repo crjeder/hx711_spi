@@ -57,7 +57,6 @@ impl Hx711
 
             let transfer = Segment::new(&mut rx_buf, &tx_buf);
             self.spi.transfer_segments(&[transfer])?;
-            println!("{:?}", rx_buf);
             values.push(i32::from_be_bytes(rx_buf) / 0x100); // upper 24 bits only
         }
 
