@@ -20,6 +20,8 @@ pub enum HX711Mode {
     ChBGain64 = 0xE0,
 }
 
+
+/// Represents an instance of a HX711 device
 pub struct Hx711
 {
     spi: Spi,
@@ -28,9 +30,10 @@ pub struct Hx711
 
 impl Hx711
 {
-    pub fn new(/*bus: Bus*/) -> Result<Hx711, Box<dyn Error>>
+    /// opens a connection to a HX711 on a specified SPI 
+    pub fn new(bus: Bus) -> Result<Hx711, Box<dyn Error>>
     {
-        let dev = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
+        let dev = Spi::new(bus, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
 
         Ok
         (
@@ -42,6 +45,7 @@ impl Hx711
         )
     }
 
+    /// reads nr_values from the HX711 and retrurns a average
     pub fn readout(&mut self, nr_values: u8) -> Result<i32, Box<dyn Error>>
     {
         // the read has the same length as the write.
