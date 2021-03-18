@@ -45,8 +45,8 @@ impl Hx711
         )
     }
 
-    /// reads nr_values from the HX711 and retrurns a average
-    pub fn readout(&mut self, nr_values: u8) -> Result<i32, Box<dyn Error>>
+    /// reads a value from the HX711 and retrurns it
+    pub fn readout(&mut self) -> Result<i32, Box<dyn Error>>
     {
         // the read has the same length as the write.
         // MOSI provides clock to the HX711's shift register (binary 1010...)
@@ -55,21 +55,12 @@ impl Hx711
         let mut values: Vec<i32> = Vec::new();
         let mut result: i32 = 0;
 
-        for _i in 1..=nr_values
-        {
-            self.spi.write(&[WREN])?;                        // write enable
+        self.spi.write(&[WREN])?;                        // write enable
 
-            let transfer = Segment::new(&mut rx_buf, &tx_buf);
-            self.spi.transfer_segments(&[transfer])?;
-            values.push(i32::from_be_bytes(rx_buf) / 0x100); // upper 24 bits only
-        }
+        let transfer = Segment::new(&mut rx_buf, &tx_buf);
+        self.spi.transfer_segments(&[transfer])?;
+        values.push(i32::from_be_bytes(rx_buf) / 0x100); // upper 24 bits only
 
-        // arithmetic average over the values
-        for element in values.iter()
-        {
-            result = result + element;
-        }
-        result = result / nr_values as i32;
         Ok(result)                                 // return value
     }
 }
@@ -77,6 +68,6 @@ impl Hx711
 fn main()
 {
         let mut test = Hx711::new().unwrap();
-        let v = test.readout(1).unwrap();
+        let v = test.readout().unwrap();
         println!("value = {}", v);
 }
