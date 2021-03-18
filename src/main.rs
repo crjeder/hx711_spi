@@ -52,16 +52,15 @@ impl Hx711
         // MOSI provides clock to the HX711's shift register (binary 1010...)
         let tx_buf: [u8; 4] = [0b10101010, 0b10101010, 0b10101010, self.mode as u8];
         let mut rx_buf: [u8; 4] = [0; 4];
-        let mut values: Vec<i32> = Vec::new();
         let mut result: i32 = 0;
 
-        self.spi.write(&[WREN])?;                        // write enable
+        self.spi.write(&[WREN])?;                               // write enable
 
         let transfer = Segment::new(&mut rx_buf, &tx_buf);
         self.spi.transfer_segments(&[transfer])?;
-        values.push(i32::from_be_bytes(rx_buf) / 0x100); // upper 24 bits only
+        values.push(i32::from_be_bytes(rx_buf) / 0x100);        // upper 24 bits only
 
-        Ok(result)                                 // return value
+        Ok(result)                                              // return value
     }
 }
 
