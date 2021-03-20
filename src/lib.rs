@@ -14,6 +14,8 @@ use rppal::spi::{Bus, Mode, SlaveSelect, Spi, Segment};
 const WREN: u8 = 0b0110; // Set the write enable latch (enable write operations).
 // const WIP: u8 = 1; // Write-In-Process bit mask for the STATUS register.
 
+const SAMPLERATE: u8 = 10; // most boards are fixed to 10 SPS change if your hardware differs
+
 /// The HX711 has two chanels: A for the load cell and B for AD conversion of other signals.
 /// This three modes selecte the chips behaviour:
 #[derive(Copy, Clone)]
@@ -57,14 +59,23 @@ impl Hx711
     {
         // the read has the same length as the write.
         // MOSI provides clock to the HX711's shift register (binary 1010...)
-        let tx_buf: [u8; 4] = [0b10101010, 0b10101010, 0b10101010, self.mode as u8];
-        let mut rx_buf: [u8; 4] = [0; 4];
+        // clock is 10 the buffer needs to be double the size of the 4 bytes we want to read
+        let tx_buf: [u8; 8] = [0b10101010, 0b10101010, 0b10101010, 0b10101010, 0b10101010, 0b10101010, self.mode as u8, 0];
+        let mut rx_buf: [u8; 8] = [0; 8];
 
         self.spi.write(&[WREN])?;                               // write enable
 
         let transfer = Segment::new(&mut rx_buf, &tx_buf);
         self.spi.transfer_segments(&[transfer])?;
-        let result = i32::from_be_bytes(rx_buf) / 0x100;       // upper 24 bits only
+        // use every second bit from the buffer
+        for byte = [0..7]
+        {
+            for bit = [0..7]
+            {
+                //
+            }
+        }
+        // let result = i32::from_be_bytes(rx_buf) / 0x100;       // upper 24 bits only
 
         Ok(result)                                              // return value
     }
