@@ -5,6 +5,7 @@
 // #![no_std]
 
 use std::error::Error;
+use std::iter::Iterator;
 use rppal::spi::{Bus, Mode, SlaveSelect, Spi, Segment};
 use std::time::Duration;
 use std::thread::sleep;
