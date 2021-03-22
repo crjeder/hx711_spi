@@ -66,8 +66,8 @@ impl Hx711
         // check if data is ready
         // When output data is not ready for retrieval, digital output pin DOUT is high. Serial clock input PD_SCK should be low. When DOUT goes
         // to low, it indicates data is ready for retrieval.
-        let tx: [u8, 1] = [0];
-        let mut rx: [u8, 1] = [0];
+        let tx: [u8; 1] = [0];
+        let mut rx: [u8; 1] = [0];
                         
         // variant with error
         /*
@@ -87,7 +87,8 @@ impl Hx711
         
         while rx[0] == 0
         {
-            sleep(Duration::from_millis(((1 / SAMPLERATE) * 1000) / 10));   // sleep for a 1/10 of the conversion period to grab the data while it's hot
+            // sleep(Duration::from_millis(((1 / SAMPLERATE) * 1000) / 10));   // sleep for a 1/10 of the conversion period to grab the data while it's hot
+            sleep(Duration::from_millis(100 / SAMPLERATE));
             self.spi.transfer_segments(&[check])?;                              // and check again      
         }
         
