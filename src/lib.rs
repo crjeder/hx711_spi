@@ -45,7 +45,7 @@ impl Hx711
     pub fn new(bus: Bus) -> Result<Hx711, Box<dyn Error>>
     {
         // datasheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range 
-        // bus speed is 5 MHz to 20 kHz. 1 MHz seems to be a good choice
+        // therefore bus speed is 5 MHz to 20 kHz. 1 MHz seems to be a good choice
         let dev = Spi::new(bus, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
 
         Ok
@@ -87,9 +87,10 @@ impl Hx711
         
         while rx == 0
         {
-            sleep(Duration::from_millis(((1 / SAMPLERATE) * 1000) / 10);        // sleep for a 1/10 of the conversion period to grab the data while it's hot
+            sleep(Duration::from_millis(((1 / SAMPLERATE) * 1000) / 10));   // sleep for a 1/10 of the conversion period to grab the data while it's hot
             self.spi.transfer_segments(&[check])?;                              // and check again      
         }
+        
         // the read has the same length as the write.
         // MOSI provides clock to the HX711's shift register (binary 1010...)
         // clock is 10 the buffer needs to be double the size of the 4 bytes we want to read
@@ -98,13 +99,14 @@ impl Hx711
 
         let transfer = Segment::new(&mut rx_buf, &tx_buf);
         self.spi.transfer_segments(&[transfer])?;
-        // use every second bit from the buffer
-        for byte = [0..7]
-        {
-            for bit = [0..7]
-            {
-                //
-            }
+        
+        // now the rx_buffer contains the 2's complement of the reading with every bit doubled.
+        // therefore we use every second bit from the buffer
+        let result: i32 = 0;
+        
+        for bit = [0..64].step_by(2)                              // counting in reverse order: bit 0 is MBS skip every second bit
+        {   
+            result &= rx_buff[bit / 8] << (bit / 2);            // works only for correct endian
         }
         // let result = i32::from_be_bytes(rx_buf) / 0x100;       // upper 24 bits only
 
