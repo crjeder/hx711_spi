@@ -66,8 +66,8 @@ impl Hx711
         // check if data is ready
         // When output data is not ready for retrieval, digital output pin DOUT is high. Serial clock input PD_SCK should be low. When DOUT goes
         // to low, it indicates data is ready for retrieval.
-        let tx: u8 = 0;
-        let mut rx: u8 = 0;
+        let tx: u8 = [0];
+        let mut rx: u8 = [0];
                         
         // variant with error
         /*
@@ -106,7 +106,7 @@ impl Hx711
         
         for bit in [0..64].step_by(2)                              // counting in reverse order: bit 0 is MBS skip every second bit
         {   
-            result &= rx_buff[bit / 8] << (bit / 2);            // works only for correct endian
+            result &= rx_buf[bit / 8] << (bit / 2);            // works only for correct endian
         }
         // let result = i32::from_be_bytes(rx_buf) / 0x100;       // upper 24 bits only
 
