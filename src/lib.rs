@@ -107,7 +107,7 @@ impl Hx711
         
         for bit in (0..64).step_by(2)                              // counting in reverse order: bit 0 is MBS skip every second bit
         {   
-            result &= rx_buf[bit / 8] << (bit / 2);            // works only for correct endian
+            result &= (rx_buf[bit / 8]).into(i32) << (bit / 2);            // works only for correct endian
         }
         // let result = i32::from_be_bytes(rx_buf) / 0x100;       // upper 24 bits only
 
