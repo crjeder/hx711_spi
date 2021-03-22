@@ -112,7 +112,7 @@ impl Hx711
 
         Ok(result)                                              // return value
     }
-    
+    /*
     pub fn reset()
     {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
@@ -124,4 +124,5 @@ impl Hx711
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
         // When PD_SCK returns to low, chip will reset and enter normal operation mode. 
     }
+    */
 }
