@@ -1,6 +1,6 @@
 //! A (soon to be) platform agnostic driver to interface with the HX711 load cell IC.
 //!
-//! This driver is built using [`embedded-hal`] traits
+//! This driver is built using [`embedded-hal`] traits (not yet, obviously)
 
 // #![no_std]
 
@@ -81,13 +81,13 @@ impl Hx711
         */
       
         // variant with sleep
-        let check = Segment::new(&mut rx; &tx);
+        let check = Segment::new(&mut rx, &tx);
         
         self.spi.transfer_segments(&[check])?;
         
         while rx == 0
         {
-            sleep(Duration::from_millis(((1 / SAMPLERATE) * 1000) / 10));   // sleep for a 1/10 of the conversion period to grab the data while it's hot
+            sleep(Duration::from_millis(((1 / SAMPLERATE) * 1000) / 10).into());   // sleep for a 1/10 of the conversion period to grab the data while it's hot
             self.spi.transfer_segments(&[check])?;                              // and check again      
         }
         
@@ -104,7 +104,7 @@ impl Hx711
         // therefore we use every second bit from the buffer
         let result: i32 = 0;
         
-        for bit = [0..64].step_by(2)                              // counting in reverse order: bit 0 is MBS skip every second bit
+        for bit in [0..64].step_by(2)                              // counting in reverse order: bit 0 is MBS skip every second bit
         {   
             result &= rx_buff[bit / 8] << (bit / 2);            // works only for correct endian
         }
