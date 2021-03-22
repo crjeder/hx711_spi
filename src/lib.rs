@@ -103,11 +103,11 @@ impl Hx711
         
         // now the rx_buffer contains the 2's complement of the reading with every bit doubled.
         // therefore we use every second bit from the buffer
-        let result: i32 = 0;
+        let mut result: i32 = 0;
         
         for bit in (0..64).step_by(2)                              // counting in reverse order: bit 0 is MBS skip every second bit
         {   
-            result &= i32.from(rx_buf[bit / 8]) << (bit / 2));            // works only for correct endian (hint: from_be(x: i32) -> i32)
+            result &= i32::from(rx_buf[bit / 8] << (bit / 2));            // works only for correct endian (hint: from_be(x: i32) -> i32)
         }
         // let result = i32::from_be_bytes(rx_buf) / 0x100;       // upper 24 bits only
 
