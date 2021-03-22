@@ -5,7 +5,6 @@
 // #![no_std]
 
 use std::error::Error;
-use std::iter::Iterator;
 use rppal::spi::{Bus, Mode, SlaveSelect, Spi, Segment};
 use std::time::Duration;
 use std::thread::sleep;
@@ -106,7 +105,7 @@ impl Hx711
         // therefore we use every second bit from the buffer
         let result: i32 = 0;
         
-        for bit in [0..64].step_by(2)                              // counting in reverse order: bit 0 is MBS skip every second bit
+        for bit in (0..64).step_by(2)                              // counting in reverse order: bit 0 is MBS skip every second bit
         {   
             result &= rx_buf[bit / 8] << (bit / 2);            // works only for correct endian
         }
