@@ -88,7 +88,7 @@ impl Hx711
         while rx[0] == 0
         {
             // sleep(Duration::from_millis(((1 / SAMPLERATE) * 1000) / 10));   // sleep for a 1/10 of the conversion period to grab the data while it's hot
-            sleep(Duration::from_millis(100 / SAMPLERATE));
+            sleep(Duration::from_millis((100 / SAMPLERATE).into()));
             self.spi.transfer_segments(&[check])?;                              // and check again      
         }
         
