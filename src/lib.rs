@@ -14,26 +14,13 @@
 //! let mut scale = Hx711(SPI)
 //!
 //! // start measurements
-//! accelerometer.start();
-//!
-//! // to get 3d accerlation data:
-//! let accel = accelerometer.accel_norm()?;
-//! println!("{:?}", accel);
-//!
-//! // One can also use conf module to supply configuration:
-//!
-//! let mut accelerometer =
-//!     Adxl355::new(spi, cs,
-//!                     ADXLConfig::new()
-//!                     .odr(ODR_LPF::ODR_31_25_Hz)
-//!                     .range(Range::_2G))?;
-//! ```
+//! let mut value = scale.readout();
 //!
 //! # References
 //!
-//! - [Register Map][1]
+//! - [Datasheet][1]
 //!
-//! [1]: https://www.analog.com/media/en/technical-documentation/data-sheets/adxl354_355.pdf
+//! [1]: https://cdn.sparkfun.com/datasheets/Sensors/ForceFlex/hx711_english.pdf
 //!
 //! - [`embedded-hal`][2]
 //!
@@ -49,7 +36,9 @@ use std::thread::sleep;
 
 use embedded_hal as hal;
 use hal::blocking::spi;
-// use hal::digital::v2::OutputPin;
+
+// use bitmach to decode the result
+use bitmatch::bitmatch;
 
 const SAMPLERATE: u8 = 10; // most boards are fixed to 10 SPS change if your hardware differs
 
@@ -113,6 +102,7 @@ where
             sleep(Duration::from_millis((100 / SAMPLERATE).into()));
             self.spi.transfer(&mut txrx)?;                                     // and check again
         }
+		
         // the read has the same length as the write.
         // MOSI provides clock to the HX711's shift register (binary 1010...)
         // clock is 10 the buffer needs to be double the size of the 4 bytes we want to read
@@ -121,20 +111,9 @@ where
 
         self.spi.transfer(&mut buffer)?;
 
-        // now buf contains the 2's complement of the reading with every bit doubled
-        // since the first byte is the most significant it's big endian
-        // we have to extract every second bit from the buffer
-        // only the upper 24 (doubled) bits are valid
-
-        let mut raw: [u8; 4] = [0; 4];
-
-        for bit in 8..31
-        {
-            raw[3 - (bit / 8)] &= (buffer[8 - ((bit * 2) / 8)] >> (bit *2) & 1) << (bit % 8);
-        }
-
-        Ok(i32::from_be_bytes(raw) / 0x100)                      // return value (upper 24 bits)
+        Ok(decode(buffer[]))
     }
+	
     /*
     pub fn reset()
     {
@@ -148,4 +127,26 @@ where
         // When PD_SCK returns to low, chip will reset and enter normal operation mode.
     }
     */
+	
+	// now buffer contains the 2's complement of the reading with every bit doubled
+        // since the first byte is the most significant it's big endian
+        // we have to extract every second bit from the buffer
+        // only the upper 24 (doubled) bits are valid
+	
+	// now buffer contains the 2's complement of the reading with every bit doubled
+    // since the first byte is the most significant it's big endian
+    // we have to extract every second bit from the buffer
+    // only the upper 24 (doubled) bits are valid
+
+	fn decode(buffer[8]: u8) -> i32
+	{
+		let mut raw: [u8; 4] = [0; 4];
+
+        for bit in 8..31
+        {
+            raw[3 - (bit / 8)] &= (buffer[8 - ((bit * 2) / 8)] >> (bit *2) & 1) << (bit % 8);
+        }
+		
+		i32::from_be_bytes(raw) / 0x100				// return value (upper 24 bits)
+	}
 }
