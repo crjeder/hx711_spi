@@ -38,7 +38,7 @@ use embedded_hal as hal;
 use hal::blocking::spi;
 
 // use bitmach to decode the result
-use bitmatch::bitmatch;
+// use bitmatch::bitmatch;
 
 const SAMPLERATE: u8 = 10; // most boards are fixed to 10 SPS change if your hardware differs
 
@@ -102,7 +102,7 @@ where
             sleep(Duration::from_millis((100 / SAMPLERATE).into()));
             self.spi.transfer(&mut txrx)?;                                     // and check again
         }
-		
+
         // the read has the same length as the write.
         // MOSI provides clock to the HX711's shift register (binary 1010...)
         // clock is 10 the buffer needs to be double the size of the 4 bytes we want to read
@@ -111,9 +111,9 @@ where
 
         self.spi.transfer(&mut buffer)?;
 
-        Ok(decode(buffer[]))
+        Ok(decode_output(&buffer))
     }
-	
+
     /*
     pub fn reset()
     {
@@ -127,26 +127,27 @@ where
         // When PD_SCK returns to low, chip will reset and enter normal operation mode.
     }
     */
-	
+
 	// now buffer contains the 2's complement of the reading with every bit doubled
         // since the first byte is the most significant it's big endian
         // we have to extract every second bit from the buffer
         // only the upper 24 (doubled) bits are valid
-	
+
 	// now buffer contains the 2's complement of the reading with every bit doubled
     // since the first byte is the most significant it's big endian
     // we have to extract every second bit from the buffer
     // only the upper 24 (doubled) bits are valid
+}
 
-	fn decode(buffer[u8;8]) -> i32
-	{
-		let mut raw: [u8; 4] = [0; 4];
 
-        for bit in 8..31
-        {
-            raw[3 - (bit / 8)] &= (buffer[8 - ((bit * 2) / 8)] >> (bit *2) & 1) << (bit % 8);
-        }
-		
-		i32::from_be_bytes(raw) / 0x100				// return value (upper 24 bits)
-	}
+fn decode_output(buffer: &[u8;8]) -> i32
+{
+	let mut raw: [u8; 4] = [0; 4];
+
+    for bit in 8..31
+    {
+        raw[3 - (bit / 8)] &= (buffer[8 - ((bit * 2) / 8)] >> (bit *2) & 1) << (bit % 8);
+    }
+
+	i32::from_be_bytes(raw) / 0x100				// return value (upper 24 bits)
 }
