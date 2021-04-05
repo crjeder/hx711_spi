@@ -138,7 +138,7 @@ where
     // we have to extract every second bit from the buffer
     // only the upper 24 (doubled) bits are valid
 
-	fn decode(buffer[8]: u8) -> i32
+	fn decode(buffer[u8;8]) -> i32
 	{
 		let mut raw: [u8; 4] = [0; 4];
 
