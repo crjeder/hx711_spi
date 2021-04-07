@@ -47,12 +47,14 @@ const SAMPLERATE: u8 = 10; // most boards are fixed to 10 SPS change if your har
 #[derive(Copy, Clone)]
 #[repr(u8)]
 pub enum HX711Mode {
-    /// Convet chanel A with a gain factor of 128
-    ChAGain128 = 0b10000000,
-    /// Convert chanel B with a gain factor of 64
+    // bits have to be converted for correct transfer 1 -> 10, 0 -> 00
+    /// Convet channel A with a gain factor of 128
+    ChAGain128 = 0b1000000,
+    /// Convert channel B with a gain factor of 64
     ChBGain32 = 0b10100000,
-    /// Convert chanel A with a gain factor of 32
-    ChBGain64 = 0b10101000,
+    /// Convert channel A with a gain factor of 32
+    ChAGain64 = 0b10101000
+    // there is a typo in the official datasheet: in Fig.2 it says channel B instead of A
 }
 
 /// Represents an instance of a HX711 device
@@ -61,7 +63,8 @@ pub struct Hx711<SPI>
     // SPI specific
     spi: SPI,
     // device specific
-    mode: HX711Mode
+    mode: HX711Mode,
+    speed: u32
 }
 
 impl <SPI, E> Hx711<SPI>
@@ -69,7 +72,7 @@ where
     SPI: spi::Transfer<u8, Error=E> + spi::Write<u8, Error=E>
 {
     /// opens a connection to a HX711 on a specified SPI
-    pub fn new(spi:SPI) -> Result<Self, E>
+    pub fn new(spi:SPI, s: u32) -> Result<Self, E>
     {
         // datasheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range
         // therefore bus speed is 5 MHz to 20 kHz. 1 MHz seems to be a good choice
@@ -80,7 +83,8 @@ where
             Hx711
             {
                 spi,
-                mode: HX711Mode::ChAGain128
+                mode: HX711Mode::ChAGain128,
+                speed: s
             }
         )
     }
@@ -89,7 +93,8 @@ where
     pub fn readout(&mut self) -> Result<i32, E>
     {
         // check if data is ready
-        // When output data is not ready for retrieval, digital output pin DOUT is high. Serial clock input PD_SCK should be low. When DOUT goes
+        // When output data is not ready for retrieval, digital output pin DOUT is high.
+        // Serial clock input PD_SCK should be low. When DOUT goes
         // to low, it indicates data is ready for retrieval.
         let mut txrx: [u8; 1] = [0];
 
@@ -114,35 +119,32 @@ where
         Ok(decode_output(&buffer))
     }
 
-    /*
-    pub fn reset()
-    {
-        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
-        // When PD_SCK returns to low, chip will reset and enter normal operation mode.
-    }
 
+    pub fn reset(&mut self) -> Result<Self, E>
+    {
+        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, H
+        // X711 enters power down mode.
+        // When PD_SCK returns to low, chip will reset and enter normal operation mode.
+        let t = self.speed;
+    }
+    /*
     pub fn power_down()
     {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
         // When PD_SCK returns to low, chip will reset and enter normal operation mode.
     }
     */
-
-	// now buffer contains the 2's complement of the reading with every bit doubled
-        // since the first byte is the most significant it's big endian
-        // we have to extract every second bit from the buffer
-        // only the upper 24 (doubled) bits are valid
-
-	// now buffer contains the 2's complement of the reading with every bit doubled
-    // since the first byte is the most significant it's big endian
-    // we have to extract every second bit from the buffer
-    // only the upper 24 (doubled) bits are valid
 }
 
 
 #[bitmatch]
 fn decode_output(buffer: &[u8;8]) -> i32
 {
+    // buffer contains the 2's complement of the reading with every bit doubled
+    // since the first byte is the most significant it's big endian
+    // we have to extract every second bit from the buffer
+    // only the upper 24 (doubled) bits are valid
+
 	#[bitmatch]
 	let "a?a?a?a?" = buffer[0];
 	#[bitmatch]
@@ -157,10 +159,10 @@ fn decode_output(buffer: &[u8;8]) -> i32
 	let "f?f?f?f?" = buffer[5];
 
 	let mut raw: [u8; 4] = [0; 4];
-	 raw[0] = bitpack!("aaaabbbb");
-	 raw[1] = bitpack!("ccccdddd");
-	 raw[2] = bitpack!("eeeeffff");
-	 raw[3] = 0;
+	raw[0] = bitpack!("aaaabbbb");
+    raw[1] = bitpack!("ccccdddd");
+    raw[2] = bitpack!("eeeeffff");
+    raw[3] = 0;
 
 	i32::from_be_bytes(raw) / 0x100
 }
