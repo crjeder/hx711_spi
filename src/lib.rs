@@ -126,7 +126,7 @@ where
         // HX711 enters power down mode.
         // When PD_SCK returns to low, chip will reset and enter normal operation mode.
         // speed is the raw SPI speed -> half bits per second
-        let n = (60.0e-6 * (self.speed as f32 / 2.0)) as u32 + 1;
+        let n = (60.0e-6 * (self.speed as f32 / 2.0)).ceil() as u32;
         let buffer : [u8; 1] = [0xFF];
 
         for _i in 0..n
