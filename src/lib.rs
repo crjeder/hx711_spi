@@ -120,12 +120,20 @@ where
     }
 
 
-    pub fn reset(&mut self) -> Result<Self, E>
+    pub fn reset(&mut self) -> Result<(), E>
     {
-        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, H
-        // X711 enters power down mode.
+        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
+        // HX711 enters power down mode.
         // When PD_SCK returns to low, chip will reset and enter normal operation mode.
-        let t = self.speed;
+        // speed is the raw SPI speed -> half bits per second
+        let n = (60.0e-6 / (self.speed as f32 / 2.0)) as u32;
+        let buffer : [u8; 1] = [0xFF];
+
+        for _i in 0..n
+        {
+            self.spi.write(& buffer)?;
+        }
+        Ok(())
     }
     /*
     pub fn power_down()
