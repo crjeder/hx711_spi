@@ -38,7 +38,7 @@ use embedded_hal as hal;
 use hal::blocking::spi;
 
 // use bitmach to decode the result
-// use bitmatch::bitmatch;
+use bitmatch::bitmatch;
 
 const SAMPLERATE: u8 = 10; // most boards are fixed to 10 SPS change if your hardware differs
 
@@ -140,14 +140,27 @@ where
 }
 
 
+#[bitmatch]
 fn decode_output(buffer: &[u8;8]) -> i32
 {
+	#[bitmatch]
+	let "a?a?a?a?" = buffer[0];
+	#[bitmatch]
+	let "b?b?b?b?" = buffer[1];
+	#[bitmatch]
+	let "c?c?c?c?" = buffer[2];
+	#[bitmatch]
+	let "d?d?d?d?" = buffer[3];
+	#[bitmatch]
+	let "e?e?e?e?" = buffer[4];
+	#[bitmatch]
+	let "f?f?f?f?" = buffer[5];
+
 	let mut raw: [u8; 4] = [0; 4];
+	 raw[0] = bitpack!("aaaabbbb");
+	 raw[1] = bitpack!("ccccdddd");
+	 raw[2] = bitpack!("eeeeffff");
+	 raw[3] = 0;
 
-    for bit in 8..31
-    {
-        raw[3 - (bit / 8)] &= (buffer[8 - ((bit * 2) / 8)] >> (bit *2) & 1) << (bit % 8);
-    }
-
-	i32::from_be_bytes(raw) / 0x100				// return value (upper 24 bits)
+	i32::from_be_bytes(raw) / 0x100
 }
