@@ -102,10 +102,11 @@ where
         // variant with sleep
         self.spi.transfer(&mut txrx)?;
 
-        while txrx[0] == 0
+        while txrx[0] == 0xFF                      // as soon as a single bit is low data is ready
         {
             // sleep for a 1/10 of the conversion period to grab the data while it's hot
             sleep(Duration::from_millis((SAMPLERATE / 100).into()));
+            txrx[0] = 0;
             self.spi.transfer(&mut txrx)?;                                     // and check again
         }
 
