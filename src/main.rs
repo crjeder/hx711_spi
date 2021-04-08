@@ -9,6 +9,9 @@ fn main()
     let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0).unwrap();
     let mut test = Hx711::new(spi, 1_000_000).unwrap();
     // test.spi.configure()
+
+	test.reset().unwrap();
+
 	loop
 	{
         let v = test.readout().unwrap();

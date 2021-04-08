@@ -44,7 +44,7 @@ const SAMPLERATE: u8 = 10; // most boards are fixed to 10 SPS change if your har
 
 /// The HX711 has two chanels: A for the load cell and B for AD conversion of other signals.
 /// This three modes selecte the chips behaviour:
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 #[repr(u8)]
 pub enum HX711Mode {
     // bits have to be converted for correct transfer 1 -> 10, 0 -> 00
@@ -58,6 +58,7 @@ pub enum HX711Mode {
 }
 
 /// Represents an instance of a HX711 device
+#[derive(Debug)]
 pub struct Hx711<SPI>
 {
     // SPI specific
@@ -104,7 +105,7 @@ where
         while txrx[0] == 0
         {
             // sleep for a 1/10 of the conversion period to grab the data while it's hot
-            sleep(Duration::from_millis((100 / SAMPLERATE).into()));
+            sleep(Duration::from_millis((SAMPLERATE / 100).into()));
             self.spi.transfer(&mut txrx)?;                                     // and check again
         }
 
@@ -115,6 +116,8 @@ where
                                    0b10101010, 0b10101010, self.mode as u8, 0];
 
         self.spi.transfer(&mut buffer)?;
+
+        println!("buffer = {:?}", buffer);
 
         Ok(decode_output(&buffer))
     }
