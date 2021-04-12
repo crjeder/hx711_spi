@@ -109,7 +109,7 @@ where
         {
             // sleep for a 1/10 of the conversion period to grab the data while it's hot
             // sleep(Duration::from_millis((SAMPLERATE / 1000).into()));
-            sleep(Duration::from_millis((10).into());
+            sleep(Duration::from_millis(10));
             txrx[0] = 0;
             self.spi.transfer(&mut txrx)?;                                     // and check again
             // println!("{:?}, ready?: {}", SystemTime::now().duration_since(UNIX_EPOCH), txrx[0]);
