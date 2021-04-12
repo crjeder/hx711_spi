@@ -31,7 +31,7 @@
 
 // #![no_std]
 
-use std::time::Duration;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use std::thread::sleep;
 
 use embedded_hal as hal;
@@ -100,7 +100,9 @@ where
         let mut txrx: [u8; 1] = [0];
 
         // variant with sleep
+        print!("{:?}, ", SystemTime::now().duration_since(UNIX_EPOCH));
         self.spi.transfer(&mut txrx)?;
+        println!("ready?: {}", txrx[0]);
 
         while txrx[0] == 0xFF                      // as soon as a single bit is low data is ready
         {
@@ -108,6 +110,7 @@ where
             sleep(Duration::from_millis((SAMPLERATE / 100).into()));
             txrx[0] = 0;
             self.spi.transfer(&mut txrx)?;                                     // and check again
+            println!("{:?}, ready?: {}", SystemTime::now().duration_since(UNIX_EPOCH), txrx[0]);
         }
 
         // the read has the same length as the write.
@@ -117,10 +120,13 @@ where
                                    0b10101010, 0b10101010, self.mode as u8, 0];
 
         self.spi.transfer(&mut buffer)?;
+        // value should be in range 0x800000 - 0x7fffff according to datasheet
 
         println!("buffer = {:?}", buffer);
+        let res = decode_output(&buffer);
+        println!("result = {:b}", res);
 
-        Ok(decode_output(&buffer))
+        Ok(res)
     }
 
 
