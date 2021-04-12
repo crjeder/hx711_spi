@@ -104,10 +104,12 @@ where
         self.spi.transfer(&mut txrx)?;
         println!("ready?: {}", txrx[0]);
 
-        while txrx[0] == 0xFF                      // as soon as a single bit is low data is ready
+        //while txrx[0] == 0xFF                      // as soon as a single bit is low data is ready
+        while txrx[0] != 0
         {
             // sleep for a 1/10 of the conversion period to grab the data while it's hot
-            sleep(Duration::from_millis((SAMPLERATE / 1000).into()));
+            // sleep(Duration::from_millis((SAMPLERATE / 1000).into()));
+            sleep(Duration::from_millis((10).into());
             txrx[0] = 0;
             self.spi.transfer(&mut txrx)?;                                     // and check again
             // println!("{:?}, ready?: {}", SystemTime::now().duration_since(UNIX_EPOCH), txrx[0]);
