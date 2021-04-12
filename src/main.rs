@@ -10,7 +10,7 @@ fn main()
     let mut test = Hx711::new(spi, 1_000_000).unwrap();
     // test.spi.configure()
 
-	test.reset().unwrap();
+	// test.reset().unwrap();
 
 	loop
 	{

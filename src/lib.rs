@@ -107,12 +107,12 @@ where
         while txrx[0] == 0xFF                      // as soon as a single bit is low data is ready
         {
             // sleep for a 1/10 of the conversion period to grab the data while it's hot
-            sleep(Duration::from_millis((SAMPLERATE / 100).into()));
+            sleep(Duration::from_millis((SAMPLERATE / 1000).into()));
             txrx[0] = 0;
             self.spi.transfer(&mut txrx)?;                                     // and check again
-            println!("{:?}, ready?: {}", SystemTime::now().duration_since(UNIX_EPOCH), txrx[0]);
+            // println!("{:?}, ready?: {}", SystemTime::now().duration_since(UNIX_EPOCH), txrx[0]);
         }
-
+        println!("{:?}, ready?: {}", SystemTime::now().duration_since(UNIX_EPOCH), txrx[0]);
         // the read has the same length as the write.
         // MOSI provides clock to the HX711's shift register (binary 1010...)
         // clock is 10 the buffer needs to be double the size of the 4 bytes we want to read
