@@ -1,6 +1,6 @@
 # hx711_spi
 This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
-This driver is built using [`embedded-hal`] traits [`embedded-hal`].
+This driver is built using [`embedded-hal`][2] traits.
 
 ## Why yet an other HX711 driver?
 In mult-iuser / multi-tasking environments bit banging is not reliable. SPI on the other hand handles the timing with hardware support and is not influenced by other processes.
