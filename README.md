@@ -10,11 +10,16 @@ Use embedded-hal implementation to get SPI. HX711 does not use CS and SCLK. Make
 is the only device on the bus. Connect the SDO to the PD_SCK and SDI to DOUT of the HX711.
 
 ```rust
+use rppal::spi::{Spi, Bus, SlaveSelect, Mode};
+use hx711_spi::{Hx711, HX711Mode};
+
+let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0).unwrap();
+
 // to create sensor with default configuration:
-let mut scale = Hx711(SPI);
+let mut scale = Hx711(spi);
 
 // start measurements
-let mut value = scale.readout();
+let mut value = scale.readout().unwrap();
 ```
 
 # References
