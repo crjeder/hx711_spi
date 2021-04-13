@@ -1,5 +1,5 @@
 # hx711_spi
-> This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
+This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
 This driver is built using [`embedded-hal`] traits [embedded-hal]: https://docs.rs/embedded-hal
 
 ## Why yet an other HX711 driver?
@@ -9,13 +9,13 @@ In mult-iuser / multi-tasking environments bit banging is not reliable. SPI on t
 Use embedded-hal implementation to get SPI. HX711 does not use CS and SCLK. Make sure that it
 is the only device on the bus. Connect the SDO to the PD_SCK and SDI to DOUT of the HX711.
 
-'''rust
+```rust
 // to create sensor with default configuration:
 let mut scale = Hx711(SPI);
 
 // start measurements
 let mut value = scale.readout();
-'''
+```
 
 # References
 
