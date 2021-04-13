@@ -28,7 +28,7 @@ let mut value = scale.readout().unwrap();
 
 [1]: https://cdn.sparkfun.com/datasheets/Sensors/ForceFlex/hx711_english.pdf
 
-- [`embedded-hal`][2]
+- [embedded-hal][2]
 
 [2]: https://github.com/rust-embedded/embedded-hal
 
