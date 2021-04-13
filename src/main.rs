@@ -7,10 +7,10 @@ use hx711_spi::{Hx711, HX711Mode};
 fn main()
 {
     let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0).unwrap();
-    let mut test = Hx711::new(spi, 1_000_000).unwrap();
+    let mut test = Hx711::new(spi).unwrap();
     // test.spi.configure()
 
-	// test.reset().unwrap();
+	test.reset().unwrap();
 
 	loop
 	{

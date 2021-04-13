@@ -8,10 +8,10 @@
 //! # Usage
 //!
 //! Use embedded-hal implementation to get SPI. HX711 does not use CS and SCLK. Make sure that it
-//! is the only device on the bus.
+//! is the only device on the bus. Connect the SDO to the PD_SCK and SDI to DOUT of the HX711.
 //!
 //! // to create sensor with default configuration:
-//! let mut scale = Hx711(SPI)
+//! let mut scale = Hx711(SPI);
 //!
 //! // start measurements
 //! let mut value = scale.readout();
@@ -40,8 +40,6 @@ use hal::blocking::spi;
 // use bitmach to decode the result
 use bitmatch::bitmatch;
 
-const SAMPLERATE: u8 = 10; // most boards are fixed to 10 SPS change if your hardware differs
-
 /// The HX711 has two chanels: A for the load cell and B for AD conversion of other signals.
 /// This three modes selecte the chips behaviour:
 #[derive(Copy, Clone, Debug)]
@@ -64,8 +62,7 @@ pub struct Hx711<SPI>
     // SPI specific
     spi: SPI,
     // device specific
-    mode: HX711Mode,
-    speed: u32
+    mode: HX711Mode
 }
 
 impl <SPI, E> Hx711<SPI>
@@ -73,7 +70,7 @@ where
     SPI: spi::Transfer<u8, Error=E> + spi::Write<u8, Error=E>
 {
     /// opens a connection to a HX711 on a specified SPI
-    pub fn new(spi:SPI, s: u32) -> Result<Self, E>
+    pub fn new(spi:SPI) -> Result<Self, E>
     {
         // datasheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range
         // therefore bus speed is 5 MHz to 20 kHz. 1 MHz seems to be a good choice
@@ -85,7 +82,6 @@ where
             {
                 spi,
                 mode: HX711Mode::ChAGain128,
-                speed: s
             }
         )
     }
@@ -107,9 +103,8 @@ where
         while txrx[0] == 0xFF                      // as soon as a single bit is low data is ready
         //while txrx[0] != 0
         {
-            // sleep for a 1/10 of the conversion period to grab the data while it's hot
-            // sleep(Duration::from_millis((SAMPLERATE / 1000).into()));
-            sleep(Duration::from_millis(10));
+            // sleep for 10 milliseconds which is 1/100 of the conversion period to grab the data while it's hot
+            sleep(Duration::from_millis(1));
             txrx[0] = 0;
             self.spi.transfer(&mut txrx)?;                                     // and check again
             println!("{:?}, waiting: {}", SystemTime::now().duration_since(UNIX_EPOCH), txrx[0]);
@@ -139,13 +134,21 @@ where
         // HX711 enters power down mode.
         // When PD_SCK returns to low, chip will reset and enter normal operation mode.
         // speed is the raw SPI speed -> half bits per second
-        let n = (60.0e-6 * (self.speed as f32 / 2.0)).ceil() as u32;
+        let time = SystemTime::now();
+
         let buffer : [u8; 1] = [0xFF];
 
-        for _i in 0..n
+        while time.elapsed().unwrap() < Duration::from_micros(60)
         {
             self.spi.write(& buffer)?;
         }
+        Ok(())
+    }
+
+    pub fn change_mode(&mut self, m: HX711Mode) -> Result<(), E>
+    {
+        self.mode = m;
+
         Ok(())
     }
     /*
