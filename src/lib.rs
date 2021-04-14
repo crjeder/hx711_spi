@@ -37,7 +37,7 @@
 
 // #![no_std]
 
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::Duration;
 use std::thread::sleep;
 
 use embedded_hal as hal;
@@ -101,22 +101,16 @@ where
         // to low, it indicates data is ready for retrieval.
         let mut txrx: [u8; 1] = [0];
 
-        // variant with sleep
-        print!("{:?}, ", SystemTime::now().duration_since(UNIX_EPOCH));
         self.spi.transfer(&mut txrx)?;
-        println!("ready?: {}", txrx[0]);
 
         while txrx[0] == 0xFF                      // as soon as a single bit is low data is ready
-        //while txrx[0] != 0
         {
-            // sleep for 10 milliseconds which is 1/100 of the conversion period to grab the data while it's hot
+            // sleep for 1 millisecond which is 1/100 of the conversion period to grab the data while it's hot
             sleep(Duration::from_millis(1));
             txrx[0] = 0;
             self.spi.transfer(&mut txrx)?;                                     // and check again
-            println!("{:?}, waiting: {}", SystemTime::now().duration_since(UNIX_EPOCH), txrx[0]);
         }
 
-        println!("{:?}, ready!: {}", SystemTime::now().duration_since(UNIX_EPOCH), txrx[0]);
         // the read has the same length as the write.
         // MOSI provides clock to the HX711's shift register (binary 1010...)
         // clock is 10 the buffer needs to be double the size of the 4 bytes we want to read
@@ -126,31 +120,11 @@ where
         self.spi.transfer(&mut buffer)?;
         // value should be in range 0x800000 - 0x7fffff according to datasheet
 
-        println!("buffer = {:?}", buffer);
         let res = decode_output(&buffer);
-        println!("result = {:b}", res);
 
         Ok(res)
     }
 
-/*
-    pub fn reset(&mut self) -> Result<(), E>
-    {
-        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
-        // HX711 enters power down mode.
-        // When PD_SCK returns to low, chip will reset and enter normal operation mode.
-
-        let time = SystemTime::now();
-
-        let buffer : [u8; 1] = [0xFF];
-
-        while time.elapsed().unwrap() < Duration::from_micros(60)
-        {
-            self.spi.write(& buffer)?;
-        }
-        Ok(())
-    }
-*/
     pub fn reset(&mut self) -> Result<(), E>
     {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
@@ -182,7 +156,6 @@ where
     }
     */
 }
-
 
 #[bitmatch]
 fn decode_output(buffer: &[u8;8]) -> i32
