@@ -8,7 +8,7 @@ In multi-user / multi-tasking environments bit banging is not reliable. SPI on t
 ## What works
 (tested on Raspberry Pi)
 
-- Reading results 
+- Reading results
 - Setting the mode (gain and channel)
 
 No scales functions (like tare weight and calibration) are implemented because I feel that's not part of a device driver.
@@ -21,7 +21,7 @@ No scales functions (like tare weight and calibration) are implemented because I
 - [ ] [`no_std`]
 
 ## Usage
-Use embedded-hal implementation to get SPI. HX711 does not use CS and SCLK. Make sure that it
+Use an embedded-hal implementation (e. g. rppal) to get SPI. HX711 does not use CS and SCLK. Make sure that it
 is the only device on the bus. Connect the SDO to the PD_SCK and SDI to DOUT of the HX711. SPI clock frequency has to be between 20 kHz and 5 MHz.
 
 ```rust

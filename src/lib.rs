@@ -1,20 +1,26 @@
 //! HX711 embedded-hal SPI driver crate
 //!
-//! A platform agnostic driver to interface with the HX711 load cell IC.
+//! This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
+//! This driver is built using [`embedded-hal`][2] traits.
 //!
-//! This driver is built using [`embedded-hal`] traits
-//! [embedded-hal]: https://docs.rs/embedded-hal
 //!
 //! # Usage
+//! Use an embedded-hal implementation to get SPI. HX711 does not use CS and SCLK. Make sure that it
+//! is the only device on the bus. Connect the SDO to the PD_SCK and SDI to DOUT of the HX711. SPI
+//!  clock frequency has to be between 20 kHz and 5 MHz.
 //!
-//! Use embedded-hal implementation to get SPI. HX711 does not use CS and SCLK. Make sure that it
-//! is the only device on the bus. Connect the SDO to the PD_SCK and SDI to DOUT of the HX711.
+//! ```rust
+//! use rppal::spi::{Spi, Bus, SlaveSelect, Mode};
+//! use hx711_spi::{Hx711, HX711Mode};
+//!
+//! let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0).unwrap();
 //!
 //! // to create sensor with default configuration:
-//! let mut scale = Hx711(SPI);
+//! let mut scale = Hx711(spi);
 //!
 //! // start measurements
-//! let mut value = scale.readout();
+//! let mut value = scale.readout().unwrap();
+//! ```
 //!
 //! # References
 //!
@@ -40,8 +46,8 @@ use hal::blocking::spi;
 // use bitmach to decode the result
 use bitmatch::bitmatch;
 
-/// The HX711 has two chanels: A for the load cell and B for AD conversion of other signals.
-/// This three modes selecte the chips behaviour:
+/// The HX711 has two chanels: `A` for the load cell and `B` for AD conversion of other signals.
+/// Channel `A` supports gains of 128 (default) and 64, `B` has a fixed gain of 32.
 #[derive(Copy, Clone, Debug)]
 #[repr(u8)]
 pub enum HX711Mode {
