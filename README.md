@@ -18,6 +18,7 @@ No scales functions (like tare weight and calibration) are implemented because I
 - [ ] Test on moree platforms
 - [ ] Power down
 - [ ] Reset
+- [ ] [`no_std`]
 
 ## Usage
 Use embedded-hal implementation to get SPI. HX711 does not use CS and SCLK. Make sure that it
