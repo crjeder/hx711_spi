@@ -1,8 +1,13 @@
 [package]
 name = "hx711_spi"
-version = "0.1.0"
+description = "A platform agnostic driver to interface with the HX711 using SPI"
+categories = ["embedded", "hardware-support"]
+keywords = ["embedded-hal-driver", "loadcell", "hx711", "amplifier", "adc"]
 authors = ["crjeder <crjeder@gmail.com>"]
+repository = "https://github.com/crjeder/hx711_spi"
+license = "MIT OR Apache-2.0"
 edition = "2018"
+version = "0.8.0"
 
 [dependencies]
 rppal = { version = "0.11.3", features = ["hal"] }
