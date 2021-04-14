@@ -127,13 +127,13 @@ where
         Ok(res)
     }
 
-
+/*
     pub fn reset(&mut self) -> Result<(), E>
     {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
         // HX711 enters power down mode.
         // When PD_SCK returns to low, chip will reset and enter normal operation mode.
-        // speed is the raw SPI speed -> half bits per second
+
         let time = SystemTime::now();
 
         let buffer : [u8; 1] = [0xFF];
@@ -142,6 +142,23 @@ where
         {
             self.spi.write(& buffer)?;
         }
+        Ok(())
+    }
+*/
+    pub fn reset(&mut self) -> Result<(), E>
+    {
+        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
+        // HX711 enters power down mode.
+        // When PD_SCK returns to low, chip will reset and enter normal operation mode.
+        // speed is the raw SPI speed -> half bits per second
+
+        // max SPI clock frequency should be 5 MHz to satisfy the 0.2 us limit for the pulse length
+        // we have to output more than 300 bytes to keep the line for at leas 60 us high
+
+        let buffer : [u8; 301] = [0xFF; 301];
+
+        self.spi.write(& buffer)?;
+
         Ok(())
     }
 

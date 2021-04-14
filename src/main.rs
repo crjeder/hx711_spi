@@ -1,8 +1,7 @@
-// use rppal::spi::{Bus, Mode, SlaveSelect, Spi, Segment};
 use rppal::spi::{Spi, Bus, SlaveSelect, Mode};
 use std::{thread, time};
 
-use hx711_spi::{Hx711, HX711Mode};
+use hx711_spi::Hx711;
 
 fn main()
 {
