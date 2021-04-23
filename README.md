@@ -1,4 +1,7 @@
 # hx711_spi
+
+[![API](https://docs.rs/hx711_spi/badge.svg)](https://docs.rs/hx711_spi)
+
 This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
 This driver is built using [`embedded-hal`][2] traits.
 
