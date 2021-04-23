@@ -23,7 +23,7 @@ No scales functions (like tare weight and calibration) are implemented because I
 
 ## TODO
 
-- [ ] Test on moree platforms
+- [ ] Test on more platforms
 - [ ] Power down
 - [ ] Reset
 - [ ] [`no_std`]
