@@ -3,6 +3,7 @@
 [![Crate](https://img.shields.io/crates/v/hx711_spi)](https://crates.io/crates/hx711_spi)
 ![License](https://img.shields.io/crates/l/hx711_spi)
 [![API](https://docs.rs/hx711_spi/badge.svg)](https://docs.rs/hx711_spi)
+![Docs](https://img.shields.io/docsrs/hx711_spi)
 
 This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
 This driver is built using [`embedded-hal`][2] traits.
