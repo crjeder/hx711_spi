@@ -1,4 +1,6 @@
-We welcome all people who want to contribute. 
+# Contributing
+
+I welcome all people who want to contribute. 
 
 Contributions in any form (issues, pull requests, etc.) to this project
 must adhere to Rust's [code of conduct].
