@@ -8,4 +8,4 @@ for inclusion in `hx711_spi` by you, as defined in the Apache-2.0 license, shall
 dual licensed as above, without any additional terms or conditions.
 
 [code of conduct](Code of Conduct): https://www.rust-lang.org/policies/code-of-conduct
-[LICENSE-APACHE](LICENSe-APACHE)
+[LICENSe-APACHE](LICENSE-APACHE)
