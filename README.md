@@ -48,7 +48,7 @@ let mut value = scale.readout().unwrap();
 
 # References
 
-  - [Datasheet][1]
+  - [datasheet][1]
 
 [1]: https://cdn.sparkfun.com/datasheets/Sensors/ForceFlex/hx711_english.pdf
 
