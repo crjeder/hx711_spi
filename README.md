@@ -6,6 +6,7 @@
 ![Docs](https://img.shields.io/docsrs/hx711_spi)
 ![LOC](https://img.shields.io/tokei/lines/github/crjeder/hx711_spi)
 ![Maintained](https://img.shields.io/maintenance/yes/2021)
+![GitHub Repo stars](https://img.shields.io/github/stars/crjeder/hx711_spi?style=plastic)
 
 This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
 This driver is built using [`embedded-hal`][2] traits.
@@ -45,6 +46,9 @@ let mut scale = Hx711(spi);
 // start measurements
 let mut value = scale.readout().unwrap();
 ```
+## Feedback
+All kind of feedback is welcome. If you have questions or problems, please post them on the issue tracker
+This is literally the first code in rust I ever wrote. So please be patient, it might take me some time to fix a bug. I might have to break my knowledge sound-barrier.
 
 # References
 
