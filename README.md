@@ -1,11 +1,13 @@
 # hx711_spi
 
-[![Crate](https://img.shields.io/crates/v/hx711_spi)](https://crates.io/crates/hx711_spi)
-![License](https://img.shields.io/crates/l/hx711_spi)
+[![Crate](https://img.shields.io/crates/v/hx711_spi?style=plastic)](https://crates.io/crates/hx711_spi)
+![License](https://img.shields.io/crates/l/hx711_spi?style=plastic)
 [![API](https://docs.rs/hx711_spi/badge.svg)](https://docs.rs/hx711_spi)
-![Docs](https://img.shields.io/docsrs/hx711_spi)
-![LOC](https://img.shields.io/tokei/lines/github/crjeder/hx711_spi)
-![Maintained](https://img.shields.io/maintenance/yes/2021)
+![Docs](https://img.shields.io/docsrs/hx711_spi?style=plastic)
+![LOC](https://img.shields.io/tokei/lines/github/crjeder/hx711_spi?style=plastic)
+![Maintained](https://img.shields.io/maintenance/yes/2021?style=plastic)
+![GitHub Repo stars](https://img.shields.io/github/stars/crjeder/hx711_spi?style=plastic)
+![Crates.io](https://img.shields.io/crates/d/hx711_spi?style=plastic)
 
 This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
 This driver is built using [`embedded-hal`][2] traits.
@@ -16,18 +18,18 @@ In multi-user / multi-tasking environments bit banging is not reliable. SPI on t
 ## What works
 (tested on Raspberry Pi)
 
-- Reading results
-- Setting the mode (gain and channel)
+  - Reading results
+  - Setting the mode (gain and channel)
 
 No scales functions (like tare weight and calibration) are implemented because I feel that's not part of a device driver.
 
 ## TODO
 
-- [ ] Test on more platforms
-- [ ] Power down
-- [ ] Reset
-- [ ] [`no_std`]
-- [ ] non-blocking with `nb`
+  - [ ] Test on more platforms
+  - [ ] Power down
+  - [ ] Reset
+  - [ ] `[no-std]`
+  - [ ] async safe
 
 ## Usage
 Use an embedded-hal implementation (e. g. rppal) to get SPI. HX711 does not use CS and SCLK. Make sure that it
@@ -45,14 +47,17 @@ let mut scale = Hx711(spi);
 // start measurements
 let mut value = scale.readout().unwrap();
 ```
+## Feedback
+All kind of feedback is welcome. If you have questions or problems, please post them on the issue tracker
+This is literally the first code I ever wrote in rust. I am stil learning. So please be patient, it might take me some time to fix a bug. I may have to break my knowledge sound-barrier.
 
 # References
 
-- [Datasheet][1]
+  - [datasheet][1]
 
 [1]: https://cdn.sparkfun.com/datasheets/Sensors/ForceFlex/hx711_english.pdf
 
-- [embedded-hal][2]
+  - [embedded-hal][2]
 
 [2]: https://github.com/rust-embedded/embedded-hal
 
@@ -60,8 +65,8 @@ let mut value = scale.readout().unwrap();
 
 Licensed under either of
 
-- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or
+  - Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or
   http://www.apache.org/licenses/LICENSE-2.0)
-- MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+  - MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
 
 at your option.
