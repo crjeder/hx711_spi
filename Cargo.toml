@@ -2,7 +2,7 @@
 name = "hx711_spi"
 description = "A platform agnostic driver to interface with the HX711 using SPI"
 categories = ["embedded", "hardware-support"]
-keywords = ["embedded-hal-driver", "loadcell", "hx711", "amplifier", "adc"]
+keywords = ["embedded-hal-driver", "embedded-hal", "loadcell", "hx711", "amplifier", "adc", "driver"]
 authors = ["crjeder <crjeder@gmail.com>"]
 repository = "https://github.com/crjeder/hx711_spi"
 readme = "README.md"
