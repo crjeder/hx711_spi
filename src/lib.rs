@@ -34,14 +34,11 @@
 //!
 //!
 
-
-// #![no_std]
-
-use std::time::Duration;
-use std::thread::sleep;
+#![no_std]
 
 use embedded_hal as hal;
 use hal::blocking::spi;
+use hal::blocking::delay::DelayMs;
 
 // use bitmach to decode the result
 use bitmatch::bitmatch;
@@ -63,20 +60,26 @@ pub enum HX711Mode {
 
 /// Represents an instance of a HX711 device
 #[derive(Debug)]
-pub struct Hx711<SPI>
+pub struct Hx711<SPI, T>
+//where
+//    SPI: spi::Transfer<u8, Error=E> + spi::Write<u8, Error=E>,
+//    T: DelayUs<u16> + DelayMs<u16>
 {
     // SPI specific
     spi: SPI,
     // device specific
-    mode: HX711Mode
+    mode: HX711Mode,
+    // timeer for delay
+    timer: T
 }
 
-impl <SPI, E> Hx711<SPI>
+impl <SPI, E, T> Hx711<SPI, T>
 where
-    SPI: spi::Transfer<u8, Error=E> + spi::Write<u8, Error=E>
+    SPI: spi::Transfer<u8, Error=E> + spi::Write<u8, Error=E>,
+    T: DelayMs<u16>
 {
     /// opens a connection to a HX711 on a specified SPI
-    pub fn new(spi:SPI) -> Result<Self, E>
+    pub fn new(spi: SPI, timer: T) -> Result<Self, E>
     {
         // datasheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range
         // therefore bus speed is 5 MHz to 20 kHz. 1 MHz seems to be a good choice
@@ -88,6 +91,7 @@ where
             {
                 spi,
                 mode: HX711Mode::ChAGain128,
+                timer
             }
         )
     }
@@ -106,7 +110,8 @@ where
         while txrx[0] == 0xFF                      // as soon as a single bit is low data is ready
         {
             // sleep for 1 millisecond which is 1/100 of the conversion period to grab the data while it's hot
-            sleep(Duration::from_millis(1));
+            self.timer.delay_ms(1);
+
             txrx[0] = 0;
             self.spi.transfer(&mut txrx)?;                                     // and check again
         }

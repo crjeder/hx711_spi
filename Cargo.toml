@@ -9,7 +9,7 @@ readme = "README.md"
 documentation = "https://docs.rs/hx711_spi"
 license = "MIT OR Apache-2.0"
 edition = "2018"
-version = "0.2.1" # remember to update html_root_url
+version = "0.2.1"
 
 [dependencies]
 embedded-hal = "0.2.4"
