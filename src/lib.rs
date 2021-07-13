@@ -11,7 +11,7 @@
 //!
 //! ```rust
 //! use rppal::spi::{Spi, Bus, SlaveSelect, Mode};
-//! use hx711_spi::{Hx711, HX711Mode};
+//! use hx711_spi::{Hx711, Mode};
 //!
 //! let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0).unwrap();
 //!
@@ -49,7 +49,7 @@ use bitmatch::bitmatch;
 /// Channel `A` supports gains of 128 (default) and 64, `B` has a fixed gain of 32.
 #[derive(Copy, Clone, Debug)]
 #[repr(u8)]
-pub enum HX711Mode {
+pub enum Mode{
     // bits have to be converted for correct transfer 1 -> 10, 0 -> 00
     /// Convet channel A with a gain factor of 128
     ChAGain128 = 0b1000000,
@@ -70,7 +70,7 @@ pub struct Hx711<SPI, T>
     // SPI specific
     spi: SPI,
     // device specific
-    mode: HX711Mode,
+    mode: Mode,
     // timeer for delay
     timer: T
 }
@@ -91,14 +91,14 @@ where
             Hx711
             {
                 spi,
-                mode: HX711Mode::ChAGain128,
+                mode: Mode::ChAGain128,
                 timer
             }
         )
     }
 
     /// reads a value from the HX711 and retrurns it
-    pub fn readout(&mut self) -> nb::Result<i32, E>
+    pub fn retrieve(&mut self) -> nb::Result<i32, E>
     {
         // check if data is ready
         // When output data is not ready for retrieval, digital output pin DOUT is high.
@@ -143,20 +143,20 @@ where
         let buffer : [u8; 301] = [0xFF; 301];
 
         self.spi.write(& buffer)?;
-        self.mode = HX711Mode::ChAGain128;      // this is the default mode after reset
+        self.mode = Mode::ChAGain128;      // this is the default mode after reset
 
         Ok(())
     }
 
     /// Set the mode to the value specified.
-    pub fn set_mode(&mut self, m: HX711Mode) -> Result<HX711Mode, E>
+    pub fn set_mode(&mut self, m: Mode) -> Result<Mode, E>
     {
         self.mode = m;
         Ok(m)
     }
 
     /// Get the mode currently set.
-    pub fn get_mode(&mut self) -> Result<HX711Mode, E>
+    pub fn get_mode(&mut self) -> Result<Mode, E>
     {
         Ok(self.mode)
     }
@@ -164,13 +164,23 @@ where
     /// To power down the chip the PD_SCK line has to be held in a 'high' state. To do this we
     /// would need to write a constant stream of binary '1' to the SPI bus which would totally defy
     /// the purpose. Therefore it's not implemented.
-    pub fn power_down(&mut self) -> Result<(), E>
+    pub fn disable(&mut self) -> Result<(), E>
     {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
         // When PD_SCK returns to low, chip will reset and enter normal operation mode.
         // this can't be implemented with SPI because we would have to write a constant stream
         // of binary '1' which would block the process
-        unimplemented!("power_down is not implemented");
+        unimplemented!("power_down is not possible with this driver implementation");
+    }
+
+    /// Power up / down is not implemented (see disable)
+    pub fn enable(&mut self) -> Result<(), E>
+    {
+        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
+        // When PD_SCK returns to low, chip will reset and enter normal operation mode.
+        // this can't be implemented with SPI because we would have to write a constant stream
+        // of binary '1' which would block the process
+        unimplemented!("power_down is not possible with this driver implementation");
     }
 }
 
