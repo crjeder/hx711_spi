@@ -39,6 +39,7 @@
 use embedded_hal as hal;
 use hal::blocking::spi;
 use hal::blocking::delay::DelayMs;
+use core::unimplemented;
 use nb;
 
 // use bitmach to decode the result
@@ -80,12 +81,11 @@ where
     T: DelayMs<u16>
 {
     /// opens a connection to a HX711 on a specified SPI
+    /// The datasheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range,
+    /// therefore bus speed has to be between 5 MHz and 20 kHz. 1 MHz seems to be a good choice.
+    // e. g. let dev = Spi::new(bus, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
     pub fn new(spi: SPI, timer: T) -> Result<Self, E>
     {
-        // datasheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range
-        // therefore bus speed is 5 MHz to 20 kHz. 1 MHz seems to be a good choice
-        // let dev = Spi::new(bus, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
-
         Ok
         (
             Hx711
@@ -129,6 +129,7 @@ where
         Ok(res)
     }
 
+    /// Reset the chip to it's default state. Mode is set to Convet channel A with a gain factor of 128.
     pub fn reset(&mut self) -> Result<(), E>
     {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
@@ -137,33 +138,40 @@ where
         // speed is the raw SPI speed -> half bits per second
 
         // max SPI clock frequency should be 5 MHz to satisfy the 0.2 us limit for the pulse length
-        // we have to output more than 300 bytes to keep the line for at leas 60 us high
+        // we have to output more than 300 bytes to keep the line for at least 60 us high
 
         let buffer : [u8; 301] = [0xFF; 301];
 
         self.spi.write(& buffer)?;
-        self.mode = HX711Mode::ChAGain128;
+        self.mode = HX711Mode::ChAGain128;      // this is the default mode after reset
 
         Ok(())
     }
 
+    /// Set the mode to the value specified.
     pub fn set_mode(&mut self, m: HX711Mode) -> Result<HX711Mode, E>
     {
         self.mode = m;
         Ok(m)
     }
 
+    /// Get the mode currently set.
     pub fn get_mode(&mut self) -> Result<HX711Mode, E>
     {
         Ok(self.mode)
     }
-    /*
-    pub fn power_down()
+
+    /// To power down the chip the PD_SCK line has to be held in a 'high' state. To do this we
+    /// would need to write a constant stream of binary '1' to the SPI bus which would totally defy
+    /// the purpose. Therefore it's not implemented.
+    pub fn power_down(&mut self) -> Result<(), E>
     {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
         // When PD_SCK returns to low, chip will reset and enter normal operation mode.
+        // this can't be implemented with SPI because we would have to write a constant stream
+        // of binary '1' which would block the process
+        unimplemented!("power_down is not implemented");
     }
-    */
 }
 
 #[bitmatch]
