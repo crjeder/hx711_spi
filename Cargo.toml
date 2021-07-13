@@ -14,3 +14,4 @@ version = "0.2.1"
 [dependencies]
 embedded-hal = "0.2.4"
 bitmatch = "0.1.1"
+nb = "1.0.0"

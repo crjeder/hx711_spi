@@ -39,6 +39,7 @@
 use embedded_hal as hal;
 use hal::blocking::spi;
 use hal::blocking::delay::DelayMs;
+use nb;
 
 // use bitmach to decode the result
 use bitmatch::bitmatch;
@@ -97,7 +98,7 @@ where
     }
 
     /// reads a value from the HX711 and retrurns it
-    pub fn readout(&mut self) -> Result<i32, E>
+    pub fn readout(&mut self) -> nb::Result<i32, E>
     {
         // check if data is ready
         // When output data is not ready for retrieval, digital output pin DOUT is high.
@@ -107,13 +108,11 @@ where
 
         self.spi.transfer(&mut txrx)?;
 
-        while txrx[0] == 0xFF                      // as soon as a single bit is low data is ready
+        if txrx[0] == 0xFF                      // as soon as a single bit is low data is ready
         {
             // sleep for 1 millisecond which is 1/100 of the conversion period to grab the data while it's hot
-            self.timer.delay_ms(1);
-
-            txrx[0] = 0;
-            self.spi.transfer(&mut txrx)?;                                     // and check again
+            self.timer.delay_ms(1);              // not sure if that's ok with nb
+            return Err(nb::Error::WouldBlock);
         }
 
         // the read has the same length as the write.
@@ -143,15 +142,20 @@ where
         let buffer : [u8; 301] = [0xFF; 301];
 
         self.spi.write(& buffer)?;
+        self.mode = HX711Mode::ChAGain128;
 
         Ok(())
     }
 
-    pub fn change_mode(&mut self, m: HX711Mode) -> Result<(), E>
+    pub fn set_mode(&mut self, m: HX711Mode) -> Result<HX711Mode, E>
     {
         self.mode = m;
+        Ok(m)
+    }
 
-        Ok(())
+    pub fn get_mode(&mut self) -> Result<HX711Mode, E>
+    {
+        Ok(self.mode)
     }
     /*
     pub fn power_down()

@@ -27,9 +27,9 @@ No scales functions (like tare weight and calibration) are implemented because I
 
   - [ ] Test on more platforms
   - [ ] Power down
-  - [ ] Reset
-  - [ ] `[no-std]`
-  - [ ] async safe
+  - [X] Reset
+  - [X] `[no-std]`
+  - [ ] reentrant safe
 
 ## Usage
 Use an embedded-hal implementation (e. g. rppal) to get SPI. HX711 does not use CS and SCLK. Make sure that it
@@ -37,19 +37,23 @@ is the only device on the bus. Connect the SDO to the PD_SCK and SDI to DOUT of 
 
 ```rust
 use rppal::spi::{Spi, Bus, SlaveSelect, Mode};
+use embedded_hal::blocking::delay::DelayMs;
+use rppal::hal::Delay;
+
 use hx711_spi::{Hx711, HX711Mode};
 
 let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0).unwrap();
 
 // to create sensor with default configuration:
-let mut scale = Hx711(spi);
+let mut scale = Hx711::new(spi, Delay::new()).unwrap();
 
 // start measurements
-let mut value = scale.readout().unwrap();
+let mut value = block!(scale.readout().unwrap());
 ```
 ## Feedback
 All kind of feedback is welcome. If you have questions or problems, please post them on the issue tracker
 This is literally the first code I ever wrote in rust. I am stil learning. So please be patient, it might take me some time to fix a bug. I may have to break my knowledge sound-barrier.
+If you have tested on another platform I'd like to hear about that, too!
 
 # References
 
