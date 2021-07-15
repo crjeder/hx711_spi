@@ -15,7 +15,7 @@ fn main()
     let mut delay = Delay::new();
 	loop
 	{
-        let v = block!(test.readout().unwrap());
+        let v = block!(test.retrieve().unwrap());
 		println!("value = {}", v);
 		delay.delay_ms(1u8);
 	}

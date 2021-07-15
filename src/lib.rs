@@ -19,7 +19,7 @@
 //! let mut scale = Hx711(spi);
 //!
 //! // start measurements
-//! let mut value = scale.readout().unwrap();
+//! let mut value = scale.retrieve().unwrap();
 //! ```
 //!
 //! # References
@@ -35,11 +35,13 @@
 //!
 
 #![no_std]
+#![feature(negative_impls)]
 
 use embedded_hal as hal;
 use hal::blocking::spi;
 use hal::blocking::delay::DelayMs;
 use core::unimplemented;
+use core::marker::Sync;
 use nb;
 
 // use bitmach to decode the result
@@ -98,7 +100,7 @@ where
     }
 
     /// reads a value from the HX711 and retrurns it
-    pub fn retrieve(&mut self) -> nb::Result<i32, E>
+    pub fn read(&mut self) -> nb::Result<i32, E>
     {
         // check if data is ready
         // When output data is not ready for retrieval, digital output pin DOUT is high.
@@ -124,9 +126,19 @@ where
         self.spi.transfer(&mut buffer)?;
         // value should be in range 0x800000 - 0x7fffff according to datasheet
 
-        let res = decode_output(&buffer);
+        Ok(decode_output(&buffer))
+    }
 
-        Ok(res)
+    /// alias for read()
+    pub fn readout(&mut self) -> nb::Result<i32, E>
+    {
+        self.read()
+    }
+
+    /// alias for read()
+    pub fn retrieve(&mut self) -> nb::Result<i32, E>
+    {
+        self.read()
     }
 
     /// Reset the chip to it's default state. Mode is set to Convet channel A with a gain factor of 128.
@@ -183,6 +195,16 @@ where
         unimplemented!("power_down is not possible with this driver implementation");
     }
 }
+
+// it's not safe to use SPI bus from different treads and therefore the Hx711 driver is not
+// tread safe either
+// this should not be necessary since the actual implementations for SPI should correctly implement Sync
+// but I don't want Sync to be auto implemented
+impl <SPI, E, T> !Sync for Hx711<SPI, T>
+where
+    SPI: spi::Transfer<u8, Error=E> + spi::Write<u8, Error=E>,
+    T: DelayMs<u16>
+{}
 
 #[bitmatch]
 fn decode_output(buffer: &[u8;8]) -> i32
