@@ -92,15 +92,20 @@ where
     D: DelayMs<u16>
 {
     /// opens a connection to a HX711 on a specified SPI.
+    ///
     /// The datasheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range,
     /// therefore bus speed has to be between 5 MHz and 20 kHz. 1 MHz seems to be a good choice.
-    /// e. g. let dev = Spi::new(bus, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
-    /// D is an embedded_hal implementation of DelayMs
+    /// e. g.
+    /// ```rust
+    /// let dev = Spi::new(bus, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
+    /// D is an embedded_hal implementation of DelayMs.
+    ///```
     ///
     /// # Safety
     ///
     /// It's unsafe to use Hx711 in multi-threading environments since a call to the read and reset
-    /// functions would result in undefined behaviour if the previous call has not finished first
+    /// functions would result in undefined behaviour if the previous call has not finished first.
+    ///
     /// Changing the mode is safe since it is applied on the next read and takes effect on the
     /// second read operation.
     pub fn new(spi: SPI, delay: D) -> Self
@@ -153,10 +158,10 @@ where
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
         // HX711 enters power down mode.
         // When PD_SCK returns to low, chip will reset and enter normal operation mode.
-        // speed is the raw SPI speed -> half bits per second
+        // speed is the raw SPI speed -> half bits per second.
 
         // max SPI clock frequency should be 5 MHz to satisfy the 0.2 us limit for the pulse length
-        // we have to output more than 300 bytes to keep the line for at least 60 us high
+        // we have to output more than 300 bytes to keep the line for at least 60 us high.
 
         let buffer : [u8; 301] = [0xFF; 301];
 
@@ -174,7 +179,7 @@ where
         Ok(m)
     }
 
-    /// Get the mode currently set.
+    /// Get the current mode.
     pub fn mode(&mut self) -> Mode
     {
         self.mode
