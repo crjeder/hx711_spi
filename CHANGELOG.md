@@ -7,16 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - reset()
--- get_mode()
--- set_mode()
--- enable()
--- disable()
+- mode()
+- set_mode()
+- enable() (unimplemented see documentation)
+- disable() (unimplemented see documentation)
 - [no_std]
 - nb for read()
 - CHANGELOG
 ### Changed
 - Due to the change to [no_std] the interface of new() had to change: it needs a Delay parameter now.
 - Due to nb the return type of read() has changed to nb::Result
+- readout() was changed to read()
 
 ## [0.2.1] - 2021-04-14
 Initial release
