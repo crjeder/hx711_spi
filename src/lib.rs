@@ -1,7 +1,7 @@
 //! HX711 embedded-hal SPI driver crate
 //!
 //! This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
-//! This driver is built using [`embedded-hal`][2] traits.
+//! This driver [no_std] is built using [`embedded-hal`][2] traits.
 //!
 //!
 //! # Usage
@@ -9,17 +9,26 @@
 //! is the only device on the bus. Connect the SDO to the PD_SCK and SDI to DOUT of the HX711. SPI
 //!  clock frequency has to be between 20 kHz and 5 MHz.
 //!
+//! # Examples
 //! ```rust
-//! use rppal::spi::{Spi, Bus, SlaveSelect, Mode};
-//! use hx711_spi::{Hx711, HX711Mode};
+//! // embedded_hal implementation
+//! use rppal::{spi::{Spi, Bus, SlaveSelect, Mode, Error},hal::Delay};
 //!
-//! let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0).unwrap();
+//! use hx711_spi::Hx711;
+//! use nb::block;
 //!
-//! // to create sensor with default configuration:
-//! let mut scale = Hx711(spi);
+//! // minimal example
+//! fn main() -> Result<(), Error>
+//! {
+//!     let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
+//!     let mut hx711 = Hx711::new(spi, Delay::new());
 //!
-//! // start measurements
-//! let mut value = scale.readout().unwrap();
+//! 	hx711.reset()?;
+//!     let v = block!(hx711.read())?;
+//! 	println!("value = {}", v);
+//!
+//!     Ok(())
+//! }
 //! ```
 //!
 //! # References
@@ -34,14 +43,15 @@
 //!
 //!
 
-
-// #![no_std]
-
-use std::time::Duration;
-use std::thread::sleep;
+#![no_std]
+#![feature(negative_impls)]
 
 use embedded_hal as hal;
 use hal::blocking::spi;
+use hal::blocking::delay::DelayMs;
+use core::unimplemented;
+use core::marker::Sync;
+use nb::{self, block};
 
 // use bitmach to decode the result
 use bitmatch::bitmatch;
@@ -50,7 +60,7 @@ use bitmatch::bitmatch;
 /// Channel `A` supports gains of 128 (default) and 64, `B` has a fixed gain of 32.
 #[derive(Copy, Clone, Debug)]
 #[repr(u8)]
-pub enum HX711Mode {
+pub enum Mode{
     // bits have to be converted for correct transfer 1 -> 10, 0 -> 00
     /// Convet channel A with a gain factor of 128
     ChAGain128 = 0b1000000,
@@ -63,37 +73,50 @@ pub enum HX711Mode {
 
 /// Represents an instance of a HX711 device
 #[derive(Debug)]
-pub struct Hx711<SPI>
+pub struct Hx711<SPI, D>
+//where
+//    SPI: spi::Transfer<u8, Error=E> + spi::Write<u8, Error=E>,
+//    T: DelayUs<u16> + DelayMs<u16>
 {
     // SPI specific
     spi: SPI,
     // device specific
-    mode: HX711Mode
+    mode: Mode,
+    // timeer for delay
+    delay: D
 }
 
-impl <SPI, E> Hx711<SPI>
+impl <SPI, E, D> Hx711<SPI, D>
 where
-    SPI: spi::Transfer<u8, Error=E> + spi::Write<u8, Error=E>
+    SPI: spi::Transfer<u8, Error=E> + spi::Write<u8, Error=E>,
+    D: DelayMs<u16>
 {
-    /// opens a connection to a HX711 on a specified SPI
-    pub fn new(spi:SPI) -> Result<Self, E>
+    /// opens a connection to a HX711 on a specified SPI.
+    /// The datasheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range,
+    /// therefore bus speed has to be between 5 MHz and 20 kHz. 1 MHz seems to be a good choice.
+    /// e. g. let dev = Spi::new(bus, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
+    /// D is an embedded_hal implementation of DelayMs
+    ///
+    /// # Safety
+    ///
+    /// It's unsafe to use Hx711 in multi-threading environments since a call to the read and reset
+    /// functions would result in undefined behaviour if the previous call has not finished first
+    /// Changing the mode is safe since it is applied on the next read and takes effect on the
+    /// second read operation.
+    pub fn new(spi: SPI, delay: D) -> Self
     {
-        // datasheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range
-        // therefore bus speed is 5 MHz to 20 kHz. 1 MHz seems to be a good choice
-        // let dev = Spi::new(bus, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
-
-        Ok
-        (
-            Hx711
-            {
-                spi,
-                mode: HX711Mode::ChAGain128,
-            }
-        )
+        Hx711
+        {
+            spi,
+            mode: Mode::ChAGain128,
+            delay
+        }
     }
 
     /// reads a value from the HX711 and retrurns it
-    pub fn readout(&mut self) -> Result<i32, E>
+    /// # Errors
+    /// Returns SPI errors and nb::Error::WouldBlock if data isn't ready to be read from hx711
+    pub fn read(&mut self) -> nb::Result<i32, E>
     {
         // check if data is ready
         // When output data is not ready for retrieval, digital output pin DOUT is high.
@@ -103,12 +126,11 @@ where
 
         self.spi.transfer(&mut txrx)?;
 
-        while txrx[0] == 0xFF                      // as soon as a single bit is low data is ready
+        if txrx[0] == 0xFF                      // as soon as a single bit is low data is ready
         {
             // sleep for 1 millisecond which is 1/100 of the conversion period to grab the data while it's hot
-            sleep(Duration::from_millis(1));
-            txrx[0] = 0;
-            self.spi.transfer(&mut txrx)?;                                     // and check again
+            self.delay.delay_ms(1);              // not sure if that's ok with nb
+            return Err(nb::Error::WouldBlock);
         }
 
         // the read has the same length as the write.
@@ -120,11 +142,12 @@ where
         self.spi.transfer(&mut buffer)?;
         // value should be in range 0x800000 - 0x7fffff according to datasheet
 
-        let res = decode_output(&buffer);
-
-        Ok(res)
+        Ok(decode_output(&buffer))
     }
 
+    /// Reset the chip to it's default state. Mode is set to convert channel A with a gain factor of 128.
+    /// # Errors
+    /// Returns SPI errors
     pub fn reset(&mut self) -> Result<(), E>
     {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
@@ -133,29 +156,62 @@ where
         // speed is the raw SPI speed -> half bits per second
 
         // max SPI clock frequency should be 5 MHz to satisfy the 0.2 us limit for the pulse length
-        // we have to output more than 300 bytes to keep the line for at leas 60 us high
+        // we have to output more than 300 bytes to keep the line for at least 60 us high
 
         let buffer : [u8; 301] = [0xFF; 301];
 
         self.spi.write(& buffer)?;
+        self.mode = Mode::ChAGain128;      // this is the default mode after reset
 
         Ok(())
     }
 
-    pub fn change_mode(&mut self, m: HX711Mode) -> Result<(), E>
+    /// Set the mode to the value specified.
+    pub fn set_mode(&mut self, m: Mode) -> Result<Mode, E>
     {
         self.mode = m;
-
-        Ok(())
+        block!(self.read())?;           // read writes Mode for the next read()
+        Ok(m)
     }
-    /*
-    pub fn power_down()
+
+    /// Get the mode currently set.
+    pub fn mode(&mut self) -> Mode
+    {
+        self.mode
+    }
+
+    /// To power down the chip the PD_SCK line has to be held in a 'high' state. To do this we
+    /// would need to write a constant stream of binary '1' to the SPI bus which would totally defy
+    /// the purpose. Therefore it's not implemented.
+    pub fn disable(&mut self) -> Result<(), E>
     {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
         // When PD_SCK returns to low, chip will reset and enter normal operation mode.
+        // this can't be implemented with SPI because we would have to write a constant stream
+        // of binary '1' which would block the process
+        unimplemented!("power_down is not possible with this driver implementation");
     }
-    */
+
+    /// Power up / down is not implemented (see disable)
+    pub fn enable(&mut self) -> Result<(), E>
+    {
+        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
+        // When PD_SCK returns to low, chip will reset and enter normal operation mode.
+        // this can't be implemented with SPI because we would have to write a constant stream
+        // of binary '1' which would block the process
+        unimplemented!("power_down is not possible with this driver implementation");
+    }
 }
+
+// it's not safe to use SPI bus from different treads and therefore the Hx711 driver is not
+// tread-safe either
+// this should not be necessary since the actual implementations for SPI should correctly implement Sync
+// but I don't want Sync to be auto implemented
+impl <SPI, E, T> !Sync for Hx711<SPI, T>
+where
+    SPI: spi::Transfer<u8, Error=E> + spi::Write<u8, Error=E>,
+    T: DelayMs<u16>
+{}
 
 #[bitmatch]
 fn decode_output(buffer: &[u8;8]) -> i32
