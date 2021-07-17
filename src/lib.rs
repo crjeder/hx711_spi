@@ -5,7 +5,8 @@
 //!
 //!
 //! # Usage
-//! Use an embedded-hal implementation to get SPI. HX711 does not use CS and SCLK. Make sure that it
+//! Use an embedded-hal implementation to get SPI and Delay.
+//! HX711 does not use CS and SCLK. Make sure that it
 //! is the only device on the bus. Connect the SDO to the PD_SCK and SDI to DOUT of the HX711. SPI
 //!  clock frequency has to be between 20 kHz and 5 MHz.
 //!
@@ -98,8 +99,8 @@ where
     /// e. g.
     /// ```rust
     /// let dev = Spi::new(bus, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
-    /// D is an embedded_hal implementation of DelayMs.
     ///```
+    /// D is an embedded_hal implementation of DelayMs.
     ///
     /// # Safety
     ///
@@ -119,6 +120,10 @@ where
     }
 
     /// reads a value from the HX711 and retrurns it
+    /// # Examples
+    /// ```rust
+    /// let v = block!(hx711.read())?;
+    /// ```
     /// # Errors
     /// Returns SPI errors and nb::Error::WouldBlock if data isn't ready to be read from hx711
     pub fn read(&mut self) -> nb::Result<i32, E>
@@ -151,6 +156,10 @@ where
     }
 
     /// Reset the chip to it's default state. Mode is set to convert channel A with a gain factor of 128.
+    /// # Examples
+    /// ```rust
+    /// hx711.reset()?;
+    /// ```
     /// # Errors
     /// Returns SPI errors
     pub fn reset(&mut self) -> Result<(), E>
@@ -172,6 +181,12 @@ where
     }
 
     /// Set the mode to the value specified.
+    /// # Examples
+    /// ```rust
+    /// hx711.set_mode(Mode::ChAGain128)?;
+    /// ```
+    /// # Errors
+    /// Returns SPI errors
     pub fn set_mode(&mut self, m: Mode) -> Result<Mode, E>
     {
         self.mode = m;
@@ -180,6 +195,10 @@ where
     }
 
     /// Get the current mode.
+    /// # Examples
+    /// ```rust
+    /// print!("{:?}", hx711.mode());
+    /// ```
     pub fn mode(&mut self) -> Mode
     {
         self.mode

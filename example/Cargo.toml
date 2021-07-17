@@ -3,6 +3,7 @@ name = "example"
 authors = ["crjeder <crjeder@gmail.com>"]
 license = "MIT OR Apache-2.0"
 edition = "2018"
+version = "0.0.4"
 
 [dependencies]
 nb = "1.0.0"
