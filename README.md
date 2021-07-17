@@ -26,33 +26,39 @@ No scales functions (like tare weight and calibration) are implemented because I
 ## TODO
 
   - [ ] Test on more platforms
-  - [ ] Power down
+  - [X] Power down (functions exist just for compatibility. Implementation is not possible with SPI)
   - [X] Reset
-  - [X] `[no-std]`
-  - [ ] reentrant safe
+  - [X] `[no_std]`
+  - [ ] make it re-entrant / thread safe
 
 ## Usage
 Use an embedded-hal implementation (e. g. rppal) to get SPI. HX711 does not use CS and SCLK. Make sure that it
 is the only device on the bus. Connect the SDO to the PD_SCK and SDI to DOUT of the HX711. SPI clock frequency has to be between 20 kHz and 5 MHz.
 
 ```rust
-use rppal::spi::{Spi, Bus, SlaveSelect, Mode};
-use embedded_hal::blocking::delay::DelayMs;
-use rppal::hal::Delay;
+// embedded_hal implementation
+use rppal::{spi::{Spi, Bus, SlaveSelect, Mode, Error},hal::Delay};
 
-use hx711_spi::{Hx711, HX711Mode};
+use hx711_spi::Hx711;
+use nb::block;
 
-let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0).unwrap();
+// minimal example
+fn main() -> Result<(), Error>
+{
+    let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
+    let mut hx711 = Hx711::new(spi, Delay::new());
 
-// to create sensor with default configuration:
-let mut scale = Hx711::new(spi, Delay::new()).unwrap();
+	hx711.reset()?;
+    let v = block!(hx711.read())?;
+ 	  println!("value = {}", v);
 
-// start measurements
-let mut value = block!(scale.readout().unwrap());
+    Ok(())
+}
+
 ```
 ## Feedback
 All kind of feedback is welcome. If you have questions or problems, please post them on the issue tracker
-This is literally the first code I ever wrote in rust. I am stil learning. So please be patient, it might take me some time to fix a bug. I may have to break my knowledge sound-barrier.
+This is literally the first code I ever wrote in rust. I am still learning. So please be patient, it might take me some time to fix a bug. I may have to break my knowledge sound-barrier.
 If you have tested on another platform I'd like to hear about that, too!
 
 # References
