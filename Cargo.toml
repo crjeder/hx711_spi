@@ -1,3 +1,5 @@
+cargo-features = ["edition2021"]
+
 [package]
 name = "hx711_spi"
 description = "A platform agnostic driver to interface with the HX711 using SPI"
@@ -8,10 +10,10 @@ repository = "https://github.com/crjeder/hx711_spi"
 readme = "README.md"
 documentation = "https://docs.rs/hx711_spi"
 license = "MIT OR Apache-2.0"
-edition = "2018"
+edition = "2021"
 version = "0.3.1"
 
 [dependencies]
-embedded-hal = "0.2.4"
+embedded-hal = "0.2.5"
 bitmatch = "0.1.1"
 nb = "1.0.0"
