@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.1] - 2021-04-14
 Initial release
 
-[Unreleased]: 
+[Unreleased]: https://github.com/crjeder/hx711_spi
 [0.3.0]: https://github.com/crjeder/hx711_spi/releases/tag/0.3.0
-[0.2.1]: https://github.com/crjeder/hx711_spi/tree/0.2.1
+[0.2.1]: https://github.com/crjeder/hx711_spi/releases/tag/0.2.1
 
