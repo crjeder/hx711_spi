@@ -190,7 +190,7 @@ where
     pub fn set_mode(&mut self, m: Mode) -> Result<Mode, E>
     {
         self.mode = m;
-        block!(self.read())?;           // read writes Mode for the next read()
+        block!(self.read())?;           // read ot set mode for the next read()
         Ok(m)
     }
 
