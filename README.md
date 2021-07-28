@@ -55,6 +55,10 @@ fn main() -> Result<(), Error>
     Ok(())
 }
 
+It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-crev)
+to verify the trustworthiness of each of your dependencies, including this one.
+
+
 ```
 ## Feedback
 All kind of feedback is welcome. If you have questions or problems, please post them on the issue tracker
