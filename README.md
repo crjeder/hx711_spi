@@ -29,11 +29,9 @@ This is just a code snplet to show how the driver is used. A full example is in
 ['./examples'](examples/src/main.rs)
 
 ```rust
-    let mut hx711 = Hx711::new(spi, Delay::new());
-
-	  hx711.reset()?;
-    let v = block!(hx711.read())?;
- 	  println!("value = {}", v);
+let mut hx711 = Hx711::new(spi, Delay::new());
+let v = block!(hx711.read())?;
+println!("value = {}", v);
 ```
 
 ## What works
