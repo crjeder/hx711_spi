@@ -26,7 +26,7 @@ has to be between 20 kHz and 5 MHz.
 
 ## Example
 This is just a code snplet to show how the driver is used. A full example is in
-['./examples'][https://github.com/crjeder/hx711_spi/blob/release/examples/src/main.rs]
+['./examples'][https://github.com/crjeder/hx711_spi/blob/next/examples/src/main.rs]
 
 ```rust
     let mut hx711 = Hx711::new(spi, Delay::new());
