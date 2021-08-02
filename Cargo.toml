@@ -1,4 +1,4 @@
-cargo-features = ["edition2021"]
+#cargo-features = ["edition2021"]
 
 [package]
 name = "hx711_spi"
