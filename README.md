@@ -8,7 +8,7 @@
 ![Maintained](https://img.shields.io/maintenance/yes/2021?style=plastic)
 ![GitHub Repo stars](https://img.shields.io/github/stars/crjeder/hx711_spi?style=plastic)
 ![Crates.io](https://img.shields.io/crates/d/hx711_spi?style=plastic)
-[![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/hx711_spi.svg)](https://web.crev.dev/rust-reviews/crate/hx711_spi/)
+[![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/hx711_spi_bb.png)](https://web.crev.dev/rust-reviews/crate/hx711_spi/)
 
 
 This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
