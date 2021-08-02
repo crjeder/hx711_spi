@@ -28,13 +28,13 @@ Connect the SDO to the PD_SCK and SDI to DOUT of the HX711. SPI clock frequency
 has to be between 20 kHz and 5 MHz.
 
 ## Example
-This is just a code snplet to show how the driver is used. A full example is in
-['./examples'](examples/src/main.rs)
 
 ### Wiring
-[![wiring](examples/hx711_spi.svg)](examples/hx711_spi.fzz)
+[<img src="examples/hx711_spi_bb.png" width="300">](examples/hx711_spi.fzz)
 
 ### Code
+This is just a code sniplet to show how the driver is used. A full example is in
+['./examples'](examples/src/main.rs)
 ```rust
 let mut hx711 = Hx711::new(spi, Delay::new());
 let v = block!(hx711.read())?;
