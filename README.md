@@ -18,6 +18,9 @@ This `[no_std]` driver is built using [`embedded-hal`][2] traits.
 In multi-user / multi-tasking environments bit banging is not reliable. SPI on the other hand handles the timing with hardware support and is not influenced by other processes.
 
 ## Usage
+It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-crev)
+to verify the trustworthiness of each of your dependencies, including this one.
+
 Use an embedded-hal implementation to get SPI and Delay.
 HX711 does not use SCLK, instead it is provided by the driver using SDI. Make sure
 that HX711 is the only device on the bus since it does not implemnt CS.
@@ -49,12 +52,6 @@ No scales functions (like tare weight and calibration) are implemented because I
   - [X] Reset
   - [X] `[no_std]`
   - [ ] make it re-entrant / thread safe
-
-
-It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-crev)
-to verify the trustworthiness of each of your dependencies, including this one.
-
-
 
 ## Feedback
 All kind of feedback is welcome. If you have questions or problems, please post them on the issue tracker
