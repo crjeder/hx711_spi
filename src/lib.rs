@@ -1,48 +1,4 @@
-//! HX711 embedded-hal SPI driver crate
-//!
-//! This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
-//! This driver [no_std] is built using [`embedded-hal`][2] traits.
-//!
-//!
-//! # Usage
-//! Use an embedded-hal implementation to get SPI and Delay.
-//! HX711 does not use CS and SCLK. Make sure that it
-//! is the only device on the bus. Connect the SDO to the PD_SCK and SDI to DOUT of the HX711. SPI
-//!  clock frequency has to be between 20 kHz and 5 MHz.
-//!
-//! # Examples
-//! ```rust
-//! // embedded_hal implementation
-//! use rppal::{spi::{Spi, Bus, SlaveSelect, Mode, Error},hal::Delay};
-//!
-//! use hx711_spi::Hx711;
-//! use nb::block;
-//!
-//! // minimal example
-//! fn main() -> Result<(), Error>
-//! {
-//!     let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
-//!     let mut hx711 = Hx711::new(spi, Delay::new());
-//!
-//! 	hx711.reset()?;
-//!     let v = block!(hx711.read())?;
-//! 	println!("value = {}", v);
-//!
-//!     Ok(())
-//! }
-//! ```
-//!
-//! # References
-//!
-//! - [Datasheet][1]
-//!
-//! [1]: https://cdn.sparkfun.com/datasheets/Sensors/ForceFlex/hx711_english.pdf
-//!
-//! - [`embedded-hal`][2]
-//!
-//! [2]: https://github.com/rust-embedded/embedded-hal
-//!
-//!
+#![doc = include_str!("../README.md")]
 
 #![no_std]
 #![feature(negative_impls)]

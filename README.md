@@ -8,12 +8,33 @@
 ![Maintained](https://img.shields.io/maintenance/yes/2021?style=plastic)
 ![GitHub Repo stars](https://img.shields.io/github/stars/crjeder/hx711_spi?style=plastic)
 ![Crates.io](https://img.shields.io/crates/d/hx711_spi?style=plastic)
+[![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/hx711_spi.svg)](https://web.crev.dev/rust-reviews/crate/hx711_spi/)
+
 
 This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
-This driver is built using [`embedded-hal`][2] traits.
+This `[no_std]` driver is built using [`embedded-hal`][2] traits.
 
 ## Why did I write another HX711 driver?
 In multi-user / multi-tasking environments bit banging is not reliable. SPI on the other hand handles the timing with hardware support and is not influenced by other processes.
+
+## Usage
+Use an embedded-hal implementation to get SPI and Delay.
+HX711 does not use SCLK, instead it is provided by the driver using SDI. Make sure
+that HX711 is the only device on the bus since it does not implemnt CS.
+Connect the SDO to the PD_SCK and SDI to DOUT of the HX711. SPI clock frequency
+has to be between 20 kHz and 5 MHz.
+
+## Example
+This is just a code snplet to show how the driver is used. A full example is in
+['./examples'][https://github.com/crjeder/hx711_spi/blob/release/examples/src/main.rs]
+
+```rust
+    let mut hx711 = Hx711::new(spi, Delay::new());
+
+	  hx711.reset()?;
+    let v = block!(hx711.read())?;
+ 	  println!("value = {}", v);
+```
 
 ## What works
 (tested on Raspberry Pi)
@@ -31,35 +52,12 @@ No scales functions (like tare weight and calibration) are implemented because I
   - [X] `[no_std]`
   - [ ] make it re-entrant / thread safe
 
-## Usage
-Use an embedded-hal implementation (e. g. rppal) to get SPI. HX711 does not use CS and SCLK. Make sure that it
-is the only device on the bus. Connect the SDO to the PD_SCK and SDI to DOUT of the HX711. SPI clock frequency has to be between 20 kHz and 5 MHz.
-
-```rust
-// embedded_hal implementation
-use rppal::{spi::{Spi, Bus, SlaveSelect, Mode, Error},hal::Delay};
-
-use hx711_spi::Hx711;
-use nb::block;
-
-// minimal example
-fn main() -> Result<(), Error>
-{
-    let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
-    let mut hx711 = Hx711::new(spi, Delay::new());
-
-	  hx711.reset()?;
-    let v = block!(hx711.read())?;
- 	  println!("value = {}", v);
-
-    Ok(())
-}
 
 It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-crev)
 to verify the trustworthiness of each of your dependencies, including this one.
 
 
-```
+
 ## Feedback
 All kind of feedback is welcome. If you have questions or problems, please post them on the issue tracker
 This is literally the first code I ever wrote in rust. I am still learning. So please be patient, it might take me some time to fix a bug. I may have to break my knowledge sound-barrier.
