@@ -31,6 +31,10 @@ has to be between 20 kHz and 5 MHz.
 This is just a code snplet to show how the driver is used. A full example is in
 ['./examples'](examples/src/main.rs)
 
+### Wiring
+[![wiring](examples/hx711_spi.svg)](examples/hx711_spi.fzz)
+
+### Code
 ```rust
 let mut hx711 = Hx711::new(spi, Delay::new());
 let v = block!(hx711.read())?;
