@@ -8,7 +8,7 @@
 ![Maintained](https://img.shields.io/maintenance/yes/2021?style=plastic)
 ![GitHub Repo stars](https://img.shields.io/github/stars/crjeder/hx711_spi?style=plastic)
 ![Crates.io](https://img.shields.io/crates/d/hx711_spi?style=plastic)
-[![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/hx711_spi.svg)](https://web.crev.dev/rust-reviews/crate/hx711_spi/)
+[![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/hx711_spi_bb.png)](https://web.crev.dev/rust-reviews/crate/hx711_spi/)
 
 
 This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
@@ -18,6 +18,9 @@ This `[no_std]` driver is built using [`embedded-hal`][2] traits.
 In multi-user / multi-tasking environments bit banging is not reliable. SPI on the other hand handles the timing with hardware support and is not influenced by other processes.
 
 ## Usage
+It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-crev)
+to verify the trustworthiness of each of your dependencies, including this one.
+
 Use an embedded-hal implementation to get SPI and Delay.
 HX711 does not use SCLK, instead it is provided by the driver using SDI. Make sure
 that HX711 is the only device on the bus since it does not implemnt CS.
@@ -25,9 +28,13 @@ Connect the SDO to the PD_SCK and SDI to DOUT of the HX711. SPI clock frequency
 has to be between 20 kHz and 5 MHz.
 
 ## Example
-This is just a code snplet to show how the driver is used. A full example is in
-['./examples'](examples/src/main.rs)
 
+### Wiring
+[<img src="examples/hx711_spi_bb.png" width="300">](examples/hx711_spi.fzz)
+
+### Code
+This is just a code sniplet to show how the driver is used. A full example is in
+['./examples'](examples/src/main.rs)
 ```rust
 let mut hx711 = Hx711::new(spi, Delay::new());
 let v = block!(hx711.read())?;
@@ -49,12 +56,6 @@ No scales functions (like tare weight and calibration) are implemented because I
   - [X] Reset
   - [X] `[no_std]`
   - [ ] make it re-entrant / thread safe
-
-
-It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-crev)
-to verify the trustworthiness of each of your dependencies, including this one.
-
-
 
 ## Feedback
 All kind of feedback is welcome. If you have questions or problems, please post them on the issue tracker
