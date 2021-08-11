@@ -1,14 +1,11 @@
 # hx711_spi
 
 [![Crate](https://img.shields.io/crates/v/hx711_spi?style=plastic)](https://crates.io/crates/hx711_spi)
-[![API](https://docs.rs/hx711_spi/badge.svg)](https://docs.rs/hx711_spi)
-
 ![License](https://img.shields.io/crates/l/hx711_spi?style=plastic)
-
-[//]:![Docs](https://img.shields.io/docsrs/hx711_spi?style=plastic)
-[//]:![LOC](https://img.shields.io/tokei/lines/github/crjeder/hx711_spi?style=plastic)
+[![API](https://docs.rs/hx711_spi/badge.svg)](https://docs.rs/hx711_spi)
+![Docs](https://img.shields.io/docsrs/hx711_spi?style=plastic)
+![LOC](https://img.shields.io/tokei/lines/github/crjeder/hx711_spi?style=plastic)
 ![Maintained](https://img.shields.io/maintenance/yes/2021?style=plastic)
-[![dependency status](https://deps.rs/repo/github/crjeder/hx711_spi/status.svg)](https://deps.rs/repo/github/crjeder/hx711_spi)
 ![GitHub Repo stars](https://img.shields.io/github/stars/crjeder/hx711_spi?style=plastic)
 ![Crates.io](https://img.shields.io/crates/d/hx711_spi?style=plastic)
 [![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/hx711_spi_bb.png)](https://web.crev.dev/rust-reviews/crate/hx711_spi/)
@@ -55,10 +52,16 @@ No scales functions (like tare weight and calibration) are implemented because I
 ## TODO
 
   - [ ] Test on more platforms
-  - [X] Power down (functions exist just for compatibility. Implementation is not possible with SPI)
+  - [X] Power down
   - [X] Reset
   - [X] `[no_std]`
-  - [ ] make it re-entrant / thread safe
+  - [X] make it re-entrant / thread safe
+
+### Power down
+Functions exist just for compatibility. Implementation is not possible with SPI since the CPU / MPU would need to constantly send on the bus to power donwn the HX711. This would totally defy the purpose.
+
+### Thread Safety
+The Hx711 struct is marked !Sync wich should be redundant since SPI implementations shold not implement Sync. You would need to wrap a Mutex around the driver to use it in a multi threading environment.  
 
 ## Feedback
 All kind of feedback is welcome. If you have questions or problems, please post them on the issue tracker
