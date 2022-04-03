@@ -146,8 +146,8 @@ where
         // the read has the same length as the write.
         // MOSI provides clock to the HX711's shift register (binary 1010...)
         // clock is 10 the buffer needs to be double the size of the 4 bytes we want to read
-        let mut buffer: [u8; 8] = [0b10101010, 0b10101010, 0b10101010, 0b10101010,
-                                   0b10101010, 0b10101010, self.mode as u8, 0];
+        let mut buffer: [u8; 7] = [0b10101010, 0b10101010, 0b10101010, 0b10101010,
+                                   0b10101010, 0b10101010, self.mode as u8];
 
         self.spi.transfer(&mut buffer)?;
         // value should be in range 0x800000 - 0x7fffff according to datasheet
@@ -238,7 +238,7 @@ where
 {}
 
 #[bitmatch]
-fn decode_output(buffer: &[u8;8]) -> i32
+fn decode_output(buffer: &[u8;7]) -> i32
 {
     // buffer contains the 2's complement of the reading with every bit doubled
     // since the first byte is the most significant it's big endian
