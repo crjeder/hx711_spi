@@ -64,11 +64,11 @@ use bitmatch::bitmatch;
 pub enum Mode{
     // bits have to be converted for correct transfer 1 -> 10, 0 -> 00
     /// Convet channel A with a gain factor of 128
-    ChAGain128 = 0b1000000,
+    ChAGain128 = 0b10000000,
     /// Convert channel B with a gain factor of 64
-    ChBGain32 = 0b10100000,
+    ChBGain32 =  0b10100000,
     /// Convert channel A with a gain factor of 32
-    ChAGain64 = 0b10101000
+    ChAGain64 =  0b10101000
     // there is a typo in the official datasheet: in Fig.2 it says channel B instead of A
 }
 
