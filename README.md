@@ -12,7 +12,7 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/crjeder/hx711_spi?style=plastic)
 ![Crates.io](https://img.shields.io/crates/d/hx711_spi?style=plastic)
 
-This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
+This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instead of bit banging.
 This driver is built using [`embedded-hal`][2] traits.
 
 ## Why did I write another HX711 driver?
@@ -59,6 +59,23 @@ fn main() -> Result<(), Error>
 }
 
 ```
+
+An example stm32f103 (blue pill) initialization (note mode 1).
+
+``` rust
+    let hx711_spi_pins = (
+        gpiob.pb13.into_alternate_push_pull(&mut gpiob.crh),
+        gpiob.pb14.into_floating_input(&mut gpiob.crh),
+        gpiob.pb15.into_alternate_push_pull(&mut gpiob.crh),
+    );
+    let hx711_spi = spi::Spi::spi2(device.SPI2, hx711_spi_pins, spi::MODE_1, 1.MHz(), clocks);
+    let tim_delay = device.TIM1.delay::<1_000_000>(&clocks);
+    let mut hx711_sensor = Hx711::new(hx711_spi, tim_delay);
+    hx711_sensor.reset().unwrap();
+    hx711_sensor.set_mode(hx711_spi::Mode::ChAGain128).unwrap(); // x128 works up to +-20mV
+```
+
+
 ## Feedback
 All kind of feedback is welcome. If you have questions or problems, please post them on the issue tracker
 This is literally the first code I ever wrote in rust. I am still learning. So please be patient, it might take me some time to fix a bug. I may have to break my knowledge sound-barrier.
