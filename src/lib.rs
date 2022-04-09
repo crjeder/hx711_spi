@@ -45,10 +45,8 @@
 //!
 
 #![no_std]
-#![feature(negative_impls)]
 
 use bitmatch::bitmatch; // use bitmatch to decode the result
-use core::marker::Sync;
 use core::unimplemented;
 use embedded_hal as hal;
 use hal::blocking::delay::DelayMs;
@@ -96,14 +94,6 @@ where
     /// let dev = Spi::new(bus, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
     ///```
     /// D is an embedded_hal implementation of DelayMs.
-    ///
-    /// # Safety
-    ///
-    /// It's unsafe to use Hx711 in multi-threading environments since a call to the read and reset
-    /// functions would result in undefined behaviour if the previous call has not finished first.
-    ///
-    /// Changing the mode is safe since it is applied on the next read and takes effect on the
-    /// second read operation.
     pub fn new(spi: SPI, delay: D) -> Self
     {
         Hx711 {
@@ -225,17 +215,6 @@ where
         // of binary '1' which would block the process
         unimplemented!("power_down is not possible with this driver implementation");
     }
-}
-
-// it's not safe to use SPI bus from different treads and therefore the Hx711 driver is not
-// tread-safe either
-// this should not be necessary since the actual implementations for SPI should correctly implement Sync
-// but I don't want Sync to be auto implemented
-impl<SPI, E, T> !Sync for Hx711<SPI, T>
-where
-    SPI: spi::Transfer<u8, Error = E> + spi::Write<u8, Error = E>,
-    T: DelayMs<u16>,
-{
 }
 
 #[bitmatch]
