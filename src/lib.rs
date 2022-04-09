@@ -1,6 +1,6 @@
 //! HX711 embedded-hal SPI driver crate
 //!
-//! This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instad of bit banging.
+//! This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instead of bit banging.
 //! This driver [no_std] is built using [`embedded-hal`][2] traits.
 //!
 //!
@@ -24,9 +24,9 @@
 //!     let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
 //!     let mut hx711 = Hx711::new(spi, Delay::new());
 //!
-//! 	hx711.reset()?;
+//!     hx711.reset()?;
 //!     let v = block!(hx711.read())?;
-//! 	println!("value = {}", v);
+//!     println!("value = {}", v);
 //!
 //!     Ok(())
 //! }
@@ -47,6 +47,7 @@
 #![no_std]
 #![feature(negative_impls)]
 
+use bitmatch::bitmatch; // use bitmatch to decode the result
 use core::marker::Sync;
 use core::unimplemented;
 use embedded_hal as hal;
@@ -54,17 +55,14 @@ use hal::blocking::delay::DelayMs;
 use hal::blocking::spi;
 use nb::{self, block};
 
-// use bitmach to decode the result
-use bitmatch::bitmatch;
-
-/// The HX711 has two chanels: `A` for the load cell and `B` for AD conversion of other signals.
+/// The HX711 has two channels: `A` for the load cell and `B` for AD conversion of other signals.
 /// Channel `A` supports gains of 128 (default) and 64, `B` has a fixed gain of 32.
 #[derive(Copy, Clone, Debug)]
 #[repr(u8)]
 pub enum Mode
 {
     // bits have to be converted for correct transfer 1 -> 10, 0 -> 00
-    /// Convet channel A with a gain factor of 128
+    /// Convert channel A with a gain factor of 128
     ChAGain128 = 0b10000000,
     /// Convert channel B with a gain factor of 64
     ChBGain32 = 0b10100000,
@@ -75,15 +73,12 @@ pub enum Mode
 /// Represents an instance of a HX711 device
 #[derive(Debug)]
 pub struct Hx711<SPI, D>
-//where
-//    SPI: spi::Transfer<u8, Error=E> + spi::Write<u8, Error=E>,
-//    T: DelayUs<u16> + DelayMs<u16>
 {
     // SPI specific
     spi: SPI,
     // device specific
     mode: Mode,
-    // timeer for delay
+    // timer for delay
     delay: D,
 }
 
@@ -118,9 +113,10 @@ where
         }
     }
 
-    /// reads a value from the HX711 and retrurns it
+    /// reads a value from the HX711 and returns it
     /// # Examples
     /// ```rust
+    /// # use nb::block;
     /// let v = block!(hx711.read())?;
     /// ```
     /// # Errors

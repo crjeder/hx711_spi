@@ -1,8 +1,6 @@
 // embedded_hal implementation
-use rppal::{
-    hal::Delay,
-    spi::{Bus, Error, Mode, SlaveSelect, Spi},
-};
+use rppal::hal::Delay;
+use rppal::spi::{Bus, Error, Mode, SlaveSelect, Spi};
 
 use hx711_spi::Hx711;
 use nb::block;
