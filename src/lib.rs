@@ -217,7 +217,7 @@ fn decode_output(buffer: &[u8;8]) -> i32
 
     // and pack them into the lower 24 bits of the 4 bytes
     let mut raw: [u8; 4] = [0; 4];
-    raw[0] = 0;
+    // raw[0] = 0;  // not necessary, allready initialized above
     raw[1] = bitpack!("aaaabbbb");
     raw[2] = bitpack!("ccccdddd");
     raw[3] = bitpack!("eeeeffff");
