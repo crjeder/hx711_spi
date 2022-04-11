@@ -201,24 +201,27 @@ fn decode_output(buffer: &[u8;8]) -> i32
     // we have to extract every second bit from the buffer
     // only the upper 24 (doubled) bits are valid
 
-	#[bitmatch]
-	let "a?a?a?a?" = buffer[0];
-	#[bitmatch]
-	let "b?b?b?b?" = buffer[1];
-	#[bitmatch]
-	let "c?c?c?c?" = buffer[2];
-	#[bitmatch]
-	let "d?d?d?d?" = buffer[3];
-	#[bitmatch]
-	let "e?e?e?e?" = buffer[4];
-	#[bitmatch]
-	let "f?f?f?f?" = buffer[5];
+    // extract the bits
+    #[bitmatch]
+    let "a?a?a?a?" = buffer[0];
+    #[bitmatch]
+    let "b?b?b?b?" = buffer[1];
+    #[bitmatch]
+    let "c?c?c?c?" = buffer[2];
+    #[bitmatch]
+    let "d?d?d?d?" = buffer[3];
+    #[bitmatch]
+    let "e?e?e?e?" = buffer[4];
+    #[bitmatch]
+    let "f?f?f?f?" = buffer[5];
 
-	let mut raw: [u8; 4] = [0; 4];
-	raw[0] = bitpack!("aaaabbbb");
-    raw[1] = bitpack!("ccccdddd");
-    raw[2] = bitpack!("eeeeffff");
-    raw[3] = 0;
+    // and pack them into the lower 24 bits of the 4 bytes
+    let mut raw: [u8; 4] = [0; 4];
+    raw[0] = 0;
+    raw[1] = bitpack!("aaaabbbb");
+    raw[2] = bitpack!("ccccdddd");
+    raw[3] = bitpack!("eeeeffff");
 
-	i32::from_be_bytes(raw) / 0x100
+    // retrun the resulting i32
+    i32::from_be_bytes(raw)
 }
