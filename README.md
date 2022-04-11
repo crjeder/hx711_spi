@@ -32,7 +32,7 @@ No scales functions (like tare weight and calibration) are implemented because I
   - [X] Power down (functions exist just for compatibility. Implementation is not possible with SPI)
   - [X] Reset
   - [X] `[no_std]`
-  - [ ] make it re-entrant / thread safe
+  - [X] make it re-entrant / thread safe
 
 ## Usage
 Use an embedded-hal implementation (e. g. rppal) to get SPI. HX711 does not use CS and SCLK. Make sure that it
