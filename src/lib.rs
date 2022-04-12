@@ -148,6 +148,10 @@ where
         Ok(decode_output(&buffer))
     }
 
+    // for compatibility:
+    pub fn retrieve(&mut self) -> nb::Result<i32, E> {
+        self.read()
+    }
     /// Reset the chip to it's default state. Mode is set to convert channel A with a gain factor of 128.
     /// # Examples
     /// ```rust
@@ -193,6 +197,9 @@ where
     /// print!("{:?}", hx711.mode());
     /// ```
     pub fn mode(&mut self) -> Mode { self.mode }
+
+    // for compatibility:
+    pub fn get_mode(&mut self) -> Mode { self.mode }
 
     /// To power down the chip the PD_SCK line has to be held in a 'high' state. To do this we
     /// would need to write a constant stream of binary '1' to the SPI bus which would totally defy
@@ -245,4 +252,18 @@ fn decode_output(buffer: &[u8; 7]) -> i32
     raw[3] = 0;
 
     i32::from_be_bytes(raw) / 0x100
+}
+
+#[cfg(test)]
+mod tests
+{
+    use super::*;
+    use test_case::test_case;
+
+    #[test_case(&[0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55] => 0; "alternating convert to zeros")]
+    #[test_case(&[0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA] => -1; "alternating convert to ones")]
+    #[test_case(&[0xFF, 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF] => -1; "all ones")]
+    #[test_case(&[0b00100111, 0b00100111, 0b00100111, 0b00100111,
+                  0b00100111, 0b00100111, 0b00100111] => 0b0000_0000_0101_0101_0101_0101_0101_0101i32; "test pattern")]
+    fn test_decode(buffer: &[u8; 7]) -> i32 { decode_output(&buffer) }
 }
