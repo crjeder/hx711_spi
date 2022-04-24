@@ -15,12 +15,13 @@ This is a platform agnostic driver to interface with the HX711 load cell IC. It 
 This `[no_std]` driver is built using [`embedded-hal`][2] traits.
 It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-crev)
 to verify the trustworthiness of each of your dependencies, including this one.
-I'm using the reddefined SPI signal names (['see sparkfun's Resolution'][3]).
 
 ## Why did I write another HX711 driver?
 In multi-user / multi-tasking environments bit banging is not reliable. SPI on the other hand handles the timing with hardware support and is not influenced by other processes.
 
 ## Usage
+Note: I'm using the reddefined SPI signal names (['see sparkfun's Resolution'][3]).
+
 Use an embedded-hal implementation to get SPI and Delay.
 HX711 does not use SCLK, instead it is provided by the driver using SDI. Make sure
 that HX711 is the only device on the bus since it does not implemnt CS (Chip Select).
