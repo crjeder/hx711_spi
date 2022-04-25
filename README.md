@@ -1,7 +1,6 @@
 # hx711_spi
 
 [![Crate](https://img.shields.io/crates/v/hx711_spi?style=plastic)](https://crates.io/crates/hx711_spi)
-[![API](https://docs.rs/hx711_spi/badge.svg)](https://docs.rs/hx711_spi)
 ![License](https://img.shields.io/crates/l/hx711_spi?style=plastic)
 ![Docs](https://img.shields.io/docsrs/hx711_spi?style=plastic)
 ![LOC](https://img.shields.io/tokei/lines/github/crjeder/hx711_spi?style=plastic)
