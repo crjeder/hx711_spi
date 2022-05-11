@@ -91,6 +91,7 @@ where
         Ok(decode_output(&buffer))
     }
 
+#[inline]
     /// This is for compatibility only. Use [read]() instead.
     pub fn retrieve(&mut self) -> nb::Result<i32, E> {
         self.read()
@@ -98,6 +99,7 @@ where
     /// Reset the chip to it's default state. Mode is set to convert channel A with a gain factor of 128.
     /// # Errors
     /// Returns SPI errors
+#[inline]
     pub fn reset(&mut self) -> Result<(), E> {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
         // HX711 enters power down mode.
@@ -118,17 +120,20 @@ where
     /// Set the mode to the value specified.
     /// # Errors
     /// Returns SPI errors
+#[inline]
     pub fn set_mode(&mut self, m: Mode) -> Result<Mode, E> {
         self.mode = m;
         block!(self.read())?; // read writes Mode for the next read()
         Ok(m)
     }
 
+#[inline]
     /// Get the current mode.
     pub fn mode(&mut self) -> Mode {
         self.mode
     }
-
+    
+#[inline]
     /// This is for compatibility only. Use [mode]() instead.
     pub fn get_mode(&mut self) -> Mode {
         self.mode
