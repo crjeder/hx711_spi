@@ -62,3 +62,17 @@ ensure_no_std:
             components: rustfmt
             override: true
       - run: cargo fmt -- --check
+
+audit:
+    name: Ensure no_std
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Download cargo-audit
+        run: cargo install cargo-audit
+      - name: Run check
+        run: cargo audit
