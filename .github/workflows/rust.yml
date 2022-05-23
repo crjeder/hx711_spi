@@ -31,8 +31,7 @@ ensure_no_std:
           toolchain: stable
           override: true
       - name: Download cargo-nono
-        run: |
-          cargo install cargo-nono
+        run: cargo install cargo-nono
       - name: Run check
         run: ./cargo-nono check
 
