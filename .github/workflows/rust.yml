@@ -21,7 +21,7 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
 
-ensure_no_std:
+  ensure_no_std:
     name: Ensure no_std
     runs-on: ubuntu-latest
     steps:
