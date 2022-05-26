@@ -25,11 +25,6 @@ jobs:
     name: Ensure no_std
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
       - name: Download cargo-nono
         run: cargo install cargo-nono
       - name: Run check
