@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Update local toolchain
+    - name: Update
         run: |
           rustup update
           rustup component add clippy
