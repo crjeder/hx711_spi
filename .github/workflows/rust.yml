@@ -24,22 +24,22 @@ jobs:
     
     - name: Lint
       run: |
-          cargo fmt -- --check
           cargo clippy -- -D warnings   
+#          cargo fmt -- --check
           
     - name: Build
       run: | 
         cargo check
-        cargo build --verbose
+        cargo build 
     
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo test 
 
-  ensure_no_std:
-    name: Ensure no_std
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download cargo-nono
-        run: cargo install cargo-nono
-      - name: Run check
-        run: cargo nono check
+#  ensure_no_std:
+#    name: Ensure no_std
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Download cargo-nono
+#        run: cargo install cargo-nono
+#      - name: Run check
+#        run: cargo nono check
