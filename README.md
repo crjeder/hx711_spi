@@ -2,13 +2,13 @@
 
 [![Crate](https://img.shields.io/crates/v/hx711_spi?style=plastic)](https://crates.io/crates/hx711_spi)
 ![License](https://img.shields.io/crates/l/hx711_spi?style=plastic)
-![Docs](https://img.shields.io/docsrs/hx711_spi?style=plastic)
-![LOC](https://img.shields.io/tokei/lines/github/crjeder/hx711_spi?style=plastic)
+<!--![Docs](https://img.shields.io/docsrs/hx711_spi?style=plastic)-->
+<!--![LOC](https://img.shields.io/tokei/lines/github/crjeder/hx711_spi?style=plastic)-->
 ![Maintained](https://img.shields.io/maintenance/yes/2022?style=plastic)
 [![dependency status](https://deps.rs/repo/github/crjeder/hx711_spi/status.svg)](https://deps.rs/repo/github/crjeder/hx711_spi)
 ![GitHub Repo stars](https://img.shields.io/github/stars/crjeder/hx711_spi?style=plastic)
 ![Crates.io](https://img.shields.io/crates/d/hx711_spi?style=plastic)
-[![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/hx711_spi_bb.png)](https://web.crev.dev/rust-reviews/crate/hx711_spi/)
+<!-- [![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/hx711_spi_bb.png)](https://web.crev.dev/rust-reviews/crate/hx711_spi/)-->
 
 This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instead of bit banging.
 This `[no_std]` driver is built using [`embedded-hal`][2] traits.
