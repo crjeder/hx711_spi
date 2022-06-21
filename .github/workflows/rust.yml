@@ -14,15 +14,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
     
     - name: Update
-        run: |
+      run: |
           rustup update
           rustup component add clippy
     
     - name: Lint
-        run: |
+      run: |
           cargo fmt -- --check
           cargo clippy -- -D warnings   
           
