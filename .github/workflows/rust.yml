@@ -34,7 +34,6 @@ jobs:
     - name: ensure_no_std
       run: |
         RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
-        curl -LSfs https://japaric.github.io/trust/install.sh | sh -s -- --git hobofan/cargo-nono
         cargo nono check
   
 #  ensure_no_std:
