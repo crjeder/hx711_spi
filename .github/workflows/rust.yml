@@ -10,7 +10,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test:
+  cargo_tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,18 +25,17 @@ jobs:
     
     - name: Run tests
       run: cargo test 
-  
-  cargo-deny:
-    runs-on: ubuntu-latest
-  
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      
+
     - name: cargo deny
       run: |
         cargo install --locked cargo-deny 
         cargo deny check
+    
+    - name: ensure_no_std
+      run: |
+        RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
+        curl -LSfs https://japaric.github.io/trust/install.sh | sh -s -- --git hobofan/cargo-nono
+        cargo nono check
   
 #  ensure_no_std:
 #    name: Ensure no_std
