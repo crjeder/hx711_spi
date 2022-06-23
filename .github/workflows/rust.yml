@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download cargo-nono
-#        run: cargo install cargo-nono
-        run: curl -LSfs https://japaric.github.io/trust/install.sh | sh -s -- --git hobofan/cargo-nono
+        run: RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
+#        run: curl -LSfs https://japaric.github.io/trust/install.sh | sh -s -- --git hobofan/cargo-nono
       - name: Run check
         run: cargo nono check
