@@ -35,12 +35,12 @@ jobs:
     - name: Run tests
       run: cargo test 
 
-  ensure_no_std:
-    name: Ensure no_std
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download cargo-nono
-        run: RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
+#  ensure_no_std:
+#    name: Ensure no_std
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Download cargo-nono
+#        run: RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
 #        run: curl -LSfs https://japaric.github.io/trust/install.sh | sh -s -- --git hobofan/cargo-nono
-      - name: Run check
-        run: cargo nono check
+#      - name: Run check
+#        run: cargo nono check
