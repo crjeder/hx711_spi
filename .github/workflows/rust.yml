@@ -25,9 +25,15 @@ jobs:
     
     - name: Run tests
       run: cargo test 
-
+  
+  cargo-deny:
+    runs-on: ubuntu-latest
+  
+    steps:
     - name: cargo deny
-      run: cargo install --locked cargo-deny && cargo deny init && cargo deny check
+      run: |
+        cargo install --locked cargo-deny 
+        cargo deny check
   
 #  ensure_no_std:
 #    name: Ensure no_std
