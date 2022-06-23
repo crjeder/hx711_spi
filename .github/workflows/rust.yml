@@ -35,11 +35,12 @@ jobs:
     - name: Run tests
       run: cargo test 
 
-#  ensure_no_std:
-#    name: Ensure no_std
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Download cargo-nono
+  ensure_no_std:
+    name: Ensure no_std
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download cargo-nono
 #        run: cargo install cargo-nono
-#      - name: Run check
-#        run: cargo nono check
+        run: curl -LSfs https://japaric.github.io/trust/install.sh | sh -s -- --git hobofan/cargo-nono
+      - name: Run check
+        run: cargo nono check
