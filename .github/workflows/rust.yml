@@ -37,7 +37,9 @@ jobs:
         cargo nono check
      
     - name: cargo_geiger
-      run: cargo install cargo-geiger
+      run: |
+        cargo install cargo-geiger
+        cargo geiger
   
 #  ensure_no_std:
 #    name: Ensure no_std
