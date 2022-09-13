@@ -2,7 +2,7 @@
 
 [![Crate](https://img.shields.io/crates/v/hx711_spi?style=plastic)](https://crates.io/crates/hx711_spi)
 ![License](https://img.shields.io/crates/l/hx711_spi?style=plastic)
-![GitHub branch checks state](https://img.shields.io/github/checks-status/crjeder/hx711_spi/release?style=plastic)
+<!--![GitHub branch checks state](https://img.shields.io/github/checks-status/crjeder/hx711_spi/release?style=plastic)-->
 <!--![Docs](https://img.shields.io/docsrs/hx711_spi?style=plastic)-->
 <!--![LOC](https://img.shields.io/tokei/lines/github/crjeder/hx711_spi?style=plastic)-->
 ![Maintained](https://img.shields.io/maintenance/yes/2022?style=plastic)
