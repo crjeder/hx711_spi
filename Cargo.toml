@@ -20,7 +20,7 @@ nb = "1.0.0"
 test-case = "2.0.2"
 embedded-hal-mock = "0.8.0"
 # for the Raspberry Pi example
-rppal = { version = "0.13.1", features = ["hal"] }
+rppal = { version = "0.14.0", features = ["hal"] }
 #cortex-m = "0.7.4"
 #cortex-m-rt = "0.7.1"
 # Panic behaviour, see https://crates.io/keywords/panic-impl for alternatives
