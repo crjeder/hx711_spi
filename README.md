@@ -91,6 +91,8 @@ An example stm32f103 (blue pill) initialization (note mode 1).
     hx711_sensor.set_mode(hx711_spi::Mode::ChAGain128).unwrap(); // x128 works up to +-20mV
 ```
 
+## Roadmap
+1.0 Will implement the ```embedded_hal::adc::OneShot``` once it is finalized
 
 ## Feedback
 All kind of feedback is welcome. If you have questions or problems, please post them on the issue tracker
