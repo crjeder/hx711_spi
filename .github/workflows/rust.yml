@@ -35,12 +35,7 @@ jobs:
       run: |
         RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
         cargo nono check
-     
-    - name: cargo_geiger
-      run: |
-        cargo install cargo-geiger --features vendored-openssl
-        cargo geiger
-        
+
     - name: cargo_audit
       run: |
         cargo install cargo-audit
