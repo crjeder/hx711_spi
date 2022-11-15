@@ -45,3 +45,8 @@ jobs:
       run: |
         cargo install cargo-audit
         cargo audit
+        
+    - name: cargo_udeps
+      run: |        
+        cargo install cargo-udeps --locked
+        cargo +nightly udeps
