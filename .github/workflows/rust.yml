@@ -45,3 +45,8 @@ jobs:
       run: |        
         cargo install cargo-udeps --locked
         cargo +nightly udeps
+
+    - name: cargo_outdated
+      run: |  
+        cargo install --locked cargo-outdated
+        cargo outdated
