@@ -1,5 +1,5 @@
 name: Rust
-
+language: rust
 on:
   push:
     branches: [ release ]
@@ -38,6 +38,11 @@ jobs:
       run: |
         RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
         cargo nono check
+        
+    - name: cargo pants
+      run: |
+       cargo install --force cargo-pants
+       cargo pants
 
 #    - name: cargo_udeps
 #      run: |        
