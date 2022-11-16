@@ -39,10 +39,10 @@ jobs:
         RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
         cargo nono check
 
-    - name: cargo_udeps
-      run: |        
-        cargo install cargo-udeps --locked
-        cargo udeps
+#    - name: cargo_udeps
+#      run: |        
+#        cargo install cargo-udeps --locked
+#        cargo udeps
 
     - name: cargo_outdated
       run: |  
