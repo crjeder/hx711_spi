@@ -1,5 +1,6 @@
 name: Rust
-language: rust
+# language: rust
+
 on:
   push:
     branches: [ release ]
