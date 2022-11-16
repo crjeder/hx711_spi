@@ -3,9 +3,9 @@ name: Rust
 on:
   push:
     branches: [ release ]
-    paths: 
-      - '**/Cargo.toml'
-      - '**/Cargo.lock'
+#    paths: 
+#      - '**/Cargo.toml'
+#      - '**/Cargo.lock'
   pull_request:
     branches: [ release ]
 
