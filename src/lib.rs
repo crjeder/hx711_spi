@@ -1,5 +1,4 @@
 #![doc = include_str!("../README.md")]
-
 #![forbid(unsafe_code)]
 #![no_std]
 
@@ -12,6 +11,7 @@ use nb::{self, block};
 
 /// The HX711 has two channels: `A` for the load cell and `B` for AD conversion of other signals.
 /// Channel `A` supports gains of 128 (default) and 64, `B` has a fixed gain of 32.
+#[cfg(not(feature = "invert-sdo"))]
 #[derive(Copy, Clone, Debug)]
 #[repr(u8)]
 pub enum Mode {
@@ -22,6 +22,15 @@ pub enum Mode {
     ChBGain32 = 0b1010_0000,
     /// Convert channel A with a gain factor of 64
     ChAGain64 = 0b1010_1000, // there is a typo in the official datasheet: in Fig.2 it says channel B instead of A
+}
+
+#[cfg(feature = "invert-sdo")]
+#[derive(Copy, Clone, Debug)]
+#[repr(u8)]
+pub enum Mode {
+    ChAGain128 = 0b0111_1111,
+    ChBGain32 = 0b0101_1111,
+    ChAGain64 = 0b0101_0111,
 }
 
 /// Represents an instance of a HX711 device
@@ -61,7 +70,10 @@ where
         // When output data is not ready for retrieval, digital output pin DOUT is high.
         // Serial clock input PD_SCK should be low. When DOUT goes
         // to low, it indicates data is ready for retrieval.
+        #[cfg(not(feature = "invert-sdo"))]
         let mut txrx: [u8; 1] = [0];
+        #[cfg(feature = "invert-sdo")]
+        let mut txrx: [u8; 1] = [0xFF];
 
         self.spi.transfer(&mut txrx)?;
 
@@ -76,15 +88,12 @@ where
         // the read has the same length as the write.
         // SDO provides clock to the HX711's shift register (binary 1010...)
         // clock is 10 the buffer needs to be double the size of the 4 bytes we want to read
-        let mut buffer: [u8; 7] = [
-            0b10101010,
-            0b10101010,
-            0b10101010,
-            0b10101010,
-            0b10101010,
-            0b10101010,
-            self.mode as u8,
-        ];
+        #[cfg(not(feature = "invert-sdo"))]
+        const CLOCK: u8 = 0b10101010;
+        #[cfg(feature = "invert-sdo")]
+        const CLOCK: u8 = 0b01010101;
+
+        let mut buffer: [u8; 7] = [CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, self.mode as u8];
 
         self.spi.transfer(&mut buffer)?;
         // value should be in range 0x800000 - 0x7fffff according to datasheet
@@ -92,7 +101,7 @@ where
         Ok(decode_output(&buffer))
     }
 
-#[inline]
+    #[inline]
     /// This is for compatibility only. Use [read]() instead.
     pub fn retrieve(&mut self) -> nb::Result<i32, E> {
         self.read()
@@ -100,7 +109,7 @@ where
     /// Reset the chip to it's default state. Mode is set to convert channel A with a gain factor of 128.
     /// # Errors
     /// Returns SPI errors
-#[inline]
+    #[inline]
     pub fn reset(&mut self) -> Result<(), E> {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
         // HX711 enters power down mode.
@@ -110,7 +119,10 @@ where
         // max SPI clock frequency should be 5 MHz to satisfy the 0.2 us limit for the pulse length
         // we have to output more than 300 bytes to keep the line for at least 60 us high.
 
+        #[cfg(not(feature = "invert-sdo"))]
         let buffer: [u8; 301] = [0xFF; 301];
+        #[cfg(feature = "invert-sdo")]
+        let buffer: [u8; 301] = [0x00; 301];
 
         self.spi.write(&buffer)?;
         self.mode = Mode::ChAGain128; // this is the default mode after reset
@@ -121,20 +133,20 @@ where
     /// Set the mode to the value specified.
     /// # Errors
     /// Returns SPI errors
-#[inline]
+    #[inline]
     pub fn set_mode(&mut self, m: Mode) -> Result<Mode, E> {
         self.mode = m;
         block!(self.read())?; // read writes Mode for the next read()
         Ok(m)
     }
 
-#[inline]
+    #[inline]
     /// Get the current mode.
     pub fn mode(&mut self) -> Mode {
         self.mode
     }
-    
-#[inline]
+
+    #[inline]
     /// This is for compatibility only. Use [mode]() instead.
     pub fn get_mode(&mut self) -> Mode {
         self.mode

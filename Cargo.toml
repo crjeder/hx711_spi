@@ -11,6 +11,9 @@ license = "MIT OR Apache-2.0"
 edition = "2021"
 version = "0.4.1"
 
+[features]
+invert-sdo = []
+
 [dependencies]
 embedded-hal = "0.2.4"
 bitmatch = "0.1.1"
