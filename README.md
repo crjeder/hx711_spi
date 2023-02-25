@@ -5,7 +5,7 @@
 ![GitHub branch checks state](https://img.shields.io/github/checks-status/crjeder/hx711_spi/release?style=plastic)
 <!--![Docs](https://img.shields.io/docsrs/hx711_spi?style=plastic)-->
 <!--![LOC](https://img.shields.io/tokei/lines/github/crjeder/hx711_spi?style=plastic)-->
-![Maintained](https://img.shields.io/maintenance/yes/2022?style=plastic)
+![Maintained](https://img.shields.io/maintenance/yes/2023?style=plastic)
 [![dependency status](https://deps.rs/repo/github/crjeder/hx711_spi/status.svg)](https://deps.rs/repo/github/crjeder/hx711_spi)
 ![GitHub Repo stars](https://img.shields.io/github/stars/crjeder/hx711_spi?style=plastic)
 ![Crates.io](https://img.shields.io/crates/d/hx711_spi?style=plastic)
@@ -23,11 +23,11 @@ In multi-user / multi-tasking environments bit banging is not reliable. SPI on t
 Note: I'm using the reddefined SPI signal names (['see sparkfun's Resolution'][3]).
 
 Use an embedded-hal implementation to get SPI and Delay.
-HX711 does not use SCLK, instead it is provided by the driver using SDI. Make sure
+HX711 does not use SCLK, instead clock is provided by the driver using SDO. Make sure
 that HX711 is the only device on the bus since it does not implemnt CS (Chip Select).
 Connect the SDO to the PD_SCK and SDI to DOUT of the HX711. SPI clock frequency
 has to be between 20 kHz and 5 MHz.
-Since the SPI clock is not used either SPI mode 0 or mode 1 should work. You need
+Since the SPI clock is not used, SPI mode 0 or mode 1 should work. You need
 test which one gives the best results for you.
 
 No scales functions (like tare weight and calibration) are implemented because I feel that's not part of a device driver.
