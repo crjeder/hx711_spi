@@ -1,5 +1,4 @@
 #![doc = include_str!("../README.md")]
-
 #![forbid(unsafe_code)]
 #![no_std]
 
@@ -66,7 +65,7 @@ where
         self.spi.transfer(&mut txrx)?;
 
         if txrx[0] & 0b01 == 0b01 {
-            // as long as the lowest bit is high there is no data waiting 
+            // as long as the lowest bit is high there is no data waiting
             return Err(nb::Error::WouldBlock);
         }
 
@@ -75,15 +74,7 @@ where
         // one clock cycle is '10'. The buffer needs to be double the size of the 4 bytes we want to read
         const CLOCK: u8 = 0b10101010;
 
-        let mut buffer: [u8; 7] = [
-            CLOCK,
-            CLOCK,
-            CLOCK,
-            CLOCK,
-            CLOCK,
-            CLOCK,
-            self.mode as u8,
-        ];
+        let mut buffer: [u8; 7] = [CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, self.mode as u8];
 
         self.spi.transfer(&mut buffer)?;
         // value should be in range 0x800000 - 0x7fffff according to datasheet
@@ -91,7 +82,7 @@ where
         Ok(decode_output(&buffer))
     }
 
-#[inline]
+    #[inline]
     /// This is for compatibility only. Use [read]() instead.
     pub fn retrieve(&mut self) -> nb::Result<i32, E> {
         self.read()
@@ -99,7 +90,7 @@ where
     /// Reset the chip to it's default state. Mode is set to convert channel A with a gain factor of 128.
     /// # Errors
     /// Returns SPI errors
-#[inline]
+    #[inline]
     pub fn reset(&mut self) -> Result<(), E> {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
         // HX711 enters power down mode.
@@ -120,20 +111,20 @@ where
     /// Set the mode to the value specified.
     /// # Errors
     /// Returns SPI errors
-#[inline]
+    #[inline]
     pub fn set_mode(&mut self, m: Mode) -> Result<Mode, E> {
         self.mode = m;
         block!(self.read())?; // read writes Mode for the next read()
         Ok(m)
     }
 
-#[inline]
+    #[inline]
     /// Get the current mode.
     pub fn mode(&mut self) -> Mode {
         self.mode
     }
-    
-#[inline]
+
+    #[inline]
     /// This is for compatibility only. Use [mode]() instead.
     pub fn get_mode(&mut self) -> Mode {
         self.mode
