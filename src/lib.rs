@@ -65,24 +65,23 @@ where
 
         self.spi.transfer(&mut txrx)?;
 
-        if txrx[0] == 0xFF
-        // as soon as a single bit is low data is ready
-        {
-            // sleep for 1 millisecond which is 1/100 of the conversion period to grab the data while it's hot
-            self.delay.delay_ms(1); // not sure if that's ok with nb
+        if txrx[0] & 0b01 == 0b01 {
+            // as long as the lowest bit is high there is no data waiting 
             return Err(nb::Error::WouldBlock);
         }
 
         // the read has the same length as the write.
         // SDO provides clock to the HX711's shift register (binary 1010...)
-        // clock is 10 the buffer needs to be double the size of the 4 bytes we want to read
+        // one clock cycle is '10'. The buffer needs to be double the size of the 4 bytes we want to read
+        const CLOCK: u8 = 0b10101010;
+
         let mut buffer: [u8; 7] = [
-            0b10101010,
-            0b10101010,
-            0b10101010,
-            0b10101010,
-            0b10101010,
-            0b10101010,
+            CLOCK,
+            CLOCK,
+            CLOCK,
+            CLOCK,
+            CLOCK,
+            CLOCK,
             self.mode as u8,
         ];
 
@@ -143,6 +142,8 @@ where
     /// To power down the chip the PD_SCK line has to be held in a 'high' state. To do this we
     /// would need to write a constant stream of binary '1' to the SPI bus which would totally defy
     /// the purpose. Therefore it's not implemented.
+    // If the SDO pin would be idle high (and at least some MCU's seem to do that in mode 1) then the chip would automatically
+    // power down if not used. Cool!
     pub fn disable(&mut self) -> Result<(), E> {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
         // When PD_SCK returns to low, chip will reset and enter normal operation mode.

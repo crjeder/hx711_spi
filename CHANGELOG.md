@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] - 2023-02-25
+Fixed a bug in the detectoin of hx711 ready state
+Refacuring the code for better maintainability
+
+## [0.4.1] - 2023-02-21
+Maintainance Release
+
 ## [0.4.0] - 2022-04-12
 Rust Edition 2021 compatible Version
 ### Changed
