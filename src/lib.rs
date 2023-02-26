@@ -12,19 +12,39 @@ use nb::{self, block};
 // for the ```invert-sdo``` feature
 
 // patterns for mode
+#[cfg(not(feature = "invert-sdo"))]
 const GAIN128: u8 = 0b1000_0000;
+#[cfg(feature = "invert-sdo")]
+const GAIN128: u8 = 0b0111_1111;
+
+#[cfg(not(feature = "invert-sdo"))]
 const GAIN32: u8 = 0b1010_0000;
+#[cfg(feature = "invert-sdo")]
+const GAIN32: u8 = 0b0101_1111;
+
+#[cfg(not(feature = "invert-sdo"))]
 const GAIN64: u8 = 0b1010_1000;
+#[cfg(feature = "invert-sdo")]
+const GAIN32: u8 = 0b0101_0111;
 
 // SDO provides clock to the HX711's shift register (binary 1010...)
 // one clock cycle is '10'. The buffer needs to be double the size of the 4 bytes we want to read
+#[cfg(not(feature = "invert-sdo"))]
 const CLOCK: u8 = 0b10101010;
+#[cfg(feature = "invert-sdo")]
+const CLOCK: u8 = 0b0101010;
 
 // Signal to send to the HX711 when checking for data ready to be read.
+#[cfg(not(feature = "invert-sdo"))]
 const SIGNAL_LOW: u8 = 0x0;
+#[cfg(feature = "invert-sdo")]
+const SIGNAL_LOW: u8 = 0xFF;
 
 // reset signal
+#[cfg(not(feature = "invert-sdo"))]
 const RESET_SIGNAL: [u8; 301] = [0xFF; 301];
+#[cfg(feature = "invert-sdo")]
+const RESET_SIGNAL: [u8; 301] = [0x00; 301];
 
 // End bit pattern definitions
 
