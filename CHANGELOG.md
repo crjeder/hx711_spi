@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2023-02-26
+### Changed
+- introduce the feature ```invert-sdo```
+- remove the delay parameter **breaking change!**
+
 ## [0.4.2] - 2023-02-25
 Fixed a bug in the detectoin of hx711 ready state
 Refacuring the code for better maintainability
