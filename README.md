@@ -13,6 +13,7 @@
 
 This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instead of bit banging.
 This `[no_std]` driver is built using [`embedded-hal`][2] traits.
+It is developed on Raspberry PI and reported to work on STM32 and ESP32.
 It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-crev)
 to verify the trustworthiness of each of your dependencies, including this one.
 
@@ -55,7 +56,7 @@ use nb::block;
 fn main() -> Result<(), Error>
 {
     let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
-    let mut hx711 = Hx711::new(spi, Delay::new());
+    let mut hx711 = Hx711::new(spi);
 
 	  hx711.reset()?;
     let v = block!(hx711.read())?;
@@ -85,8 +86,7 @@ An example stm32f103 (blue pill) initialization (note mode 1).
         gpiob.pb15.into_alternate_push_pull(&mut gpiob.crh),
     );
     let hx711_spi = spi::Spi::spi2(device.SPI2, hx711_spi_pins, spi::MODE_1, 1.mhz(), clocks);
-    let tim_delay = device.TIM1.delay::<1_000_000>(&clocks);
-    let mut hx711_sensor = Hx711::new(hx711_spi, tim_delay);
+    let mut hx711_sensor = Hx711::new(hx711_spi);
     hx711_sensor.reset().unwrap();
     hx711_sensor.set_mode(hx711_spi::Mode::ChAGain128).unwrap(); // x128 works up to +-20mV
 ```
