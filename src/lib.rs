@@ -25,14 +25,14 @@ const GAIN32: u8 = 0b0101_1111;
 #[cfg(not(feature = "invert-sdo"))]
 const GAIN64: u8 = 0b1010_1000;
 #[cfg(feature = "invert-sdo")]
-const GAIN32: u8 = 0b0101_0111;
+const GAIN64: u8 = 0b0101_0111;
 
 // SDO provides clock to the HX711's shift register (binary 1010...)
 // one clock cycle is '10'. The buffer needs to be double the size of the 4 bytes we want to read
 #[cfg(not(feature = "invert-sdo"))]
 const CLOCK: u8 = 0b10101010;
 #[cfg(feature = "invert-sdo")]
-const CLOCK: u8 = 0b0101010;
+const CLOCK: u8 = 0b01010101;
 
 // Signal to send to the HX711 when checking for data ready to be read.
 #[cfg(not(feature = "invert-sdo"))]
