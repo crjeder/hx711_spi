@@ -30,7 +30,7 @@ Connect the SDO to the PD_SCK and SDI to DOUT of the HX711. SPI clock frequency
 has to be between 20 kHz and 5 MHz.
 Since the SPI clock is not used, SPI mode 0 or mode 1 should work. You need
 test which one gives the best results for you.
-The library assumes that SDO signal is idle low. If this is not the case you have to use extra hardware to pull it low. In this case you should use the [invert-sdo] feature to send the correct signals to the hx711.
+The library assumes that SDO signal is idle low. If this is not the case you have to use extra hardware to pull it low. In this case you should use the ```[invert-sdo]``` feature to send the correct signals to the hx711.
 
 No scales functions (like tare weight and calibration) are implemented because I feel that's not part of a device driver.
 Power down functions exist just for compatibility. Implementation is not possible with this (ab-) use of SPI since the CPU / MPU would need to constantly send on the bus to power donwn the HX711. This would totally defy the purpose.
