@@ -23,7 +23,7 @@ In multi-user / multi-tasking environments bit banging is not reliable. SPI on t
 ## Usage
 Note: I'm using the reddefined SPI signal names (['see sparkfun's Resolution'][3]).
 
-Use an embedded-hal implementation to get SPI and Delay.
+Use an embedded-hal implementation to get SPI.
 HX711 does not use SCLK, instead clock is provided by the driver using SDO. Make sure
 that HX711 is the only device on the bus since it does not implemnt CS (Chip Select).
 Connect the SDO to the PD_SCK and SDI to DOUT of the HX711. SPI clock frequency
