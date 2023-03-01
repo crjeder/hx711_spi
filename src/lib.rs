@@ -5,9 +5,48 @@
 use bitmatch::bitmatch;
 use core::unimplemented;
 use embedded_hal as hal;
-use hal::blocking::delay::DelayMs;
 use hal::blocking::spi;
 use nb::{self, block};
+
+// Bit pattern definitions for the communication with the hx711. All have to be bitwise negate
+// for the ```invert-sdo``` feature
+
+// patterns for mode
+#[cfg(not(feature = "invert-sdo"))]
+const GAIN128: u8 = 0b1000_0000;
+#[cfg(feature = "invert-sdo")]
+const GAIN128: u8 = 0b0111_1111;
+
+#[cfg(not(feature = "invert-sdo"))]
+const GAIN32: u8 = 0b1010_0000;
+#[cfg(feature = "invert-sdo")]
+const GAIN32: u8 = 0b0101_1111;
+
+#[cfg(not(feature = "invert-sdo"))]
+const GAIN64: u8 = 0b1010_1000;
+#[cfg(feature = "invert-sdo")]
+const GAIN64: u8 = 0b0101_0111;
+
+// SDO provides clock to the HX711's shift register (binary 1010...)
+// one clock cycle is '10'. The buffer needs to be double the size of the 4 bytes we want to read
+#[cfg(not(feature = "invert-sdo"))]
+const CLOCK: u8 = 0b10101010;
+#[cfg(feature = "invert-sdo")]
+const CLOCK: u8 = 0b01010101;
+
+// Signal to send to the HX711 when checking for data ready to be read.
+#[cfg(not(feature = "invert-sdo"))]
+const SIGNAL_LOW: u8 = 0x0;
+#[cfg(feature = "invert-sdo")]
+const SIGNAL_LOW: u8 = 0xFF;
+
+// reset signal
+#[cfg(not(feature = "invert-sdo"))]
+const RESET_SIGNAL: [u8; 301] = [0xFF; 301];
+#[cfg(feature = "invert-sdo")]
+const RESET_SIGNAL: [u8; 301] = [0x00; 301];
+
+// End bit pattern definitions
 
 /// The HX711 has two channels: `A` for the load cell and `B` for AD conversion of other signals.
 /// Channel `A` supports gains of 128 (default) and 64, `B` has a fixed gain of 32.
@@ -16,39 +55,35 @@ use nb::{self, block};
 pub enum Mode {
     // bits have to be converted for correct transfer 1 -> 10, 0 -> 00
     /// Convert channel A with a gain factor of 128
-    ChAGain128 = 0b1000_0000,
+    ChAGain128 = GAIN128,
     /// Convert channel B with a gain factor of 32
-    ChBGain32 = 0b1010_0000,
+    ChBGain32 = GAIN32,
     /// Convert channel A with a gain factor of 64
-    ChAGain64 = 0b1010_1000, // there is a typo in the official datasheet: in Fig.2 it says channel B instead of A
+    ChAGain64 = GAIN64, // there is a typo in the official datasheet: in Fig.2 it says channel B instead of A
 }
 
 /// Represents an instance of a HX711 device
 #[derive(Debug)]
-pub struct Hx711<SPI, D> {
+pub struct Hx711<SPI> {
     // SPI specific
     spi: SPI,
     // device specific
     mode: Mode,
-    // timer for delay
-    delay: D,
 }
 
-impl<SPI, E, D> Hx711<SPI, D>
+impl<SPI, E> Hx711<SPI>
 where
     SPI: spi::Transfer<u8, Error = E> + spi::Write<u8, Error = E>,
-    D: DelayMs<u16>,
 {
     /// opens a connection to a HX711 on a specified SPI.
     ///
     /// The datasheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range,
     /// therefore bus speed has to be between 5 MHz and 20 kHz. 1 MHz seems to be a good choice.
     /// D is an embedded_hal implementation of DelayMs.
-    pub fn new(spi: SPI, delay: D) -> Self {
+    pub fn new(spi: SPI) -> Self {
         Hx711 {
             spi,
             mode: Mode::ChAGain128,
-            delay,
         }
     }
 
@@ -60,7 +95,7 @@ where
         // When output data is not ready for retrieval, digital output pin DOUT is high.
         // Serial clock input PD_SCK should be low. When DOUT goes
         // to low, it indicates data is ready for retrieval.
-        let mut txrx: [u8; 1] = [0];
+        let mut txrx: [u8; 1] = [SIGNAL_LOW];
 
         self.spi.transfer(&mut txrx)?;
 
@@ -70,10 +105,7 @@ where
         }
 
         // the read has the same length as the write.
-        // SDO provides clock to the HX711's shift register (binary 1010...)
-        // one clock cycle is '10'. The buffer needs to be double the size of the 4 bytes we want to read
-        const CLOCK: u8 = 0b10101010;
-
+        
         let mut buffer: [u8; 7] = [CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, self.mode as u8];
 
         self.spi.transfer(&mut buffer)?;
@@ -100,7 +132,7 @@ where
         // max SPI clock frequency should be 5 MHz to satisfy the 0.2 us limit for the pulse length
         // we have to output more than 300 bytes to keep the line for at least 60 us high.
 
-        let buffer: [u8; 301] = [0xFF; 301];
+        let buffer: [u8; 301] = RESET_SIGNAL;
 
         self.spi.write(&buffer)?;
         self.mode = Mode::ChAGain128; // this is the default mode after reset
