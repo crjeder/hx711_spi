@@ -26,6 +26,7 @@ embedded-hal-mock = "0.9.0"
 # for the Raspberry Pi example
 rppal = { version = "0.14.1", features = ["hal"] }
 
+#[[example]]
 #[dependencies.stm32f1xx-hal]
 #version = "0.9"
 #features = ["rt", "stm32f103", "medium"]
