@@ -4,9 +4,9 @@ name: Rust
 on:
   push:
     branches: [ release ]
-#    paths: 
-#      - '**/Cargo.toml'
-#      - '**/Cargo.lock'
+    paths: 
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
   pull_request:
     branches: [ release ]
 
@@ -62,3 +62,4 @@ jobs:
 #      - uses: actions-rs/audit-check@v1
 #        with:
 #          token: ${{ secrets.GITHUB_TOKEN }}
+
