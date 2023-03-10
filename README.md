@@ -37,11 +37,19 @@ Power down functions exist just for compatibility. Implementation is not possibl
 
 ## TODO
 
-  - [ ] Test on more platforms
+  - [ ] Test on more platforms (HALs)
+  	- [x] Rasperry Pi
+	- [x] STM32
+	- [?] ESP32
+  	- [ ] RP2040
+	- [ ] Teensy
   - [X] Power down (functions exist just for compatibility. Implementation is not possible with SPI)
   - [X] Reset
   - [X] `[no_std]`
   - [X] make it re-entrant / thread safe
+  - [ ] validate against other libraries (bit banging, python, ..) 
+  - [ ] async
+  - [ ] use emedded HAL v1
 
 ## Examples
 ### Raspberry PI
