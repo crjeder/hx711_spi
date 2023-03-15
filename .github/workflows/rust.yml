@@ -60,6 +60,11 @@ jobs:
       run: |
         rustup component add rustfmt
         cargo fmt --all -- --check
+
+    - name: cargo_unused_features
+      run: |
+        cargo install cargo-unused-features
+        unused-features analyze
         
   cargo-deny:
     runs-on: ubuntu-22.04
@@ -83,13 +88,7 @@ jobs:
         uses: aig787/cargo-udeps-action@v1
         with:
           version: 'latest'
-          args: '--all-targets'
-
-#    - name: cargo_unused_features
-#      run: |
-#        cargo install cargo-unused-features
-#        unused-features analyze
-       
+          args: '--all-targets'      
 
 # ideas for future improvement
 #
