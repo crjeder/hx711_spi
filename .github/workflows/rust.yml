@@ -27,11 +27,12 @@ jobs:
     
     - name: Run tests
       run: cargo test 
-      
-    - name: cargo_unused_features
-      run: |
-        cargo install cargo-unused-features
-        unused-features analyze
+
+# Probably not suitable for actions
+#    - name: cargo_unused_features
+#      run: |
+#        cargo install cargo-unused-features
+#        unused-features analyze
     
     - name: cargo deny
       run: |
@@ -64,6 +65,12 @@ jobs:
         rustup component add rustfmt
         cargo fmt --all -- --check
 
+#    - name: prusti
+#      run: |
+#         download?
+#        ./x.py setup 
+#        ./x.py build --release
+#        cargo prusti
 
 #  cargo-udeps:
 #    runs-on: ubuntu-latest
@@ -85,13 +92,13 @@ jobs:
 
 # ideas for future improvement
 #
-# [ ] cargo bloat (not suitable for automat
+# [ ] cargo bloat (not suitable for automating)
 # [ ] cargo breaking (between minor releases wich should not break api)
 # [x] cargo spellcheck
-# [ ] cargo unused-features
-# [ ] herbie (warnings for unstable floating point expressions)
+# [x] cargo unused-features
+# [ ] mcarton/rust-herbie-lint (warnings for unstable floating point expressions)(not suitable for automating)
 # [ ] Prusti (verifies absence of e. g. panic!())
 # [ ] Rudra (memory safety check)
-# [ ] rust-audit (maybe contained in cargo deny or cargo pants)
 # [x] rustfmt
 # [ ] cargo-action-fmt (Converts cargo check (and clippy) JSON output to the GitHub Action error format)
+# [ ] cargo tarpaulin (code coverage reporting tool)
