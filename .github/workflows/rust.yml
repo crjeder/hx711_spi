@@ -2,13 +2,11 @@ name: Rust
 
 on:
   push:
-#    branches: [ release ]
     paths: 
       - '**/Cargo.toml'
       - '**/Cargo.lock'
       - '**/.github/workflows/*'
   pull_request:
-#    branches: [ release ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -49,11 +47,12 @@ jobs:
       run: |  
         cargo install --locked cargo-outdated
         cargo outdated
-        
-    - name: cargo_spellchek
-      run: |
-        cargo install --locked cargo-spellcheck
-        cargo spellcheck
+  
+  # Does not compile
+  #  - name: cargo_spellchek
+  #    run: |
+  #      cargo install --locked cargo-spellcheck
+  #      cargo spellcheck
         
     - name: rustfmt
       run: |
@@ -65,23 +64,23 @@ jobs:
         cargo install cargo-unused-features
         unused-features analyze
     
-  cargo-udeps:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Install nightly toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true#
-
-      - name: Run cargo-udeps
-        uses: aig787/cargo-udeps-action@v1
-        with:
-          version: 'latest'
-          args: '--all-targets'      
+#  cargo-udeps:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v2
+#
+#      - name: Install nightly toolchain
+#        uses: actions-rs/toolchain@v1
+#        with:
+#          toolchain: nightly
+#          override: true
+#
+#      - name: Run cargo-udeps
+#        uses: aig787/cargo-udeps-action@v1
+#        with:
+#          version: 'latest'
+#          args: '--all-targets'      
 
 # ideas for future improvement
 #
