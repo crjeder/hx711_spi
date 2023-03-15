@@ -63,3 +63,16 @@ jobs:
 #        with:
 #          token: ${{ secrets.GITHUB_TOKEN }}
 
+# ideas for future improvement
+#
+# - cargo bloat
+# - cargo breaking (between minor releases wich should not break api)
+# - cargo spellcheck
+# - cargo unused-features
+# - herbie (warnings for unstable floating point expressions)
+# - Prusti (verifies absence of e. g. panic!())
+# - Rudra (memory safety check)
+# - rust-audit (maybe contained in cargo deny or cargo pants)
+# - rustfmt
+
+
