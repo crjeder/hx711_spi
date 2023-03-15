@@ -27,7 +27,12 @@ jobs:
     
     - name: Run tests
       run: cargo test 
-
+      
+    - name: cargo_unused_features
+      run: |
+        cargo install cargo-unused-features
+        unused-features analyze
+    
     - name: cargo deny
       run: |
         cargo install --locked cargo-deny 
@@ -59,11 +64,7 @@ jobs:
         rustup component add rustfmt
         cargo fmt --all -- --check
 
-    - name: cargo_unused_features
-      run: |
-        cargo install cargo-unused-features
-        unused-features analyze
-    
+
 #  cargo-udeps:
 #    runs-on: ubuntu-latest
 #    steps:
