@@ -108,7 +108,7 @@ where
 
         self.spi.transfer(&mut buffer)?;
 
-        Ok(decode_output(&buffer))        // value should be in range 0x800000 - 0x7fffff according to datasheet
+        Ok(decode_output(&buffer)) // value should be in range 0x800000 - 0x7fffff according to datasheet
     }
 
     #[inline]
