@@ -91,6 +91,7 @@ jobs:
 #          args: '--all-targets'      
 
 # ideas for future improvement
+# don't forget to run ```cargo owner --add rust-bus-owner``` on first publication
 #
 # [ ] cargo bloat (not suitable for automating)
 # [ ] cargo breaking (between minor releases wich should not break api)
