@@ -33,7 +33,6 @@ jobs:
     - name: cargo deny
       run: |
         cargo install --locked cargo-deny 
-        cargo deny init
         cargo deny check
     
     - name: ensure_no_std
@@ -65,12 +64,6 @@ jobs:
       run: |
         cargo install cargo-unused-features
         unused-features analyze
-        
-  cargo-deny:
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v3
-    - uses: EmbarkStudios/cargo-deny-action@v1
     
   cargo-udeps:
     runs-on: ubuntu-latest
