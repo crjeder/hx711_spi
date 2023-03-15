@@ -1,14 +1,14 @@
 name: Rust
-# language: rust
 
 on:
   push:
-    branches: [ release ]
+#    branches: [ release ]
     paths: 
       - '**/Cargo.toml'
       - '**/Cargo.lock'
+      - '**/.github/workflows'
   pull_request:
-    branches: [ release ]
+#    branches: [ release ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -45,15 +45,31 @@ jobs:
        cargo install --force cargo-pants
        cargo pants
 
-#    - name: cargo_udeps
-#      run: |        
-#        cargo install cargo-udeps --locked
-#        cargo udeps
+    - name: cargo_udeps
+      run: |        
+        cargo install cargo-udeps --locked
+        cargo +nightly udeps
 
     - name: cargo_outdated
       run: |  
         cargo install --locked cargo-outdated
         cargo outdated
+        
+    - name: cargo_spellchek
+      run: |
+        cargo install --locked cargo-spellcheck
+        cargo spellcheck
+        
+    - name: rustfmt
+      run: |
+        rustup component add rustfmt
+        cargo fmt --all -- --check
+
+#    - name: cargo_unused_features
+#      run: |
+#        cargo install cargo-unused-features
+#        unused-features analyze
+       
 
 #  security_audit:
 #    runs-on: ubuntu-latest
@@ -65,14 +81,13 @@ jobs:
 
 # ideas for future improvement
 #
-# - cargo bloat
-# - cargo breaking (between minor releases wich should not break api)
-# - cargo spellcheck
-# - cargo unused-features
-# - herbie (warnings for unstable floating point expressions)
-# - Prusti (verifies absence of e. g. panic!())
-# - Rudra (memory safety check)
-# - rust-audit (maybe contained in cargo deny or cargo pants)
-# - rustfmt
-
-
+# [ ] cargo bloat (not suitable for automat
+# [ ] cargo breaking (between minor releases wich should not break api)
+# [x] cargo spellcheck
+# [ ] cargo unused-features
+# [ ] herbie (warnings for unstable floating point expressions)
+# [ ] Prusti (verifies absence of e. g. panic!())
+# [ ] Rudra (memory safety check)
+# [ ] rust-audit (maybe contained in cargo deny or cargo pants)
+# [x] rustfmt
+# [ ] cargo-action-fmt (Converts cargo check (and clippy) JSON output to the GitHub Action error format)
