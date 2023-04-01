@@ -15,6 +15,7 @@ version = "0.5.0"
 embedded-hal = "0.2.4"
 bitmatch = "0.1.1"
 nb = "1.0"
+scales = {package = "scales-rs", path = "../scales-rs"}
 
 
 [features]

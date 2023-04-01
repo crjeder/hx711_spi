@@ -7,6 +7,7 @@ use core::unimplemented;
 use embedded_hal as hal;
 use hal::blocking::spi;
 use nb::{self, block};
+use scales::Read;
 
 // Bit pattern definitions for the communication with the hx711. All have to be bitwise negate
 // for the ```invert-sdo``` feature
@@ -70,6 +71,15 @@ pub struct Hx711<SPI> {
     // device specific
     mode: Mode,
 }
+//  needed to satisfy the trait bound in scales
+impl <E, SPI> Read<i32, nb::Error<E>> for Hx711<SPI> 
+where
+SPI: spi::Transfer<u8, Error = E>
+{
+    fn read(&mut self) -> nb::Result<i32, E> {
+        self.read_val()
+    }
+}
 
 impl<SPI, E> Hx711<SPI>
 where
@@ -90,7 +100,7 @@ where
     /// reads a value from the HX711 and returns it
     /// # Errors
     /// Returns SPI errors and nb::Error::WouldBlock if data isn't ready to be read from hx711
-    pub fn read(&mut self) -> nb::Result<i32, E> {
+    pub fn read_val(&mut self) -> nb::Result<i32, E> {
         // check if data is ready
         // When output data is not ready for retrieval, digital output pin DOUT is high.
         // Serial clock input PD_SCK should be low. When DOUT goes
@@ -129,9 +139,9 @@ where
         // max SPI clock frequency should be 5 MHz to satisfy the 0.2 us limit for the pulse length
         // we have to output more than 300 bytes to keep the line for at least 60 us high.
 
-        let buffer: [u8; 301] = RESET_SIGNAL;
+        let mut buffer: [u8; 301] = RESET_SIGNAL;
 
-        self.spi.write(&buffer)?;
+        self.spi.transfer(&mut buffer)?;
         self.mode = Mode::ChAGain128; // this is the default mode after reset
 
         Ok(())
