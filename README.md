@@ -40,7 +40,7 @@ Power down functions exist just for compatibility. Implementation is not possibl
   - [ ] Test on more platforms (HALs)
   	- [x] Rasperry Pi
 	- [x] STM32
-	- [?] ESP32
+	- [x] ESP32
   	- [ ] RP2040
 	- [ ] Teensy
   - [X] Power down (functions exist just for compatibility. Implementation is not possible with SPI)

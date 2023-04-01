@@ -104,14 +104,11 @@ where
             return Err(nb::Error::WouldBlock);
         }
 
-        // the read has the same length as the write.
-        
         let mut buffer: [u8; 7] = [CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, self.mode as u8];
 
         self.spi.transfer(&mut buffer)?;
-        // value should be in range 0x800000 - 0x7fffff according to datasheet
 
-        Ok(decode_output(&buffer))
+        Ok(decode_output(&buffer)) // value should be in range 0x800000 - 0x7fffff according to datasheet
     }
 
     #[inline]

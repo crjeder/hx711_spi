@@ -1,15 +1,18 @@
 name: Rust
-# language: rust
 
 on:
   push:
-    branches: [ release ]
     paths: 
       - '**/Cargo.toml'
       - '**/Cargo.lock'
+      - '**/.github/workflows/*'
+      - '**/src/*'
   pull_request:
-    branches: [ release ]
-
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/.github/workflows/*'
+      - '**/src/*'
 env:
   CARGO_TERM_COLOR: always
 
@@ -30,6 +33,12 @@ jobs:
     - name: Run tests
       run: cargo test 
 
+# Probably not suitable for actions
+#    - name: cargo_unused_features
+#      run: |
+#        cargo install cargo-unused-features
+#        unused-features analyze
+    
     - name: cargo deny
       run: |
         cargo install --locked cargo-deny 
@@ -45,21 +54,57 @@ jobs:
        cargo install --force cargo-pants
        cargo pants
 
-#    - name: cargo_udeps
-#      run: |        
-#        cargo install cargo-udeps --locked
-#        cargo udeps
-
     - name: cargo_outdated
       run: |  
         cargo install --locked cargo-outdated
         cargo outdated
+  
+  # Does not compile
+  #  - name: cargo_spellchek
+  #    run: |
+  #      cargo install --locked cargo-spellcheck
+  #      cargo spellcheck
+        
+    - name: rustfmt
+      run: |
+        rustup component add rustfmt
+        cargo fmt --all -- --check
 
-#  security_audit:
+#    - name: prusti
+#      run: |
+#         download?
+#        ./x.py setup 
+#        ./x.py build --release
+#        cargo prusti
+
+#  cargo-udeps:
 #    runs-on: ubuntu-latest
 #    steps:
-#      - uses: actions/checkout@v1
-#      - uses: actions-rs/audit-check@v1
+#      - name: Checkout repository
+#        uses: actions/checkout@v2
+#
+#      - name: Install nightly toolchain
+#        uses: actions-rs/toolchain@v1
 #        with:
-#          token: ${{ secrets.GITHUB_TOKEN }}
+#          toolchain: nightly
+#          override: true
+#
+#      - name: Run cargo-udeps
+#        uses: aig787/cargo-udeps-action@v1
+#        with:
+#          version: 'latest'
+#          args: '--all-targets'      
 
+# ideas for future improvement
+# don't forget to run ```cargo owner --add rust-bus-owner``` on first publication
+#
+# [ ] cargo bloat (not suitable for automating)
+# [ ] cargo breaking (between minor releases wich should not break api)
+# [x] cargo spellcheck
+# [x] cargo unused-features
+# [ ] mcarton/rust-herbie-lint (warnings for unstable floating point expressions)(not suitable for automating)
+# [ ] Prusti (verifies absence of e. g. panic!())
+# [ ] Rudra (memory safety check)
+# [x] rustfmt
+# [ ] cargo-action-fmt (Converts cargo check (and clippy) JSON output to the GitHub Action error format)
+# [ ] cargo tarpaulin (code coverage reporting tool)
