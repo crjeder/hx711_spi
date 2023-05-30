@@ -37,14 +37,14 @@ Power down functions exist just for compatibility. Implementation is not possibl
 
 ## TODO
 
- - [ ] Test on more platforms (HALs)
+- Test on more platforms (HALs)
   - [x] Rasperry Pi
  	- [x] STM32
 	 - [x] ESP32
   - [x] nrf52840  
 	 - [ ] RP2040
  	- [ ] Teensy
-  - [X] Power Save (functions exist just for compatibility. Implementation is not possible with SPI)
+- [X] Power Save (functions exist just for compatibility. Implementation is not possible with SPI)
 - [X] Reset
 - [X] `[no_std]`
 - [X] make it re-entrant / thread safe  
