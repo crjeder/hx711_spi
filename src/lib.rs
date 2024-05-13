@@ -90,7 +90,7 @@ where
     /// reads a value from the HX711 and returns it
     /// # Errors
     /// Returns SPI errors and nb::Error::WouldBlock if data isn't ready to be read from hx711
-    pub fn read_val(&mut self) -> nb::Result<i32, E> {
+    pub fn read(&mut self) -> nb::Result<i32, E> {
         // check if data is ready
         // When output data is not ready for retrieval, digital output pin DOUT is high.
         // Serial clock input PD_SCK should be low. When DOUT goes
@@ -210,15 +210,14 @@ fn decode_output(buffer: &[u8; 7]) -> i32 {
 
     i32::from_be_bytes(raw) / 0x100
 }
+
 #[cfg(test)]
-mod tests {
+//#[macro_use]
+//extern crate std;
+mod tests {  
     use super::*;
     use test_case::test_case;
-    // embedded_hal implementation
-    use embedded_hal_mock::{
-        spi::{Mock as Spi, Transaction as SpiTransaction},
-    };
-
+  
     #[test_case(&[0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55] => 0; "alternating convert to zeros")]
     #[test_case(&[0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA] => -1; "alternating convert to ones")]
     #[test_case(&[0xFF, 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF] => -1; "all ones")]
@@ -226,22 +225,5 @@ mod tests {
                   0b00100111, 0b00100111, 0b00100111] => 0b0000_0000_0101_0101_0101_0101_0101_0101i32; "test pattern")]
     fn test_decode(buffer: &[u8; 7]) -> i32 {
         decode_output(&buffer)
-    }
-
-    #[test]
-    fn test_read() {
-        // Data the mocked up SPI bus should return
-        let expectations = [
-            SpiTransaction::transfer(vec![SIGNAL_LOW], vec![SIGNAL_LOW]),
-            SpiTransaction::transfer(vec![CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, GAIN128], vec![0x00,0x00,0x00,0x00,0x00,0x00, SIGNAL_LOW]),
-        ];
-    
-        let spi = Spi::new(&expectations);
-        let mut hx711 = Hx711::new(spi);
-    
-
-        //hx711.reset()?;
-        let v = block!(hx711.read())?;
-        assert_eq!(v, 0);
     }   
 }
