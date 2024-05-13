@@ -7,9 +7,8 @@ use core::unimplemented;
 use embedded_hal as hal;
 use hal::blocking::spi;
 use nb::{self, block};
-use scales::Read;
 
-// Bit pattern definitions for the communication with the hx711. All have to be bitwise negate
+// Bit pattern definitions for the communication with the hx711. All have to be bitwise negated
 // for the ```invert-sdo``` feature
 
 // patterns for mode
@@ -70,15 +69,6 @@ pub struct Hx711<SPI> {
     spi: SPI,
     // device specific
     mode: Mode,
-}
-//  needed to satisfy the trait bound in scales
-impl <E, SPI> Read<i32, nb::Error<E>> for Hx711<SPI> 
-where
-SPI: spi::Transfer<u8, Error = E>
-{
-    fn read(&mut self) -> nb::Result<i32, E> {
-        self.read_val()
-    }
 }
 
 impl<SPI, E> Hx711<SPI>
@@ -220,7 +210,6 @@ fn decode_output(buffer: &[u8; 7]) -> i32 {
 
     i32::from_be_bytes(raw) / 0x100
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;
