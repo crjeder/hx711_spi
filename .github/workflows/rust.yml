@@ -43,11 +43,12 @@ jobs:
       run: |
         cargo install --locked cargo-deny 
         cargo deny check
-    
-    - name: ensure_no_std
-      run: |
-        RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
-        cargo nono check
+
+ # cargo nono is currently not maintained
+ #   - name: ensure_no_std
+ #     run: |
+ #       RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
+ #       cargo nono check
         
     - name: cargo pants
       run: |
