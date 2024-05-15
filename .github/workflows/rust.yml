@@ -67,6 +67,10 @@ jobs:
         cargo binstall --no-confirm cargo-outdated
         cargo outdated
 
+    - name: cargo udeps
+      run: |
+        cargo binstall --no-confirm cargo-udeps
+
 # nono does not compile anymore    
 #    - name: ensure_no_std
 #      run: |
