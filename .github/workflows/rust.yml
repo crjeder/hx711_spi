@@ -26,42 +26,40 @@ jobs:
     
     - name: Update
       run: rustup update     
-          
+    
+    - name: rustfmt
+      run: |
+        rustup component add rustfmt
+        cargo fmt --all -- --check
+
     - name: Build
       run: cargo build 
     
     - name: Run tests
       run: cargo test 
 
+    - name: binstall
+      run: |
+        cargo install cargo-binstall
+
     - name: audit
       run: |
-        cargo install cargo-audit
+        cargo binstall cargo-audit
         cargo audit
-
-    - name: rustfmt
-      run: |
-        rustup component add rustfmt
-        cargo fmt --all -- --check
-
+   
     - name: Check Semver
       run: |
-        cargo install --locked cargo-semver-checks
+        cargo binstall cargo-semver-checks
         cargo semver-checks
       
-# Probably not suitable for actions
-#    - name: cargo_unused_features
-#      run: |
-#        cargo install cargo-unused-features
-#        unused-features analyze
-    
     - name: cargo deny
       run: |
-        cargo install --locked cargo-deny
+        cargo binstall cargo-deny
         cargo deny check
 
     - name: cargo_outdated
       run: |  
-        cargo install --locked cargo-outdated
+        cargo binstall cargo-outdated
         cargo outdated
 
 # nono does not compile anymore    
@@ -74,14 +72,9 @@ jobs:
       env:
         AWS_HOST: ${{ secrets.AWS_HOST }}
       run: |
-       cargo install --force cargo-pants
+       cargo binstall cargo-pants
        cargo pants
 
-  # not suitable for actions until I find out a way to save additions to the dictionary
-  #  - name: cargo_spellchek
-  #    run: |
-  #      cargo install --locked cargo-spellcheck
-  #      cargo spellcheck
   
 # Works with nightly only
 #  cargo-udeps:
@@ -110,7 +103,7 @@ jobs:
 # [ ] cargo bloat (not suitable for automation)
 # [x] cargo semver-checks
 # [x] cargo spellcheck
-# [x] cargo unused-features
+# [ ] cargo unused-features (not suitable for automation)
 # [ ] mcarton/rust-herbie-lint (warnings for unstable floating point expressions)(not suitable for automating)
 # [ ] Prusti (verifies absence of e. g. panic!())
 # [ ] Rudra (memory safety check)

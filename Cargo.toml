@@ -15,7 +15,6 @@ include = ["src/lib.rs", "LICENSE", "README.md", "CHANGELOG.md"]
 [dependencies]
 embedded-hal = "1.0"
 bitmatch = "0.1.1"
-cargo-diet = "1.2.7"
 
 [features]
 invert-sdo = []
