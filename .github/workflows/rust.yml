@@ -22,7 +22,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     
     - name: Update
       run: rustup update     
@@ -44,22 +44,22 @@ jobs:
 
     - name: audit
       run: |
-        cargo binstall cargo-audit
+        cargo install cargo-audit
         cargo audit
    
     - name: Check Semver
       run: |
-        cargo binstall cargo-semver-checks
+        cargo install cargo-semver-checks
         cargo semver-checks
       
     - name: cargo deny
       run: |
-        cargo binstall cargo-deny
+        cargo install cargo-deny
         cargo deny check
 
     - name: cargo_outdated
       run: |  
-        cargo binstall cargo-outdated
+        cargo install cargo-outdated
         cargo outdated
 
 # nono does not compile anymore    
@@ -70,9 +70,9 @@ jobs:
         
     - name: cargo pants
       env:
-        AWS_HOST: ${{ secrets.AWS_HOST }}
+        OSS_INDEX_API_KEY: ${{ secrets.OSS_INDEX_API_KEY }}
       run: |
-       cargo binstall cargo-pants
+       cargo install cargo-pants
        cargo pants
 
   
