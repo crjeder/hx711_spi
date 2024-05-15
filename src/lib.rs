@@ -79,7 +79,7 @@ pub enum Hx711Error<SPI> {
 impl<SPIERROR> From<SPIERROR> for Hx711Error<SPIERROR> {
     fn from(value: SPIERROR) -> Self {
         Hx711Error::Spi(value)
-    }  
+    }
 }
 
 impl<SPI> Hx711<SPI>
@@ -126,7 +126,7 @@ where
     /// # Errors
     /// Returns `SPI` errors
     #[inline]
-    pub fn reset(&mut self) -> Result<(), Hx711Error<SPI::Error>>{
+    pub fn reset(&mut self) -> Result<(), Hx711Error<SPI::Error>> {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
         // HX711 enters power down mode.
         // When PD_SCK returns to low, chip will reset and enter normal operation mode.
