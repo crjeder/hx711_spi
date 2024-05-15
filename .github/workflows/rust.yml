@@ -13,8 +13,9 @@ on:
       - '**/Cargo.lock'
       - '**/.github/workflows/*'
       - '**/src/*'
+
 env:
-  CARGO_TERM_COLOR: alwaysenv
+  CARGO_TERM_COLOR: always
   GH_TOKEN: ${{ secrets.gh_token }}
 
 jobs:
@@ -118,3 +119,4 @@ jobs:
 # [ ] cargo-about (not suitable for automation)
 # [ ] cargo-msrv (not suitable for automation)
 # [ ] cargo-diet (not suitable for automation)
+
