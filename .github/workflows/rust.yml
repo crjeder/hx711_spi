@@ -14,8 +14,8 @@ on:
       - '**/.github/workflows/*'
       - '**/src/*'
 env:
-  CARGO_TERM_COLOR: alwaysenv:
-  #GH_TOKEN: ${{ secrets.gh_token }}
+  CARGO_TERM_COLOR: alwaysenv
+  GH_TOKEN: ${{ secrets.gh_token }}
 
 jobs:
   cargo_tests:
