@@ -33,6 +33,21 @@ jobs:
     - name: Run tests
       run: cargo test 
 
+    - name: audit
+      run: |
+        cargo install cargo-audit
+        cargo audit
+
+    - name: rustfmt
+      run: |
+        rustup component add rustfmt
+        cargo fmt --all -- --check
+
+    - name: Check Semver
+      run: |
+        cargo install --locked cargo-semver-checks
+        cargo semver-checks
+      
 # Probably not suitable for actions
 #    - name: cargo_unused_features
 #      run: |
@@ -41,8 +56,13 @@ jobs:
     
     - name: cargo deny
       run: |
-        cargo install --locked cargo-deny 
+        cargo install --locked cargo-deny
         cargo deny check
+
+    - name: cargo_outdated
+      run: |  
+        cargo install --locked cargo-outdated
+        cargo outdated
 
 # nono does not compile anymore    
 #    - name: ensure_no_std
@@ -51,31 +71,18 @@ jobs:
 #        cargo nono check
         
     - name: cargo pants
+      env:
+        AWS_HOST: ${{ secrets.AWS_HOST }}
       run: |
        cargo install --force cargo-pants
        cargo pants
 
-    - name: cargo_outdated
-      run: |  
-        cargo install --locked cargo-outdated
-        cargo outdated
-  
-  # Does not compile
+  # not suitable for actions until I find out a way to save additions to the dictionary
   #  - name: cargo_spellchek
   #    run: |
   #      cargo install --locked cargo-spellcheck
   #      cargo spellcheck
-        
-    - name: rustfmt
-      run: |
-        rustup component add rustfmt
-        cargo fmt --all -- --check
-
-    - name: Check_semver
-      run: |
-        cargo install --locked cargo-semver-checks
-        cargo semver-checks
-      
+  
 # Works with nightly only
 #  cargo-udeps:
 #    runs-on: ubuntu-latest
@@ -98,9 +105,10 @@ jobs:
 # ideas for future improvement
 # don't forget to run ```cargo owner --add rust-bus-owner``` on first publication
 #
-# [ ] cargo audit (is it integrated somewhere?)
-# [ ] cargo bloat (not suitable for automating)
-# [ ] cargo semver-checks
+# [ ] speed things up using cargo-binstall
+# [x] cargo audit (is it integrated somewhere?)
+# [ ] cargo bloat (not suitable for automation)
+# [x] cargo semver-checks
 # [x] cargo spellcheck
 # [x] cargo unused-features
 # [ ] mcarton/rust-herbie-lint (warnings for unstable floating point expressions)(not suitable for automating)
@@ -110,5 +118,8 @@ jobs:
 # [ ] cargo-action-fmt (Converts cargo check (and clippy) JSON output to the GitHub Action error format)
 # [ ] cargo tarpaulin (code coverage reporting tool)
 # [ ] cargo crev
-# [ ] cargo geiger
+# [ ] cargo geiger (does not run)
 # [ ] Husky
+# [ ] cargo-about (not suitable for automation)
+# [ ] cargo-msrv (not suitable for automation)
+# [ ] cargo-diet (not suitable for automation)

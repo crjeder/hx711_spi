@@ -1,2 +1,4 @@
 Cargo.lock
 target/
+target-install/
+report.json

@@ -86,7 +86,7 @@ impl<SPI> Hx711<SPI>
 where
     SPI: SpiBus,
 {
-    /// opens a connection to a HX711 on a specified SPI.
+    /// opens a connection to a HX711 on a specified `SPI`.
     ///
     /// The data sheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range,
     /// therefore bus speed has to be between 5 MHz and 20 kHz. 1 MHz seems to be a good choice.
