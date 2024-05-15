@@ -41,6 +41,7 @@ jobs:
     - name: binstall
       run: |
         cargo install cargo-binstall
+# curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
     - name: audit
       run: |
@@ -48,10 +49,12 @@ jobs:
         cargo audit
    
     - name: Check Semver
+      env:
+        GH_TOKEN: ${{ secrets.gh_token }}
       run: |
-        cargo install cargo-semver-checks
+        cargo binstall cargo-semver-checks
         cargo semver-checks
-      
+
     - name: cargo deny
       run: |
         cargo install cargo-deny
