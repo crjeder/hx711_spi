@@ -55,7 +55,7 @@ Power down functions exist just for compatibility. Implementation is not possibl
 ## Examples
 ### Raspberry PI
 [<img src="examples/hx711_spi_bb.png" width="300">](examples/hx711_spi.fzz)
-```rust
+```text
 // embedded_hal implementation
 use rppal::spi::{Bus, Error, Mode, SlaveSelect, Spi};
 
@@ -77,7 +77,7 @@ fn main() -> Result<(), Hx711Error<Error>> {
 ### STM32F1
 An example stm32f103 (blue pill) initialization (note mode 1).
 
-```rust
+```text
     use stm32f1xx_hal::time::U32Ext;
     use cortex_m_rt::entry;
     use stm32f1xx_hal::{pac, prelude::*,
