@@ -14,7 +14,8 @@ on:
       - '**/.github/workflows/*'
       - '**/src/*'
 env:
-  CARGO_TERM_COLOR: always
+  CARGO_TERM_COLOR: alwaysenv:
+  GH_TOKEN: ${{ secrets.gh_token }}
 
 jobs:
   cargo_tests:
@@ -23,12 +24,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-      
-    - name: curl
-      uses: enflo/curl-action@master
-      with:
-        curl: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-        
+    
     - name: Update
       run: rustup update     
     
@@ -54,8 +50,6 @@ jobs:
         cargo audit
    
     - name: Check Semver
-      env:
-        GH_TOKEN: ${{ secrets.gh_token }}
       run: |
         cargo binstall --no-confirm cargo-semver-checks
         cargo semver-checks
