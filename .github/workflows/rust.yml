@@ -73,7 +73,7 @@ jobs:
 
     - name: Check_semver
       run: |
-        cargo install --fixed cargo-semver-checks
+        cargo install --locked cargo-semver-checks
         cargo semver-checks
       
 # Works with nightly only
