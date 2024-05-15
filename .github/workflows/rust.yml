@@ -23,7 +23,12 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    
+      
+    - name: curl
+      uses: enflo/curl-action@master
+      with:
+        curl: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+        
     - name: Update
       run: rustup update     
     
@@ -57,12 +62,12 @@ jobs:
 
     - name: cargo deny
       run: |
-        cargo install cargo-deny
+        cargo binstall --no-confirm cargo-deny
         cargo deny check
 
     - name: cargo_outdated
       run: |  
-        cargo install cargo-outdated
+        cargo binstall --no-confirm cargo-outdated
         cargo outdated
 
 # nono does not compile anymore    
@@ -75,7 +80,7 @@ jobs:
       env:
         OSS_INDEX_API_KEY: ${{ secrets.OSS_INDEX_API_KEY }}
       run: |
-       cargo install cargo-pants
+       cargo binstall --no-confirm cargo-pants
        cargo pants
 
   
