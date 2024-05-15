@@ -12,17 +12,14 @@ edition = "2021"
 version = "0.5.1"
 
 [dependencies]
-embedded-hal = "0.2.4"
+embedded-hal = "1.0"
 bitmatch = "0.1.1"
 nb = "1.0"
-# scales = {package = "scales-rs", path = "../scales-rs"}
-
 
 [features]
 invert-sdo = []
 
 [dev-dependencies]
 test-case = "3.0"
-
 # for the Raspberry Pi example
-rppal = { version = "0.14.1", features = ["hal"] }
+rppal = { version = "0.17.1", features = ["hal"] }

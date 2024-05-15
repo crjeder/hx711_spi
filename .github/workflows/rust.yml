@@ -43,11 +43,12 @@ jobs:
       run: |
         cargo install --locked cargo-deny 
         cargo deny check
-    
-    - name: ensure_no_std
-      run: |
-        RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
-        cargo nono check
+
+# nono does not compile anymore    
+#    - name: ensure_no_std
+#      run: |
+#        RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
+#        cargo nono check
         
     - name: cargo pants
       run: |
@@ -70,13 +71,10 @@ jobs:
         rustup component add rustfmt
         cargo fmt --all -- --check
 
-#    - name: prusti
-#      run: |
-#         download?
-#        ./x.py setup 
-#        ./x.py build --release
-#        cargo prusti
-
+    - name: Check_semver
+      uses: obi1kenobi/cargo-semver-checks-action@v2
+      
+# Works with nightly only
 #  cargo-udeps:
 #    runs-on: ubuntu-latest
 #    steps:
@@ -98,8 +96,9 @@ jobs:
 # ideas for future improvement
 # don't forget to run ```cargo owner --add rust-bus-owner``` on first publication
 #
+# [ ] cargo audit (is it integrated somewhere?)
 # [ ] cargo bloat (not suitable for automating)
-# [ ] cargo breaking (between minor releases wich should not break api)
+# [ ] cargo semver-checks
 # [x] cargo spellcheck
 # [x] cargo unused-features
 # [ ] mcarton/rust-herbie-lint (warnings for unstable floating point expressions)(not suitable for automating)
@@ -108,3 +107,6 @@ jobs:
 # [x] rustfmt
 # [ ] cargo-action-fmt (Converts cargo check (and clippy) JSON output to the GitHub Action error format)
 # [ ] cargo tarpaulin (code coverage reporting tool)
+# [ ] cargo crev
+# [ ] cargo geiger
+# [ ] Husky
