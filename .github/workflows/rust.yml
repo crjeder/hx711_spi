@@ -15,7 +15,7 @@ on:
       - '**/src/*'
 env:
   CARGO_TERM_COLOR: alwaysenv:
-  GH_TOKEN: ${{ secrets.gh_token }}
+  #GH_TOKEN: ${{ secrets.gh_token }}
 
 jobs:
   cargo_tests:
