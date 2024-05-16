@@ -9,7 +9,7 @@ readme = "README.md"
 documentation = "https://docs.rs/hx711_spi"
 license = "MIT OR Apache-2.0"
 edition = "2021"
-version = "0.6.0"
+version = "0.7.0"
 include = ["src/lib.rs", "LICENSE", "README.md", "CHANGELOG.md"]
 
 [dependencies]
