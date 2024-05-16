@@ -20,6 +20,6 @@ bitmatch = "0.1.1"
 invert-sdo = []
 
 [dev-dependencies]
-test-case = "3.0"
+test-case = "3.3"
 # for the Raspberry Pi example
 rppal = { version = "0.17.1", features = ["hal"] }

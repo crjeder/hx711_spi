@@ -107,11 +107,11 @@ jobs:
 # ideas for future improvement
 # don't forget to run ```cargo owner --add rust-bus-owner``` on first publication
 #
-# [ ] speed things up using cargo-binstall
+# [x] speed things up using cargo-binstall
 # [x] cargo audit (is it integrated somewhere?)
 # [ ] cargo bloat (not suitable for automation)
 # [x] cargo semver-checks
-# [x] cargo spellcheck
+# [ ] cargo spellcheck (not suitable for automation)
 # [ ] cargo unused-features (not suitable for automation)
 # [ ] mcarton/rust-herbie-lint (warnings for unstable floating point expressions)(not suitable for automating)
 # [ ] Prusti (verifies absence of e. g. panic!())
