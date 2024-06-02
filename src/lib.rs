@@ -61,16 +61,18 @@ const RESET_SIGNAL: [u8; 301] = [0x00; 301];
 
 /// The HX711 has two channels: `A` for the load cell and `B` for AD conversion of other signals.
 /// Channel `A` supports gains of 128 (default) and 64, `B` has a fixed gain of 32.
+/// Set chanel and gain with the set_mode function.
+/// 
 #[derive(Copy, Clone, Debug)]
 #[repr(u8)]
 pub enum Mode {
     // bits have to be converted for correct transfer 1 -> 10, 0 -> 00
     /// Convert channel A with a gain factor of 128
     ChAGain128 = GAIN128,
-    /// Convert channel B with a gain factor of 32
-    ChBGain32 = GAIN32,
     /// Convert channel A with a gain factor of 64
     ChAGain64 = GAIN64, // there is a typo in the official datasheet: in Fig.2 it says channel B instead of A
+    /// Convert channel B with a gain factor of 32
+    ChBGain32 = GAIN32,
 }
 
 /// Represents an instance of a HX711 device
@@ -96,13 +98,13 @@ impl<SPIERROR> From<SPIERROR> for Hx711Error<SPIERROR> {
 
 impl<SPI> Hx711<SPI>
 where
-    SPI: SpiBus,
-{
+    SPI: SpiBus, { 
+
+
     /// opens a connection to a HX711 on a specified `SPI`.
     ///
     /// The data sheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range,
-    /// therefore bus speed has to be between 5 MHz and 20 kHz. 1 MHz seems to be a good choice.
-    /// D is an `embedded_hal` implementation of `DelayMs`.
+    /// therefore bus speed has to be between 5 MHz and 20 kHz. 
     pub fn new(spi: SPI) -> Self {
         Hx711 {
             spi,
@@ -122,16 +124,15 @@ where
 
         self.spi.transfer_in_place(&mut txrx)?;
 
-        if txrx[0] & 0b01 == 0b01 {
-            // as long as the lowest bit is high there is no data waiting
-            return Err(Hx711Error::DataNotReady);
+        if txrx[0] == 0x00 {
+            let mut buffer: [u8; 7] = [CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, self.mode as u8];
+
+            self.spi.transfer_in_place(&mut buffer)?;
+
+            Ok(decode_output(&buffer)) // value should be in range 0x800000 - 0x7fffff according to datasheet
+        } else {
+            Err(Hx711Error::DataNotReady)
         }
-
-        let mut buffer: [u8; 7] = [CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, self.mode as u8];
-
-        self.spi.transfer_in_place(&mut buffer)?;
-
-        Ok(decode_output(&buffer)) // value should be in range 0x800000 - 0x7fffff according to datasheet
     }
 
     /// Reset the chip to it's default state. Mode is set to convert channel A with a gain factor of 128.
@@ -156,12 +157,21 @@ where
     }
 
     /// Set the mode to the value specified.
+    /// see the Mode struct for possible values
+    /// # Usage
+    /// ```text
+    /// my_hx711.set_mode(Mode::ChAGain128);
+    /// value1_chanel_a = my_hx711.read()?
+    /// value2_chanel_a = my_hx711.read()?
+    /// my_hx711.set_mode(Mode::ChBGain32);
+    /// value_chanel_b = my_hx711.read()?
+    ///```
     /// # Errors
     /// Returns `SPI` errors
     #[inline]
     pub fn set_mode(&mut self, m: Mode) -> Result<Mode, Hx711Error<SPI::Error>> {
         self.mode = m;
-        self.read()?; // read writes Mode for the next read()
+        self.read()?;  // read writes Mode for the next read()
         Ok(m)
     }
 
