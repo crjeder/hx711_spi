@@ -15,9 +15,6 @@ pub const HX711_MAXIMUM: i32 = 2i32.saturating_pow(24 - 1) - 1;
 // if signed < HX711_MINIMUM {
 //    signed = HX711_MINIMUM;
 //} else if signed > HX711_MAXIMUM {
-//    signed = HX711_MAXIMUM;
-//}
-// to be implemented..
 
 // Bit pattern definitions for the communication with the hx711. All have to be bitwise negated
 // for the ```invert-sdo``` feature
