@@ -13,8 +13,10 @@ on:
       - '**/Cargo.lock'
       - '**/.github/workflows/*'
       - '**/src/*'
+
 env:
   CARGO_TERM_COLOR: always
+  GH_TOKEN: ${{ secrets.gh_token }}
 
 jobs:
   cargo_tests:
@@ -22,61 +24,68 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     
     - name: Update
-      run: rustup update     
-          
+      run: |
+        rustup default nightly
+        rustup update     
+    
+    - name: rustfmt
+      run: |
+        rustup component add rustfmt
+        cargo fmt --all -- --check
+
     - name: Build
       run: cargo build 
     
     - name: Run tests
       run: cargo test 
 
-# Probably not suitable for actions
-#    - name: cargo_unused_features
-#      run: |
-#        cargo install cargo-unused-features
-#        unused-features analyze
-    
+    - name: binstall
+      run: |
+        cargo install cargo-binstall
+# curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+    - name: audit
+      run: |
+        cargo binstall --no-confirm cargo-audit
+        cargo audit
+   
+    - name: Check Semver
+      run: |
+        cargo binstall --no-confirm cargo-semver-checks
+        cargo semver-checks
+
     - name: cargo deny
       run: |
-        cargo install --locked cargo-deny 
+        cargo binstall --no-confirm cargo-deny
         cargo deny check
-    
-    - name: ensure_no_std
-      run: |
-        RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
-        cargo nono check
-        
-    - name: cargo pants
-      run: |
-       cargo install --force cargo-pants
-       cargo pants
 
     - name: cargo_outdated
       run: |  
-        cargo install --locked cargo-outdated
+        cargo binstall --no-confirm cargo-outdated
         cargo outdated
-  
-  # Does not compile
-  #  - name: cargo_spellchek
-  #    run: |
-  #      cargo install --locked cargo-spellcheck
-  #      cargo spellcheck
-        
-    - name: rustfmt
+
+    - name: cargo udeps
       run: |
-        rustup component add rustfmt
-        cargo fmt --all -- --check
+        cargo binstall --no-confirm cargo-udeps
 
-#    - name: prusti
+# nono does not compile anymore    
+#    - name: ensure_no_std
 #      run: |
-#         download?
-#        ./x.py setup 
-#        ./x.py build --release
-#        cargo prusti
+#        RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
+#        cargo nono check
+        
+    - name: cargo pants
+      env:
+        OSS_INDEX_API_KEY: ${{ secrets.OSS_INDEX_API_KEY }}
+      run: |
+       cargo binstall --no-confirm cargo-pants
+       cargo pants
 
+  
+# Works with nightly only
 #  cargo-udeps:
 #    runs-on: ubuntu-latest
 #    steps:
@@ -98,13 +107,23 @@ jobs:
 # ideas for future improvement
 # don't forget to run ```cargo owner --add rust-bus-owner``` on first publication
 #
-# [ ] cargo bloat (not suitable for automating)
-# [ ] cargo breaking (between minor releases wich should not break api)
-# [x] cargo spellcheck
-# [x] cargo unused-features
+# [x] speed things up using cargo-binstall
+# [x] cargo audit (is it integrated somewhere?)
+# [ ] cargo bloat (not suitable for automation)
+# [x] cargo semver-checks
+# [ ] cargo spellcheck (not suitable for automation)
+# [ ] cargo unused-features (not suitable for automation)
 # [ ] mcarton/rust-herbie-lint (warnings for unstable floating point expressions)(not suitable for automating)
 # [ ] Prusti (verifies absence of e. g. panic!())
 # [ ] Rudra (memory safety check)
 # [x] rustfmt
 # [ ] cargo-action-fmt (Converts cargo check (and clippy) JSON output to the GitHub Action error format)
 # [ ] cargo tarpaulin (code coverage reporting tool)
+# [ ] cargo crev
+# [ ] cargo geiger (does not run)
+# [ ] Husky
+# [ ] cargo-about (not suitable for automation)
+# [ ] cargo-msrv (not suitable for automation)
+# [ ] cargo-diet (not suitable for automation)
+# [ ] cargo-udeps (requires nightly)
+

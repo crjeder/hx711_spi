@@ -39,11 +39,11 @@ Power down functions exist just for compatibility. Implementation is not possibl
 
 - Test on more platforms (HALs)
   - [x] Rasperry Pi
-  - [x] STM32
-  - [x] ESP32
+ 	- [x] STM32
+	- [x] ESP32
   - [x] nrf52840  
-  - [ ] RP2040
-  - [ ] Teensy
+	- [ ] RP2040
+ 	- [ ] Teensy
 - [X] Power Save (functions exist just for compatibility. Implementation is not possible with SPI)
 - [X] Reset
 - [X] `[no_std]`
@@ -57,20 +57,18 @@ Power down functions exist just for compatibility. Implementation is not possibl
 [<img src="examples/hx711_spi_bb.png" width="300">](examples/hx711_spi.fzz)
 ```text
 // embedded_hal implementation
-use rppal::{spi::{Spi, Bus, SlaveSelect, Mode, Error},hal::Delay};
+use rppal::spi::{Bus, Error, Mode, SlaveSelect, Spi};
 
-use hx711_spi::Hx711;
-use nb::block;
+use hx711_spi::{Hx711, Hx711Error};
 
 // minimal example
-fn main() -> Result<(), Error>
-{
-    let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)?;
+fn main() -> Result<(), Hx711Error<Error>> {
+    let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode1)?;
     let mut hx711 = Hx711::new(spi);
 
-	  hx711.reset()?;
-    let v = block!(hx711.read())?;
- 	  println!("value = {}", v);
+    hx711.reset()?;
+    let v = hx711.read();
+    println!("value = {:?}", v);
 
     Ok(())
 }
@@ -102,7 +100,9 @@ An example stm32f103 (blue pill) initialization (note mode 1).
 ```
 
 ## Roadmap
-1.0 Will implement the ```embedded_hal::adc::OneShot``` once it is finalized
+1.0 Will implement the ```embedded_hal::adc::OneShot``` once it is finalized. 
+Update:
+OneShot is not part of the released embedded_hal 1.0.0 and probably is gone forever.
 
 ## Feedback
 All kind of feedback is welcome. If you have questions or problems, please post them on the issue tracker
