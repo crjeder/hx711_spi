@@ -90,7 +90,6 @@ pub enum Hx711Error<SPI> {
 impl<SPIERROR> From<SPIERROR> for Hx711Error<SPIERROR> {
     fn from(value: SPIERROR) -> Self {
         Hx711Error::Spi(value)
-    }
 }
 
 impl<SPI> Hx711<SPI>
