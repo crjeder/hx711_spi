@@ -59,7 +59,7 @@ const RESET_SIGNAL: [u8; 301] = [0x00; 301];
 /// The HX711 has two channels: `A` for the load cell and `B` for AD conversion of other signals.
 /// Channel `A` supports gains of 128 (default) and 64, `B` has a fixed gain of 32.
 /// Set chanel and gain with the set_mode function.
-/// 
+///
 #[derive(Copy, Clone, Debug)]
 #[repr(u8)]
 pub enum Mode {
@@ -90,17 +90,17 @@ pub enum Hx711Error<SPI> {
 impl<SPIERROR> From<SPIERROR> for Hx711Error<SPIERROR> {
     fn from(value: SPIERROR) -> Self {
         Hx711Error::Spi(value)
+    }
 }
 
 impl<SPI> Hx711<SPI>
 where
-    SPI: SpiBus, { 
-
-
+    SPI: SpiBus,
+{
     /// opens a connection to a HX711 on a specified `SPI`.
     ///
     /// The data sheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range,
-    /// therefore bus speed has to be between 5 MHz and 20 kHz. 
+    /// therefore bus speed has to be between 5 MHz and 20 kHz.
     pub fn new(spi: SPI) -> Self {
         Hx711 {
             spi,
@@ -167,7 +167,7 @@ where
     #[inline]
     pub fn set_mode(&mut self, m: Mode) -> Result<Mode, Hx711Error<SPI::Error>> {
         self.mode = m;
-        self.read()?;  // read writes Mode for the next read()
+        self.read()?; // read writes Mode for the next read()
         Ok(m)
     }
 
