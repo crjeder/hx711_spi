@@ -72,9 +72,9 @@ pub struct Hx711<SPI> {
     mode: Mode,
 }
 //  needed to satisfy the trait bound in scales
-impl <E, SPI> Read<i32, nb::Error<E>> for Hx711<SPI> 
+impl<E, SPI> Read<i32, nb::Error<E>> for Hx711<SPI>
 where
-SPI: spi::Transfer<u8, Error = E>
+    SPI: spi::Transfer<u8, Error = E>,
 {
     fn read(&mut self) -> nb::Result<i32, E> {
         self.read_val()
@@ -226,9 +226,7 @@ mod tests {
     use super::*;
     use test_case::test_case;
     // embedded_hal implementation
-    use embedded_hal_mock::{
-        spi::{Mock as Spi, Transaction as SpiTransaction},
-    };
+    use embedded_hal_mock::spi::{Mock as Spi, Transaction as SpiTransaction};
 
     #[test_case(&[0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55] => 0; "alternating convert to zeros")]
     #[test_case(&[0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA] => -1; "alternating convert to ones")]
@@ -244,15 +242,17 @@ mod tests {
         // Data the mocked up SPI bus should return
         let expectations = [
             SpiTransaction::transfer(vec![SIGNAL_LOW], vec![SIGNAL_LOW]),
-            SpiTransaction::transfer(vec![CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, GAIN128], vec![0x00,0x00,0x00,0x00,0x00,0x00, SIGNAL_LOW]),
+            SpiTransaction::transfer(
+                vec![CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, GAIN128],
+                vec![0x00, 0x00, 0x00, 0x00, 0x00, 0x00, SIGNAL_LOW],
+            ),
         ];
-    
+
         let spi = Spi::new(&expectations);
         let mut hx711 = Hx711::new(spi);
-    
 
         //hx711.reset()?;
         let v = block!(hx711.read())?;
         assert_eq!(v, 0);
-    }   
+    }
 }
