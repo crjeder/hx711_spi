@@ -18,9 +18,11 @@ It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-c
 to verify the trustworthiness of each of your dependencies, including this one.
 
 ## Why did I write another HX711 driver?
+
 In multi-user / multi-tasking environments bit banging is not reliable. SPI on the other hand handles the timing with hardware support and is not influenced by other processes.
 
 ## Usage
+
 Note: I'm using the reddefined SPI signal names (['see sparkfun's Resolution'][3]).
 
 Use an embedded-hal implementation to get SPI.
@@ -39,11 +41,11 @@ Power down functions exist just for compatibility. Implementation is not possibl
 
 - Test on more platforms (HALs)
   - [x] Rasperry Pi
- 	- [x] STM32
-	- [x] ESP32
+  - [x] STM32
+  - [x] ESP32
   - [x] nrf52840  
-	- [ ] RP2040
- 	- [ ] Teensy
+  - [ ] RP2040
+  - [ ] Teensy
 - [X] Power Save (functions exist just for compatibility. Implementation is not possible with SPI)
 - [X] Reset
 - [X] `[no_std]`
@@ -53,9 +55,12 @@ Power down functions exist just for compatibility. Implementation is not possibl
 - [ ] use emedded HAL v1
 
 ## Examples
+
 ### Raspberry PI
+
 [<img src="examples/hx711_spi_bb.png" width="300">](examples/hx711_spi.fzz)
 ```text
+
 // embedded_hal implementation
 use rppal::spi::{Bus, Error, Mode, SlaveSelect, Spi};
 
@@ -75,6 +80,7 @@ fn main() -> Result<(), Hx711Error<Error>> {
 ```
 
 ### STM32F1
+
 An example stm32f103 (blue pill) initialization (note mode 1).
 
 ```text
@@ -100,10 +106,12 @@ An example stm32f103 (blue pill) initialization (note mode 1).
 ```
 
 ## Roadmap
+
 I wanted to use ```embedded_hal::adc::OneShot``` once it is finalized (was planed for embedded_hal 1.0). 
 OneShot is not part of the released embedded_hal 1.0.0 and probably is gone forever. But now as it's out I'll port my code to it. The main challenge is async...
 
 ## Feedback
+
 All kind of feedback is welcome. If you have questions or problems, please post them on the issue tracker
 This is literally the first code I ever wrote in rust. I am still learning. So please be patient, it might take me some time to fix a bug. I may have to break my knowledge sound-barrier.
 If you have tested on another platform I'd like to hear about that, too!
@@ -111,18 +119,17 @@ If you have tested on another platform I'd like to hear about that, too!
 Big thanx to ['jbit'](https://github.com/jbit) for clearing the question about thread safety
 and ['anddreyk0'](https://github.com/andreyk0) for testing on STM32 and both for debugging!
 
+## References
 
-# References
-
-  - [datasheet][1]
+- [datasheet][1]
 
 [1]: https://cdn.sparkfun.com/datasheets/Sensors/ForceFlex/hx711_english.pdf
 
-  - [embedded-hal][2]
+- [embedded-hal][2]
 
 [2]: https://github.com/rust-embedded/embedded-hal
 
-  - [spi_signal_names][3]
+- [spi_signal_names][3]
 
 [3]: https://www.sparkfun.com/spi_signal_names
 
@@ -130,8 +137,8 @@ and ['anddreyk0'](https://github.com/andreyk0) for testing on STM32 and both for
 
 Licensed under either of
 
-  - Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or
+- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or
   [here](http://www.apache.org/licenses/LICENSE-2.0))
-  - MIT license ([LICENSE-MIT](LICENSE-MIT) or [here](http://opensource.org/licenses/MIT))
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or [here](http://opensource.org/licenses/MIT))
 
 at your option.
