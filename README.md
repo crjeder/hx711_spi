@@ -50,7 +50,7 @@ Power down functions exist just for compatibility. Implementation is not possibl
 - [X] Reset
 - [X] `[no_std]`
 - [X] make it re-entrant / thread safe  
-- [ ] validate against other libraries (bit banging, python, ..) 
+- [ ] validate against other libraries (bit banging, python, ..)
 - [ ] async
 - [ ] use emedded HAL v1
 
@@ -58,7 +58,8 @@ Power down functions exist just for compatibility. Implementation is not possibl
 
 ### Raspberry PI
 
-[<img src="examples/hx711_spi_bb.png" width="300">](examples/hx711_spi.fzz)
+[<img src="examples/hx711_spi_bb.png" width="300" alt="schematic"](examples/hx711_spi.fzz)
+>
 ```text
 
 // embedded_hal implementation
@@ -107,7 +108,7 @@ An example stm32f103 (blue pill) initialization (note mode 1).
 
 ## Roadmap
 
-I wanted to use ```embedded_hal::adc::OneShot``` once it is finalized (was planed for embedded_hal 1.0). 
+I wanted to use ```embedded_hal::adc::OneShot``` once it is finalized (was planed for embedded_hal 1.0).
 OneShot is not part of the released embedded_hal 1.0.0 and probably is gone forever. But now as it's out I'll port my code to it. The main challenge is async...
 
 ## Feedback
