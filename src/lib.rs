@@ -155,6 +155,7 @@ where
     /// Set the mode to the value specified.
     /// see the Mode struct for possible values
     /// # Usage
+    /// 
     /// ```text
     /// my_hx711.set_mode(Mode::ChAGain128);
     /// value1_chanel_a = my_hx711.read()?

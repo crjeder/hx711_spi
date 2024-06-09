@@ -100,9 +100,8 @@ An example stm32f103 (blue pill) initialization (note mode 1).
 ```
 
 ## Roadmap
-1.0 Will implement the ```embedded_hal::adc::OneShot``` once it is finalized. 
-Update:
-OneShot is not part of the released embedded_hal 1.0.0 and probably is gone forever.
+I wanted to use ```embedded_hal::adc::OneShot``` once it is finalized (was planed for embedded_hal 1.0). 
+OneShot is not part of the released embedded_hal 1.0.0 and probably is gone forever. But now as it's out I'll port my code to it. The main challenge is async...
 
 ## Feedback
 All kind of feedback is welcome. If you have questions or problems, please post them on the issue tracker
