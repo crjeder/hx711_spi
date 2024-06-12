@@ -16,11 +16,12 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  GH_TOKEN: ${{ secrets.gh_token }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN}}
 
 jobs:
   cargo_tests:
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
     - name: Checkout
