@@ -21,7 +21,6 @@ env:
 jobs:
   cargo_tests:
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     steps:
     - name: Checkout
@@ -33,6 +32,7 @@ jobs:
         rustup update     
     
     - name: rustfmt
+      continue-on-error: true
       run: |
         rustup component add rustfmt
         cargo fmt --all -- --check
@@ -52,21 +52,25 @@ jobs:
         
 
     - name: audit
+      continue-on-error: true
       run: |
         cargo binstall --no-confirm cargo-audit
         cargo audit
    
     - name: Check Semver
+      continue-on-error: true
       run: |
         cargo binstall --no-confirm cargo-semver-checks
         cargo semver-checks
 
     - name: cargo deny
+      continue-on-error: true
       run: |
         cargo binstall --no-confirm cargo-deny
         cargo deny check
 
     - name: cargo_outdated
+      continue-on-error: true
       run: |  
         cargo binstall --no-confirm cargo-outdated
         cargo outdated
