@@ -44,6 +44,7 @@ jobs:
       run: cargo test 
 
     - name: binstall form binary
+      continue-on-error: true
       run: |
         false
 # curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
