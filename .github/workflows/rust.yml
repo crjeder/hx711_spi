@@ -31,12 +31,6 @@ jobs:
         rustup default nightly
         rustup update     
     
-    - name: rustfmt
-      continue-on-error: true
-      run: |
-        rustup component add rustfmt
-        cargo fmt --all -- --check
-
     - name: Build
       run: cargo build 
     
@@ -53,34 +47,35 @@ jobs:
       run:  cargo install cargo-binstall
 
     - name: audit
-      continue-on-error: true
       run: |
         cargo binstall --no-confirm cargo-audit
         cargo audit
    
-    - name: Check Semver
-      continue-on-error: true
-      run: |
-        cargo binstall --no-confirm cargo-semver-checks
-        cargo semver-checks
-
     - name: cargo deny
-      continue-on-error: true
       run: |
         cargo binstall --no-confirm cargo-deny
         cargo deny check
 
     - name: cargo_outdated
-      continue-on-error: true
       run: |  
         cargo binstall --no-confirm cargo-outdated
         cargo outdated
 
     - name: cargo udeps
-      continue-on-error: true
       run: |
         cargo binstall --no-confirm cargo-udeps
         cargo udeps
+
+    - name: rustfmt
+      run: |
+        rustup component add rustfmt
+        cargo fmt --all -- --check
+   
+    - name: Check Semver
+      run: |
+        cargo binstall --no-confirm cargo-semver-checks
+        cargo semver-checks
+  
 
 # nono does not compile anymore    
 #    - name: ensure_no_std
@@ -95,26 +90,7 @@ jobs:
       run: |
        cargo binstall --no-confirm cargo-pants
        cargo pants
-
-  
-# Works with nightly only
-#  cargo-udeps:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout repository
-#        uses: actions/checkout@v2
-#
-#      - name: Install nightly toolchain
-#        uses: actions-rs/toolchain@v1
-#        with:
-#          toolchain: nightly
-#          override: true
-#
-#      - name: Run cargo-udeps
-#        uses: aig787/cargo-udeps-action@v1
-#        with:
-#          version: 'latest'
-#          args: '--all-targets'      
+     
 
 # ideas for future improvement
 # don't forget to run ```cargo owner --add rust-bus-owner``` on first publication
@@ -137,5 +113,5 @@ jobs:
 # [ ] cargo-about (not suitable for automation)
 # [ ] cargo-msrv (not suitable for automation)
 # [ ] cargo-diet (not suitable for automation)
-# [ ] cargo-udeps (requires nightly)
+# [x] cargo-udeps 
 
