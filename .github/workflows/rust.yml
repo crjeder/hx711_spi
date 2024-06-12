@@ -80,7 +80,7 @@ jobs:
    
     - name: Check Semver
       run: |
-        cargo install cargo-semver-checks
+        cargo binstall --no-confirm cargo-semver-checks
         cargo semver-checks
   
 
