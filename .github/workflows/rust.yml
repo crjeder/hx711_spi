@@ -80,6 +80,7 @@ jobs:
       continue-on-error: true
       run: |
         cargo binstall --no-confirm cargo-udeps
+        cargo udeps
 
 # nono does not compile anymore    
 #    - name: ensure_no_std
