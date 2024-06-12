@@ -52,7 +52,7 @@ jobs:
     
     - name: binstall from source
       if: ${{ steps.from_binary.outcome == 'failure' }}
-      run:  cargo install binstall
+      run:  cargo install cargo-binstall
 
     - name: audit
       continue-on-error: true
