@@ -45,7 +45,8 @@ jobs:
 
     - name: binstall form binary
       run: |
-        curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+        false
+# curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
     
     - name: binstall from source
       if: ${{ steps == 'failure' }}
