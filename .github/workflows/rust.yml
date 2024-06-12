@@ -76,7 +76,7 @@ jobs:
     - name: rustfmt
       run: |
         rustup component add rustfmt
-        cargo fmt --all -- --check
+        cargo fmt --all --check -v
    
     - name: Check Semver
       run: |
