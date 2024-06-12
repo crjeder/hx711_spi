@@ -50,7 +50,7 @@ jobs:
 # curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
     
     - name: binstall from source
-      if: ${{ steps == 'failure' }}
+      if: ${{ steps.outcome == 'failure' }}
       run: |
         cargo install binstall
 
