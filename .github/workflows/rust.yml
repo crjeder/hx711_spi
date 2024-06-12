@@ -44,13 +44,14 @@ jobs:
       run: cargo test 
 
     - name: binstall form binary
+      id: from_binary
       continue-on-error: true
       run: |
         false
 # curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
     
     - name: binstall from source
-      if: ${{ steps.outcome == 'failure' }}
+      if: [[ ${{ steps.from_binary.outcome == 'failure' }}
       run: |
         cargo install binstall
 
