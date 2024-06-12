@@ -61,7 +61,7 @@ jobs:
         OSS_INDEX_API_KEY: ${{ secrets.OSS_INDEX_API_KEY }}
       run: |
        cargo binstall --no-confirm cargo-pants
-       cargo pants
+       cargo pants -v
      
     - name: cargo_outdated
       run: |  
