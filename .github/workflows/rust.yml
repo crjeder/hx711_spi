@@ -45,6 +45,11 @@ jobs:
     - name: binstall from source
       if: ${{ steps.from_binary.outcome == 'failure' }}
       run:  cargo install cargo-binstall
+    
+    - name: cargo diet
+      run: |
+        cargo binstall --no-confirm cargo-diet
+        cargo diet --dry-run
 
     - name: audit
       run: |
@@ -81,7 +86,8 @@ jobs:
     - name: Check Semver
       run: |
         cargo binstall --no-confirm cargo-semver-checks
-        cargo semver-checks
+        cargo semver-checks check-release -v
+
   
 
 # nono does not compile anymore    
@@ -112,4 +118,5 @@ jobs:
 # [ ] cargo-msrv (not suitable for automation)
 # [ ] cargo-diet (not suitable for automation)
 # [x] cargo-udeps 
+# [ ] cargo-diet
 
