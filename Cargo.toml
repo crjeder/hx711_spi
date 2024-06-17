@@ -15,10 +15,10 @@ include = ["src/lib.rs", "LICENSE", "README.md", "CHANGELOG.md"]
 [dependencies]
 embedded-hal = "1.0"
 bitmatch = "0.1.1"
-cargo-semver-checks = "0.31.0"
 
 [features]
 invert-sdo = []
+with-async = []
 
 [dev-dependencies]
 test-case = "3.3"
