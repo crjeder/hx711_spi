@@ -103,7 +103,7 @@ jobs:
 # [x] cargo audit (is it integrated somewhere?)
 # [ ] cargo bloat (not suitable for automation)
 # [x] cargo semver-checks
-# [ ] cargo spellcheck (not suitable for automation)
+# [ ] cargo spellcheck
 # [ ] cargo unused-features (not suitable for automation)
 # [ ] mcarton/rust-herbie-lint (warnings for unstable floating point expressions)(not suitable for automating)
 # [ ] Prusti (verifies absence of e. g. panic!())

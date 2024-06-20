@@ -13,7 +13,7 @@ use hal::spi::SpiBus;
 // saturation
 // values above maximum and below minimum are wrong
 pub const HX711_MINIMUM: i32 = -(2i32.saturating_pow(24 - 1));
-/// The absolute maximum readings. A greater value should be clamped.
+// The absolute maximum readings. A greater value should be clamped.
 pub const HX711_MAXIMUM: i32 = 2i32.saturating_pow(24 - 1) - 1;
 // if signed < HX711_MINIMUM {
 //    signed = HX711_MINIMUM;
@@ -61,7 +61,7 @@ const RESET_SIGNAL: [u8; 301] = [0x00; 301];
 
 /// The HX711 has two channels: `A` for the load cell and `B` for AD conversion of other signals.
 /// Channel `A` supports gains of 128 (default) and 64, `B` has a fixed gain of 32.
-/// Set channel and gain with the set_mode function.
+/// Set channel and gain with the set_mode() function.
 ///
 #[derive(Copy, Clone, Debug)]
 #[repr(u8)]
