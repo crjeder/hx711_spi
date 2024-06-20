@@ -2,6 +2,9 @@
 #![forbid(unsafe_code)]
 #![no_std]
 
+// Just a word definition for a spell checker:
+// spell-checker:words DOUT HX711 SPI SDO PD_SCK MCU
+
 use bitmatch::bitmatch;
 use core::unimplemented;
 use embedded_hal as hal;
@@ -58,7 +61,7 @@ const RESET_SIGNAL: [u8; 301] = [0x00; 301];
 
 /// The HX711 has two channels: `A` for the load cell and `B` for AD conversion of other signals.
 /// Channel `A` supports gains of 128 (default) and 64, `B` has a fixed gain of 32.
-/// Set chanel and gain with the set_mode function.
+/// Set channel and gain with the set_mode function.
 ///
 #[derive(Copy, Clone, Debug)]
 #[repr(u8)]
@@ -67,7 +70,7 @@ pub enum Mode {
     /// Convert channel A with a gain factor of 128
     ChAGain128 = GAIN128,
     /// Convert channel A with a gain factor of 64
-    ChAGain64 = GAIN64, // there is a typo in the official datasheet: in Fig.2 it says channel B instead of A
+    ChAGain64 = GAIN64, // there is a typo in the official data sheet: in Fig.2 it says channel B instead of A
     /// Convert channel B with a gain factor of 32
     ChBGain32 = GAIN32,
 }
@@ -87,8 +90,8 @@ pub enum Hx711Error<SPI> {
     DataNotReady,
 }
 
-impl<SPIERROR> From<SPIERROR> for Hx711Error<SPIERROR> {
-    fn from(value: SPIERROR) -> Self {
+impl<SpiError> From<SpiError> for Hx711Error<SpiError> {
+    fn from(value: SpiError) -> Self {
         Hx711Error::Spi(value)
     }
 }
@@ -110,7 +113,7 @@ where
 
     /// reads a value from the HX711 and returns it
     /// # Errors
-    /// Returns `SPI` errors and `nb`::Error::`WouldBlock` if data isn't ready to be read from hx711
+    /// Returns `SPI` errors and `DataNotReady` if data isn't ready to be read from hx711
     pub fn read(&mut self) -> Result<i32, Hx711Error<SPI::Error>> {
         // check if data is ready
         // When output data is not ready for retrieval, digital output pin DOUT is high.
@@ -125,7 +128,7 @@ where
 
             self.spi.transfer_in_place(&mut buffer)?;
 
-            Ok(decode_output(&buffer)) // value should be in range 0x800000 - 0x7fffff according to datasheet
+            Ok(decode_output(&buffer)) // value should be in range 0x800000 - 0x7fffff according to data sheet
         } else {
             Err(Hx711Error::DataNotReady)
         }
@@ -207,7 +210,8 @@ fn decode_output(buffer: &[u8; 7]) -> i32 {
     // since the first byte is the most significant it's big endian
     // we have to extract every second bit from the buffer
     // only the upper 24 (doubled) bits are valid
-
+    
+    // spell-checker:disable
     #[bitmatch]
     let "a?a?a?a?" = buffer[0];
     #[bitmatch]
@@ -226,6 +230,7 @@ fn decode_output(buffer: &[u8; 7]) -> i32 {
     raw[1] = bitpack!("ccccdddd");
     raw[2] = bitpack!("eeeeffff");
     raw[3] = 0;
+    // spell-checker:enable
 
     i32::from_be_bytes(raw) / 0x100
 }
