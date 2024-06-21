@@ -46,6 +46,11 @@ jobs:
       if: ${{ steps.from_binary.outcome == 'failure' }}
       run:  cargo install cargo-binstall
     
+    - name: secret scan
+      run: |
+        cargo binstall --no-confirm fencer
+        fencer --project_dir ./
+
     - name: cargo diet
       run: |
         cargo binstall --no-confirm cargo-diet
