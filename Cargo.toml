@@ -14,11 +14,12 @@ include = ["src/lib.rs", "LICENSE", "README.md", "CHANGELOG.md"]
 
 [dependencies]
 embedded-hal = "1.0"
+embedded-hal-async = "1.0"
 bitmatch = "0.1.1"
+maybe-async = { version = "0.2.10", features = ["is_sync"] }
 
 [features]
 invert-sdo = []
-with-async = []
 
 [dev-dependencies]
 test-case = "3.3"
