@@ -2,7 +2,7 @@
 #![forbid(unsafe_code)]
 #![no_std]
 
-// Just a word definition for a spell checker:
+// word definition for spell checker:
 // spell-checker:words DOUT HX711 SPI SDO PD_SCK MCU
 
 use bitmatch::bitmatch;
@@ -15,9 +15,6 @@ use hal::spi::SpiBus;
 pub const HX711_MINIMUM: i32 = -(2i32.saturating_pow(24 - 1));
 // The absolute maximum readings. A greater value should be clamped.
 pub const HX711_MAXIMUM: i32 = 2i32.saturating_pow(24 - 1) - 1;
-// if signed < HX711_MINIMUM {
-//    signed = HX711_MINIMUM;
-//} else if signed > HX711_MAXIMUM {
 
 // Bit pattern definitions for the communication with the hx711. All have to be bitwise negated
 // for the ```invert-sdo``` feature
@@ -88,6 +85,7 @@ pub struct Hx711<SPI> {
 pub enum Hx711Error<SPI> {
     Spi(SPI),
     DataNotReady,
+    ReadError,
 }
 
 impl<SpiError> From<SpiError> for Hx711Error<SpiError> {
@@ -102,6 +100,7 @@ where
 {
     /// opens a connection to a HX711 on a specified `SPI`.
     ///
+    /// The whole SPI bus is blocked because HX711 does not support a select signal like CS or ENABLE
     /// The data sheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range,
     /// therefore bus speed has to be between 5 MHz and 20 kHz.
     pub fn new(spi: SPI) -> Self {
@@ -113,7 +112,7 @@ where
 
     /// reads a value from the HX711 and returns it
     /// # Errors
-    /// Returns `SPI` errors and `DataNotReady` if data isn't ready to be read from hx711
+    /// Returns `SPI` errors and `DataNotReady` if data isn't ready to be read from HX711
     pub fn read(&mut self) -> Result<i32, Hx711Error<SPI::Error>> {
         // check if data is ready
         // When output data is not ready for retrieval, digital output pin DOUT is high.
@@ -128,7 +127,14 @@ where
 
             self.spi.transfer_in_place(&mut buffer)?;
 
-            Ok(decode_output(&buffer)) // value should be in range 0x800000 - 0x7fffff according to data sheet
+            let value: i32 = decode_output(&buffer);
+
+            if value < HX711_MINIMUM || value > HX711_MAXIMUM {
+                // value should be in range 0x800000 - 0x7fffff according to data sheet
+                Err(Hx711Error::ReadError)
+            } else {
+                Ok(decode_output(&buffer))
+            }
         } else {
             Err(Hx711Error::DataNotReady)
         }
@@ -210,7 +216,7 @@ fn decode_output(buffer: &[u8; 7]) -> i32 {
     // since the first byte is the most significant it's big endian
     // we have to extract every second bit from the buffer
     // only the upper 24 (doubled) bits are valid
-    
+
     // spell-checker:disable
     #[bitmatch]
     let "a?a?a?a?" = buffer[0];
