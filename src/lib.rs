@@ -5,15 +5,14 @@
 // word definition for spell checker:
 // spell-checker:words DOUT HX711 SPI SDO PD_SCK MCU
 
-// use maybe_async::maybe_async;
+//use maybe_async::maybe_async;
 //#[maybe_async::maybe_async(AFIT)]
 use bitmatch::bitmatch;
 use core::unimplemented;
-#[maybe_async(
-    sync(feature = "sync", keep_self),
-    async(not(feature = "sync"), keep_self)
-)]
+// #[cfg(not(feature = "is_sync"))]
 use embedded_hal_async as hal;
+// #[cfg(feature = "is_sync")]
+// use embedded_hal as hal;
 use hal::spi::SpiBus;
 //
 // saturation
@@ -121,11 +120,8 @@ where
     /// If compiled with the ```with-sync``` feature it returns  `DataNotReady` if data isn't ready to be read from HX711
     /// Other errors are SPI errors or DataNotValid if the value read is out of the range specified in the data sheet (0x800000 - 0x7fffff in 2's complement)
     /// 
-    #[maybe_async(
-        sync(feature = "sync", keep_self),
-        async(not(feature = "sync"), keep_self)
-    )]
-    pub fn read(&mut self) -> Result<i32, Hx711Error<SPI::Error>> {
+    // #[maybe_async]
+    pub async fn read(&mut self) -> Result<i32, Hx711Error<SPI::Error>> {
         // check if data is ready
         // When output data is not ready for retrieval, digital output pin DOUT is high.
         // Serial clock input PD_SCK should be low. When DOUT goes
@@ -156,12 +152,8 @@ where
     /// Reset the chip to it's default state. Mode is set to convert channel A with a gain factor of 128.
     /// # Errors
     /// Returns `SPI` errors
-    #[maybe_async(
-        sync(feature = "sync", keep_self),
-        async(not(feature = "sync"), keep_self)
-    )]
-    #[inline]
-    pub fn reset(&mut self) -> Result<(), Hx711Error<SPI::Error>> {
+    //#[maybe_async]
+    pub async fn reset(&mut self) -> Result<(), Hx711Error<SPI::Error>> {
         // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
         // HX711 enters power down mode.
         // When PD_SCK returns to low, chip will reset and enter normal operation mode.
@@ -173,7 +165,7 @@ where
         let mut buffer: [u8; 301] = RESET_SIGNAL;
 
         self.spi.transfer_in_place(&mut buffer).await?;
-        self.mode = Mode::ChAGain128; // this is the default mode after reset
+        self.mode = Mode::ChAGain128; // this is the def;ault mode after reset
 
         Ok(())
     }
@@ -192,9 +184,9 @@ where
     /// # Errors
     /// Returns `SPI` errors
     #[inline]
-    pub fn set_mode(&mut self, m: Mode) -> Result<Mode, Hx711Error<SPI::Error>> {
+    pub async fn set_mode(&mut self, m: Mode) -> Result<Mode, Hx711Error<SPI::Error>> {
         self.mode = m;
-        self.read()?; // read writes Mode for the next read()
+        self.read().await?; // read writes Mode for the next read()
         Ok(m)
     }
 

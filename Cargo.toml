@@ -20,6 +20,7 @@ maybe-async = { version = "0.2.10", features = ["is_sync"] }
 
 [features]
 invert-sdo = []
+is_sync = []
 
 [dev-dependencies]
 test-case = "3.3"
