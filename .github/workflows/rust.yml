@@ -32,7 +32,7 @@ jobs:
         restore-keys: rust-${{ github.run_id }}
 
 
-    - if: steps.cargo-cache.outputs.cache-hit != 'true'
+#    - if: steps.cargo-cache.outputs.cache-hit != 'true'
       name: List the cached binaries
       continue-on-error: true
       run: |
@@ -52,6 +52,12 @@ jobs:
     - name: binstall from source
       if: ${{ steps.from_binary.outcome == 'failure' }}
       run:  cargo install cargo-binstall
+
+    - name: List the cached binaries
+      continue-on-error: true
+      run: |
+        ls ~
+        ls ~/.cargo/bin
 
   build_and_test:
     needs: install
