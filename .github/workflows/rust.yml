@@ -239,8 +239,8 @@ jobs:
       
       - name: cargo udeps
         run: |
-          cargo install cargo-udeps
-          cargo udeps
+          cargo binstall --no-confirm cargo-udeps
+          cargo udeps --all --all-features
 
   Comply_with_formating_standard:
     needs: [install, build_and_test]
