@@ -47,7 +47,7 @@ jobs:
       run:  cargo install cargo-binstall
     
     - name: create directory
-      run: touch ~/target/
+      run: mkdir ~/target/
 
   build_and_test:
     needs: install
