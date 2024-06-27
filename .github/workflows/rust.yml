@@ -262,7 +262,7 @@ jobs:
       - name: rustfmt
         run: |
           rustup component add rustfmt
-          cargo fmt --all --check
+          cargo fmt --all --check --message-format short
    
   Comply_with_versioning_standard:
     needs: [install, build_and_test]
