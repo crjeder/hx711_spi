@@ -17,7 +17,7 @@ env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN}}
 
 jobs:
-  build:
+  install:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -33,9 +33,9 @@ jobs:
 
 
     - if: ${{ steps.cargo-cache.outputs.cache-hit != 'true' }}
-      name: List the state of node modules
+      name: List the cached binaries
       continue-on-error: true
-      run: ls ~/.cargo
+      run: ls ~/.cargo/bin
 
     - name: Update
       run: |
@@ -52,6 +52,7 @@ jobs:
       run:  cargo install cargo-binstall
 
   build_and_test:
+    needs: install
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
