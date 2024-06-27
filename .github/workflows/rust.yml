@@ -28,7 +28,6 @@ jobs:
       with:
         path: |
           ~./cargo
-          ./target
         key: rust
         restore-keys: rust-${{ github.run_id }}
 
