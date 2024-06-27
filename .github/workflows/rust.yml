@@ -28,7 +28,8 @@ jobs:
       with:
         path: |
           ~/.cargo/
-          ./target/
+          ~/target/
+          ~/Cargo.lock
         key: rust
         restore-keys: rust-${{ github.run_id }}
 
@@ -47,8 +48,10 @@ jobs:
       if: ${{ steps.from_binary.outcome == 'failure' }}
       run:  cargo install cargo-binstall
     
-    - name: create directory
-      run: mkdir ~/target/
+    - name: create directory structure
+      run: |
+        mkdir ~/target/
+        touch ~/Cargo.lock
 
     - name: check version 
       run: rustc --version
