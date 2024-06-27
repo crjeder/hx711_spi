@@ -109,7 +109,8 @@ jobs:
         with:
           path: |
             ~/.cargo/
-            ./target/
+            ~/target/
+            ~/Cargo.lock
           key: rust
          
       - name: cargo diet
