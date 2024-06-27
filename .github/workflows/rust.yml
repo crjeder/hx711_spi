@@ -239,7 +239,7 @@ jobs:
       
       - name: cargo udeps
         run: |
-          cargo binstall --no-confirm cargo-udeps
+          cargo install cargo-udeps
           cargo udeps
 
   Comply_with_formating_standard:
@@ -327,7 +327,7 @@ jobs:
       
       - name: check if library is no-std compatible
         run: | 
-          cargo binstall --no-confirm cargo-no-std-check
+          cargo install cargo-no-std-check
           cargo no-std-check
 
 # ideas for future improvement
