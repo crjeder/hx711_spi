@@ -22,6 +22,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: create directory structure
+      run: |
+        mkdir ~/target/
+        touch ~/Cargo.lock
+
     - name: Cache cargo packages
       id: cargo-cache
       uses: actions/cache@v4
@@ -47,11 +52,6 @@ jobs:
     - name: binstall from source
       if: ${{ steps.from_binary.outcome == 'failure' }}
       run:  cargo install cargo-binstall
-    
-    - name: create directory structure
-      run: |
-        mkdir ~/target/
-        touch ~/Cargo.lock
 
     - name: check version 
       run: rustc --version
