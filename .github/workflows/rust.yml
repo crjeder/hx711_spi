@@ -135,7 +135,10 @@ jobs:
           key: rust
       
       - name: check_binaries
-        run: ls ~/.cargo/bin/cargo-binstall
+        continue-on-error: true
+        run: |
+          ls ~/.cargo/bin/cargo-binstall
+          cargo --list
 
       - name: audit
         run: |
