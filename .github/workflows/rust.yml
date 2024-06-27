@@ -29,7 +29,8 @@ jobs:
         path: |
           ~./cargo
           ./target
-        key: rust-${{ github.run_id }}
+        key: rust-
+# ${{ github.run_id }}
         restore-keys: rust-
 
 
@@ -65,7 +66,7 @@ jobs:
         path: |
           ~./cargo
           ./target
-        key: rust-${{ github.run_id }}
+        key: rust-
         restore-keys: rust-
 
     - name: Build
