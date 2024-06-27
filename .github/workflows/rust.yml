@@ -91,10 +91,10 @@ jobs:
         run: |
           cargo binstall --no-confirm fencer
           fencer --project_dir ./
-    needs: install
-    runs-on: ubuntu-latest
   
   check_for_bloat:
+    needs: install
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
   
@@ -106,22 +106,7 @@ jobs:
             ~/.cargo/
             ./target/
           key: rust
-      
-          needs: install
-          runs-on: ubuntu-latest
-            
-          steps:
-            - uses: actions/checkout@v4
-        
-            - name: Cache cargo packages
-              id: cargo-cache
-              uses: actions/cache@v4
-              with:
-                path: |
-                  ~/.cargo/
-                  ./target/
-                key: rust
-                      
+         
       - name: cargo diet
         run: |
           cargo binstall --no-confirm cargo-diet
@@ -185,9 +170,10 @@ jobs:
             ./target/
           key: rust
              
-       - name: cargo pants
-         env: OSS_INDEX_API_KEY: ${{ secrets.OSS_INDEX_API_KEY }}
-         run: |
+      - name: cargo pants
+        env: 
+          OSS_INDEX_API_KEY: ${{ secrets.OSS_INDEX_API_KEY }}
+        run: |
            cargo binstall --no-confirm cargo-pants
            cargo pants -v
   
@@ -233,7 +219,7 @@ jobs:
           cargo binstall --no-confirm cargo-udeps
           cargo udeps
 
-  Comply_with_formating standard:
+  Comply_with_formating_standard:
     needs: install
     runs-on: ubuntu-latest
       
