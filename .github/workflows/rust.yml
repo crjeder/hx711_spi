@@ -136,7 +136,7 @@ jobs:
       
       - name: check_binaries
         run: ls ~/.cargo/bin/cargo-binstall
-        
+
       - name: audit
         run: |
           cargo binstall --no-confirm cargo-audit
@@ -288,10 +288,9 @@ jobs:
       
       - name: cargo spellcheck
         run: | 
-          cargo add cargo-spellcheck
+          cargo binstall cargo-spellcheck
           cargo spellcheck check
          
-
 # nono does not compile anymore    
 #    - name: ensure_no_std
 #      run: |
