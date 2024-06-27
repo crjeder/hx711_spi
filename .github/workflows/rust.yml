@@ -26,12 +26,11 @@ jobs:
       id: cargo-cache
       uses: actions/cache@v4
       with:
-        path: ~/.cargo/
+        path: |
+          ~/.cargo/
+          ./target/
         key: rust
         restore-keys: rust-${{ github.run_id }}
-
-
-#    - if: steps.cargo-cache.outputs.cache-hit != 'true'
 
     - name: Update
       run: |
@@ -46,12 +45,9 @@ jobs:
     - name: binstall from source
       if: ${{ steps.from_binary.outcome == 'failure' }}
       run:  cargo install cargo-binstall
-
-    - name: List the cached binaries
-      continue-on-error: true
-      run: |
-        ls ~
-        ls ~/.cargo/bin
+    
+    - name: create directory
+      run: touch ~/target/
 
   build_and_test:
     needs: install
@@ -64,13 +60,13 @@ jobs:
       uses: actions/cache@v4
       with:
         path: |
-          ~/.cargo
-          ./target
-        key: rust-
-        restore-keys: rust-
+          ~/.cargo/
+          ./target/
+        key: rust
 
     - name: Build
       run: cargo build 
+
   
     - name: Run tests
       run: cargo test 
@@ -153,4 +149,4 @@ jobs:
 # [ ] cargo-diet (not suitable for automation)
 # [x] cargo-udeps 
 # [ ] cargo-diet
-
+#- if: steps.cargo-cache.outputs.cache-hit != 'true'
