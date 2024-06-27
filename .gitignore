@@ -3,3 +3,4 @@ target-install/
 report.json
 Cargo.lock
 *.bak
+.git
