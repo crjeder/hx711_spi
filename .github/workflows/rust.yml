@@ -4,13 +4,11 @@ on:
   push:
     paths: 
       - '**/Cargo.toml'
-      - '**/Cargo.lock'
       - '**/.github/workflows/*'
       - '**/src/*'
   pull_request:
     paths:
       - '**/Cargo.toml'
-      - '**/Cargo.lock'
       - '**/.github/workflows/*'
       - '**/src/*'
 
@@ -19,23 +17,30 @@ env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN}}
 
 jobs:
-  cargo_tests:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    
+    - uses: actions/checkout@v4
+
+    - name: Cache cargo packages
+      id: cargo-cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~./cargo
+          ./target
+        key: rust-${{ github.run_id }}
+
+
+    - if: ${{ steps.cargo-cache.outputs.cache-hit != 'true' }}
+      name: List the state of node modules
+      continue-on-error: true
+      run: ls ~/.cargo
+
     - name: Update
       run: |
         rustup default nightly
         rustup update     
-    
-    - name: Build
-      run: cargo build 
-    
-    - name: Run tests
-      run: cargo test 
 
     - name: binstall form binary
       id: from_binary
@@ -45,7 +50,27 @@ jobs:
     - name: binstall from source
       if: ${{ steps.from_binary.outcome == 'failure' }}
       run:  cargo install cargo-binstall
-    
+
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Cache cargo packages
+      id: cargo-cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~./cargo
+          ./target
+        key: rust-${{ github.run_id }}
+
+    - name: Build
+      run: cargo build 
+  
+    - name: Run tests
+      run: cargo test 
+
     - name: secret scan
       run: |
         cargo binstall --no-confirm fencer
