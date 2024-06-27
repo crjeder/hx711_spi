@@ -98,7 +98,7 @@ jobs:
           fencer --project_dir ./
   
   check_for_bloat:
-    needs: install
+    needs: [install, build_and_test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -137,9 +137,9 @@ jobs:
       - name: check_binaries
         continue-on-error: true
         run: |
-          ls ~/.cargo/bin/cargo-binstall
           cargo --list
-
+          ls ~/.cargo/bin/cargo-binstall
+          
       - name: audit
         run: |
           cargo binstall --no-confirm cargo-audit
