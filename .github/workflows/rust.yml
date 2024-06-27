@@ -70,55 +70,232 @@ jobs:
   
     - name: Run tests
       run: cargo test 
-
-    - name: secret scan
-      run: |
-        cargo binstall --no-confirm fencer
-        fencer --project_dir ./
-
-    - name: cargo diet
-      run: |
-        cargo binstall --no-confirm cargo-diet
-        cargo diet --dry-run
-
-    - name: audit
-      run: |
-        cargo binstall --no-confirm cargo-audit
-        cargo audit
-   
-    - name: cargo deny
-      run: |
-        cargo binstall --no-confirm cargo-deny
-        cargo deny check
-
-    - name: cargo pants
-      env:
-        OSS_INDEX_API_KEY: ${{ secrets.OSS_INDEX_API_KEY }}
-      run: |
-       cargo binstall --no-confirm cargo-pants
-       cargo pants -v
-     
-    - name: cargo_outdated
-      run: |  
-        cargo binstall --no-confirm cargo-outdated
-        cargo outdated
-
-    - name: cargo udeps
-      run: |
-        cargo binstall --no-confirm cargo-udeps
-        cargo udeps
-
-    - name: rustfmt
-      run: |
-        rustup component add rustfmt
-        cargo fmt --all --check -v
-   
-    - name: Check Semver
-      run: |
-        cargo binstall --no-confirm cargo-semver-checks
-        cargo semver-checks check-release -v
-
   
+  secret_scan:
+    needs: install
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Cache cargo packages
+        id: cargo-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/
+            ./target/
+          key: rust
+      
+      - name: fencer
+        run: |
+          cargo binstall --no-confirm fencer
+          fencer --project_dir ./
+    needs: install
+    runs-on: ubuntu-latest
+  
+  check_for_bloat:
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Cache cargo packages
+        id: cargo-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/
+            ./target/
+          key: rust
+      
+          needs: install
+          runs-on: ubuntu-latest
+            
+          steps:
+            - uses: actions/checkout@v4
+        
+            - name: Cache cargo packages
+              id: cargo-cache
+              uses: actions/cache@v4
+              with:
+                path: |
+                  ~/.cargo/
+                  ./target/
+                key: rust
+                      
+      - name: cargo diet
+        run: |
+          cargo binstall --no-confirm cargo-diet
+          cargo diet --dry-run
+  
+  audit_for_vulnerabilities:
+    needs: install
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Cache cargo packages
+        id: cargo-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/
+            ./target/
+          key: rust
+      
+      - name: audit
+        run: |
+          cargo binstall --no-confirm cargo-audit
+          cargo audit
+  
+  check_licenses:
+    needs: install
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Cache cargo packages
+        id: cargo-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/
+            ./target/
+          key: rust
+      
+      - name: cargo deny
+        run: |
+          cargo binstall --no-confirm cargo-deny
+          cargo deny check
+  
+  Sonatype_OSSIndex: 
+    needs: install
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Cache cargo packages
+        id: cargo-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/
+            ./target/
+          key: rust
+             
+       - name: cargo pants
+         env: OSS_INDEX_API_KEY: ${{ secrets.OSS_INDEX_API_KEY }}
+         run: |
+           cargo binstall --no-confirm cargo-pants
+           cargo pants -v
+  
+  Outdated_dependencies:
+    needs: install
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Cache cargo packages
+        id: cargo-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/
+            ./target/
+          key: rust
+      
+      - name: cargo_outdated
+        run: |  
+          cargo binstall --no-confirm cargo-outdated
+          cargo outdated
+  
+  Unused_dependencies:
+    needs: install
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Cache cargo packages
+        id: cargo-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/
+            ./target/
+          key: rust
+      
+      - name: cargo udeps
+        run: |
+          cargo binstall --no-confirm cargo-udeps
+          cargo udeps
+
+  Comply_with_formating standard:
+    needs: install
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Cache cargo packages
+        id: cargo-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/
+            ./target/
+          key: rust
+      
+      - name: rustfmt
+        run: |
+          rustup component add rustfmt
+          cargo fmt --all --check -v
+   
+  Comply_with_versioning_standard:
+    needs: install
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Cache cargo packages
+        id: cargo-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/
+            ./target/
+          key: rust
+          
+      - name: Check Semver
+        run: |
+          cargo binstall --no-confirm cargo-semver-checks
+          cargo semver-checks check-release -v
+
+  Spellcheck:
+    needs: install
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Cache cargo packages
+        id: cargo-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/
+            ./target/
+          key: rust
+      
+      - name: cargo spellcheck
+        run: | 
+          cargo binstall --no-confirm cargo-spellcheck
+          cargo spellchek check
+         
 
 # nono does not compile anymore    
 #    - name: ensure_no_std
