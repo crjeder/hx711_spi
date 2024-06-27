@@ -327,7 +327,7 @@ jobs:
       
       - name: check if library is no-std compatible
         run: | 
-          cargo binstall cargo-no-std-check
+          cargo binstall --no-confirm cargo-no-std-check
           cargo no-std-check
 
 # ideas for future improvement
