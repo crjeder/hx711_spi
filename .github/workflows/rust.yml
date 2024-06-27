@@ -49,6 +49,9 @@ jobs:
     - name: create directory
       run: mkdir ~/target/
 
+    - name: check version 
+      run: rustc --version
+
   build_and_test:
     needs: install
     runs-on: ubuntu-latest
@@ -62,7 +65,7 @@ jobs:
         path: |
           ~/.cargo/
           ./target/
-          ~/Cargo.lock
+          Cargo.lock
         key: rust
 
     - name: Build
@@ -114,7 +117,7 @@ jobs:
           cargo diet --dry-run
   
   audit_for_vulnerabilities:
-    needs: install
+    needs: [install, build_and_test]
     runs-on: ubuntu-latest
       
     steps:
@@ -127,7 +130,7 @@ jobs:
           path: |
             ~/.cargo/
             ./target/
-            ~/Cargo.lock
+            Cargo.lock
           key: rust
       
       - name: audit
