@@ -68,19 +68,21 @@ jobs:
       with:
         path: |
           ~/.cargo/
-          ./target/
-          Cargo.lock
+          ~/target/
+          ~/Cargo.lock
         key: rust
 
+    - name: Verify
+      run: cargo verify-project
+      
     - name: Build
       run: cargo build 
-
   
     - name: Run tests
       run: cargo test 
   
   secret_scan:
-    needs: install
+    needs: [install, build_and_test]
     runs-on: ubuntu-latest
       
     steps:
@@ -92,7 +94,8 @@ jobs:
         with:
           path: |
             ~/.cargo/
-            ./target/
+            ~/target/
+            ~/Cargo.lock
           key: rust
       
       - name: fencer
@@ -150,7 +153,7 @@ jobs:
           cargo audit
   
   check_licenses:
-    needs: install
+    needs: [install, build_and_test]
     runs-on: ubuntu-latest
       
     steps:
@@ -162,7 +165,8 @@ jobs:
         with:
           path: |
             ~/.cargo/
-            ./target/
+            ~/target/
+            ~/Cargo.lock
           key: rust
       
       - name: cargo deny
@@ -171,7 +175,7 @@ jobs:
           cargo deny check
   
   Sonatype_OSSIndex: 
-    needs: install
+    needs: [install, build_and_test]
     runs-on: ubuntu-latest
       
     steps:
@@ -183,7 +187,8 @@ jobs:
         with:
           path: |
             ~/.cargo/
-            ./target/
+            ~/target/
+            ~/Cargo.lock
           key: rust
              
       - name: cargo pants
@@ -194,7 +199,7 @@ jobs:
            cargo pants -v
   
   Outdated_dependencies:
-    needs: install
+    needs: [install, build_and_test]
     runs-on: ubuntu-latest
       
     steps:
@@ -206,7 +211,8 @@ jobs:
         with:
           path: |
             ~/.cargo/
-            ./target/
+            ~/target/
+            ~/Cargo.lock
           key: rust
       
       - name: cargo_outdated
@@ -215,7 +221,7 @@ jobs:
           cargo outdated
   
   Unused_dependencies:
-    needs: install
+    needs: [install, build_and_test]
     runs-on: ubuntu-latest
       
     steps:
@@ -227,7 +233,8 @@ jobs:
         with:
           path: |
             ~/.cargo/
-            ./target/
+            ~/target/
+            ~/Cargo.lock
           key: rust
       
       - name: cargo udeps
@@ -236,7 +243,7 @@ jobs:
           cargo udeps
 
   Comply_with_formating_standard:
-    needs: install
+    needs: [install, build_and_test]
     runs-on: ubuntu-latest
       
     steps:
@@ -248,16 +255,17 @@ jobs:
         with:
           path: |
             ~/.cargo/
-            ./target/
+            ~/target/
+            ~/Cargo.lock
           key: rust
       
       - name: rustfmt
         run: |
           rustup component add rustfmt
-          cargo fmt --all --check -v
+          cargo fmt --all --check
    
   Comply_with_versioning_standard:
-    needs: install
+    needs: [install, build_and_test]
     runs-on: ubuntu-latest
       
     steps:
@@ -269,7 +277,8 @@ jobs:
         with:
           path: |
             ~/.cargo/
-            ./target/
+            ~/target/
+            ~/Cargo.lock
           key: rust
           
       - name: Check Semver
@@ -278,7 +287,7 @@ jobs:
           cargo semver-checks check-release -v
 
   Spellcheck:
-    needs: install
+    needs: [install, build_and_test]
     runs-on: ubuntu-latest
       
     steps:
@@ -290,28 +299,24 @@ jobs:
         with:
           path: |
             ~/.cargo/
-            ./target/
+            ~/target/
+            ~/Cargo.lock
           key: rust
       
       - name: cargo spellcheck
         run: | 
           cargo binstall cargo-spellcheck
           cargo spellcheck check
-         
-# nono does not compile anymore    
-#    - name: ensure_no_std
-#      run: |
-#        RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-nono
-#        cargo nono check
 
 # ideas for future improvement
 # don't forget to run ```cargo owner --add rust-bus-owner``` on first publication
 #
+# [ ] cargo no-std-check
 # [x] speed things up using cargo-binstall
 # [x] cargo audit (is it integrated somewhere?)
 # [ ] cargo bloat (not suitable for automation)
 # [x] cargo semver-checks
-# [ ] cargo spellcheck
+# [x] cargo spellcheck
 # [ ] cargo unused-features (not suitable for automation)
 # [ ] mcarton/rust-herbie-lint (warnings for unstable floating point expressions)(not suitable for automating)
 # [ ] Prusti (verifies absence of e. g. panic!())
@@ -324,7 +329,7 @@ jobs:
 # [ ] Husky
 # [ ] cargo-about (not suitable for automation)
 # [ ] cargo-msrv (not suitable for automation)
-# [ ] cargo-diet (not suitable for automation)
 # [x] cargo-udeps 
-# [ ] cargo-diet
+# [x] cargo-diet
+# [x] cargo verify-project
 #- if: steps.cargo-cache.outputs.cache-hit != 'true'
