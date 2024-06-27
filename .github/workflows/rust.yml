@@ -286,7 +286,7 @@ jobs:
       - name: cargo spellcheck
         run: | 
           cargo add cargo-spellcheck
-          cargo spellchek check
+          cargo spellcheck check
          
 
 # nono does not compile anymore    
