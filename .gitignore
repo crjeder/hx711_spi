@@ -1,4 +1,5 @@
 target/
 target-install/
 report.json
+Cargo.lock
 *.bak

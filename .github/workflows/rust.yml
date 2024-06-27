@@ -62,6 +62,7 @@ jobs:
         path: |
           ~/.cargo/
           ./target/
+          ~/Cargo.lock
         key: rust
 
     - name: Build
@@ -126,6 +127,7 @@ jobs:
           path: |
             ~/.cargo/
             ./target/
+            ~/Cargo.lock
           key: rust
       
       - name: audit
