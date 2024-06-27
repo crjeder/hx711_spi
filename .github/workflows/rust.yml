@@ -33,11 +33,6 @@ jobs:
 
 
 #    - if: steps.cargo-cache.outputs.cache-hit != 'true'
-      name: List the cached binaries
-      continue-on-error: true
-      run: |
-        ls ~
-        ls ~/.cargo/bin
 
     - name: Update
       run: |
