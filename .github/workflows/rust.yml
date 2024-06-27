@@ -130,10 +130,13 @@ jobs:
         with:
           path: |
             ~/.cargo/
-            ./target/
-            Cargo.lock
+            ~/target/
+            ~/Cargo.lock
           key: rust
       
+      - name: check_binaries
+        run: ls ~/.cargo/bin/cargo-binstall
+        
       - name: audit
         run: |
           cargo binstall --no-confirm cargo-audit
