@@ -308,10 +308,32 @@ jobs:
           cargo binstall cargo-spellcheck
           cargo spellcheck check
 
+  no-std-check:
+    needs: [install, build_and_test]
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Cache cargo packages
+        id: cargo-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/
+            ~/target/
+            ~/Cargo.lock
+          key: rust
+      
+      - name: check if library is no-std compatible
+        run: | 
+          cargo binstall cargo-no-std-check
+          cargo no-std-check
+
 # ideas for future improvement
 # don't forget to run ```cargo owner --add rust-bus-owner``` on first publication
 #
-# [ ] cargo no-std-check
+# [x] cargo no-std-check
 # [x] speed things up using cargo-binstall
 # [x] cargo audit (is it integrated somewhere?)
 # [ ] cargo bloat (not suitable for automation)
