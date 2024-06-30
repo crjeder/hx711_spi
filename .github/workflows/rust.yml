@@ -305,7 +305,7 @@ jobs:
       
       - name: cargo spellcheck
         run: | 
-          apt install llvm-dev
+          sudo apt-get install llvm-dev
           cargo binstall --no-confirm cargo-spellcheck
           cargo spellcheck check
 
