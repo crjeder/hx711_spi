@@ -5,13 +5,13 @@
 // word definition for spell checker:
 // spell-checker:words DOUT HX711 SPI SDO PD_SCK MCU
 
-use maybe_async::maybe_async;
 use bitmatch::bitmatch;
-#[cfg(not(feature = "is_sync"))]
-use embedded_hal_async as hal;
 #[cfg(feature = "is_sync")]
 use embedded_hal as hal;
+#[cfg(not(feature = "is_sync"))]
+use embedded_hal_async as hal;
 use hal::spi::SpiBus;
+use maybe_async::maybe_async;
 
 // saturation
 // values above maximum and below minimum are wrong
@@ -116,15 +116,15 @@ where
 
     // Helper function to use ```maybe_async```
     #[cfg(not(feature = "is_sync"))]
-    async fn check_for_data_async(&mut self) -> Result<i32, Hx711Error<SPI::Error>>{
+    async fn check_for_data_async(&mut self) -> Result<i32, Hx711Error<SPI::Error>> {
         let mut attempts_left = 500;
         let mut txrx: [u8; 1] = [SIGNAL_LOW];
         loop {
             self.spi.transfer_in_place(&mut txrx).await?;
-            if attempts_left == 0 && txrx[0] != 0x00 as u8 { 
-                break (Err(Hx711Error::Timeout)); 
+            if attempts_left == 0 && txrx[0] != 0x00 as u8 {
+                break (Err(Hx711Error::Timeout));
             }
-                      
+
             attempts_left -= 1;
             // I'd like to have a kind of async delay here
         }
@@ -132,7 +132,7 @@ where
 
     // handle the sync case:
     #[cfg(feature = "is_sync")]
-    fn check_for_data_sync(&mut self) -> Result<i32, Hx711Error<SPI::Error>>{
+    fn check_for_data_sync(&mut self) -> Result<i32, Hx711Error<SPI::Error>> {
         let mut txrx: [u8; 1] = [SIGNAL_LOW];
         self.spi.transfer_in_place(&mut txrx)?;
         if txrx[0] != 0x00 {
@@ -144,16 +144,16 @@ where
     /// # Errors
     /// If compiled with the ```is_sync``` feature it returns  ```DataNotReady``` if data isn't ready to be read from HX711
     /// Other errors are SPI errors or DataNotValid if the value read is out of the range specified in the data sheet (0x800000 - 0x7fffff in 2's complement)
-    /// 
+    ///
     #[maybe_async]
     pub async fn read(&mut self) -> Result<i32, Hx711Error<SPI::Error>> {
         // check if data is ready
         // When output data is not ready for retrieval, digital output pin DOUT is high.
         // Serial clock input PD_SCK should be low. When DOUT goes
         // to low, it indicates data is ready for retrieval.
-        
+
         self.check_for_data_async().await?;
-        
+
         let mut buffer: [u8; 7] = [CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, self.mode as u8];
         self.spi.transfer_in_place(&mut buffer).await?;
         let value: i32 = decode_output(&buffer);
@@ -161,8 +161,7 @@ where
         if value < HX711_MINIMUM || value > HX711_MAXIMUM {
             // value should be in range 0x800000 - 0x7fffff according to data sheet
             Err(Hx711Error::DataNotValid)
-        }
-        else {
+        } else {
             Ok(value)
         }
     }
