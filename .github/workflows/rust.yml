@@ -98,11 +98,13 @@ jobs:
             ~/Cargo.lock
           key: rust
       
-      - name: fencer
+      - name: build fencer
         run: |
           cargo binstall --no-confirm fencer
-          fencer --project_dir ./
-  
+          
+      - name: fencer
+        run: fencer --project_dir ./
+
   check_for_bloat:
     needs: [install, build_and_test]
     runs-on: ubuntu-latest
@@ -119,11 +121,12 @@ jobs:
             ~/Cargo.lock
           key: rust
          
+      - name: build diet
+        run: cargo binstall --no-confirm cargo-diet
+
       - name: cargo diet
-        run: |
-          cargo binstall --no-confirm cargo-diet
-          cargo diet --dry-run
-  
+        run: cargo diet
+            
   audit_for_vulnerabilities:
     needs: [install, build_and_test]
     runs-on: ubuntu-latest
@@ -140,18 +143,14 @@ jobs:
             ~/target/
             ~/Cargo.lock
           key: rust
-      
-      - name: check_binaries
-        continue-on-error: true
-        run: |
-          cargo --list
-          ls ~/.cargo/bin/cargo-binstall
           
-      - name: audit
-        run: |
-          cargo binstall --no-confirm cargo-audit
+      - name: build audit
+        run: cargo binstall --no-confirm cargo-audit
           cargo audit
   
+      - name: cargo audit
+        run: cargo audit
+
   check_licenses:
     needs: [install, build_and_test]
     runs-on: ubuntu-latest
@@ -169,10 +168,11 @@ jobs:
             ~/Cargo.lock
           key: rust
       
+      - name: build deny
+        run: cargo binstall --no-confirm cargo-deny
+      
       - name: cargo deny
-        run: |
-          cargo binstall --no-confirm cargo-deny
-          cargo deny check
+        run: cargo deny check
   
   Sonatype_OSSIndex: 
     needs: [install, build_and_test]
@@ -280,11 +280,12 @@ jobs:
             ~/target/
             ~/Cargo.lock
           key: rust
-          
+      
+      - name: build Semver
+        run: cargo binstall --no-confirm cargo-semver-checks
+      
       - name: Check Semver
-        run: |
-          cargo binstall --no-confirm cargo-semver-checks
-          cargo semver-checks check-release -v
+        run: cargo semver-checks check-release -v
 
   Spellcheck:
     needs: [install, build_and_test]
@@ -302,13 +303,15 @@ jobs:
             ~/target/
             ~/Cargo.lock
           key: rust
-      
-      - name: cargo spellcheck
+          
+      - name: build spellcheck
         run: | 
           sudo apt-get install llvm-dev
           sudo apt-get install clang libclang-dev
           cargo binstall --no-confirm cargo-spellcheck
-          cargo spellcheck -code 1 check
+      
+      - name: cargo spellcheck
+        run: cargo spellcheck -code 1 check
 
   no-std-check:
     needs: [install, build_and_test]
