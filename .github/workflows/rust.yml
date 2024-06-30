@@ -239,7 +239,9 @@ jobs:
           key: rust
       
       - name: build udeps
-        run: cargo binstall --no-confirm cargo-udeps
+        run: |
+          rustup default nightly
+          cargo install cargo-udeps
             
       - name: cargo udeps
         run: cargo udeps --all --all-features
