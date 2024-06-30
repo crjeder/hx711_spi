@@ -146,7 +146,6 @@ jobs:
           
       - name: build audit
         run: cargo binstall --no-confirm cargo-audit
-          cargo audit
   
       - name: cargo audit
         run: cargo audit
