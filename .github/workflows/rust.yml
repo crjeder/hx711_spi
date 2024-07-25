@@ -127,3 +127,31 @@ jobs:
 # [ ] cargo-diet (not suitable for automation)
 # [ ] cargo-udeps (requires nightly)
 
+## Tasks to do bevore publish
+#  cargo command | comment |
+# |---|---|
+# | cargo owner --add rust-bus-owner | only once |
+# | cargo geiger | allways has warnings which have to be manually vetetd |
+# | cargo crev | manually done at release |
+# | cargo release | finis up! |
+# | cargo command | comment |
+# |---|---|
+# | cargo-strip | strip binary |
+# | cargo diet | done bevore final build |
+# 
+## Subcommands to Test
+#
+# | cargo command | comment |
+# |---|---|
+# | cargo tree | nice tree of dependencies |
+# | vargo vet | testing it, it's under development |
+# | cargo udeps | works only with nightly compiler |
+# | cargo mutants | check test coverage |
+# | cargo checkmate | test and see if it can streamline tasks |
+#
+## Not Needed
+#
+# | cargo command | comment |
+# | --- | --- |
+# | cargo bloat|  replaced by cargo diet
+# | cargo duplicates | is handled by cargo deny |
