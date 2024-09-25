@@ -116,7 +116,7 @@ where
 
     // Helper function to use ```maybe_async```
     #[maybe_async(AFIT)]
-    async fn check_for_data_async(&mut self) -> Result<i32, Hx711Error<SPI::Error>> {
+    async fn check_for_data(&mut self) -> Result<i32, Hx711Error<SPI::Error>> {
         let mut attempts_left = 500;
         let mut txrx: [u8; 1] = [SIGNAL_LOW];
         loop {
@@ -132,7 +132,7 @@ where
 
     // handle the sync case:
     #[maybe_async::sync_impl]
-    fn check_for_data_sync(&mut self) -> Result<i32, Hx711Error<SPI::Error>> {
+    fn check_for_data(&mut self) -> Result<i32, Hx711Error<SPI::Error>> {
         let mut txrx: [u8; 1] = [SIGNAL_LOW];
         self.spi.transfer_in_place(&mut txrx)?;
         if txrx[0] != 0x00 {
