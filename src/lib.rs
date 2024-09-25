@@ -6,9 +6,9 @@
 // spell-checker:words DOUT HX711 SPI SDO PD_SCK MCU
 
 use bitmatch::bitmatch;
-#[cfg(feature = "is_sync")]
+#[maybe_async::sync_impl]
 use embedded_hal as hal;
-#[cfg(not(feature = "is_sync"))]
+#[maybe_async]
 use embedded_hal_async as hal;
 use hal::spi::SpiBus;
 use maybe_async::maybe_async;
@@ -152,7 +152,7 @@ where
         // Serial clock input PD_SCK should be low. When DOUT goes
         // to low, it indicates data is ready for retrieval.
 
-        self.check_for_data_async().await?;
+        self.check_for_data().await?;
 
         let mut buffer: [u8; 7] = [CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, self.mode as u8];
         self.spi.transfer_in_place(&mut buffer).await?;
