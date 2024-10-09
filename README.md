@@ -53,6 +53,7 @@ Power down functions exist just for compatibility. Implementation is not possibl
 - [ ] validate against other libraries (bit banging, python, ..) 
 - [ ] async
 - [ ] use emedded HAL v1
+- [ ] use compile-time dimensional analysis 
 
 ## Examples
 
