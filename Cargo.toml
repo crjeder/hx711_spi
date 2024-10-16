@@ -12,6 +12,9 @@ edition = "2021"
 version = "0.7.0"
 include = ["src/lib.rs", "LICENSE", "README.md", "CHANGELOG.md"]
 
+[future-incompat-report]
+frequency = "always"
+
 [dependencies]
 embedded-hal = "1.0"
 bitmatch = "0.1.1"
