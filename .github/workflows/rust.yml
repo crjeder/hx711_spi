@@ -138,6 +138,7 @@ jobs:
 # |---|---|
 # | cargo-strip | strip binary |
 # | cargo diet | done bevore final build |
+# | release-plz release | automates the release process |
 # 
 ## Subcommands to Test
 #
