@@ -11,7 +11,7 @@
 ![Crates.io](https://img.shields.io/crates/d/hx711_spi?style=plastic)
 <!-- [![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/hx711_spi_bb.png)](https://web.crev.dev/rust-reviews/crate/hx711_spi/)-->
 
-This is a platform agnostic driver to interface with the HX711 load cell IC. It uses SPI instead of bit banging.
+This is a platform agnostic driver to interface with the HX711 load cell IC ([break out board by Sparkfun](https://github.com/sparkfun/HX711-Load-Cell-Amplifier)) It uses SPI instead of bit banging.
 This `[no_std]` driver is built using [`embedded-hal`][2] traits.
 It is developed on Raspberry PI and reported to work on STM32 and ESP32.
 It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-crev)
@@ -19,7 +19,7 @@ to verify the trustworthiness of each of your dependencies, including this one.
 
 ## Why did I write another HX711 driver?
 
-In multi-user / multi-tasking environments bit banging is not reliable. SPI on the other hand handles the timing with hardware support and is not influenced by other processes.
+In multi-user / multi-tasking environments bit banging is not reliable. SPI on the other hand handles the timing with hardware support and is not influenced by other processes. I found a few C implementations following the same idea: [1](https://github.com/dudapickler/hx711_SPI), [2](https://github.com/sash13/hx711_spi/tree/main) and [3](https://github.com/SIGSEGV111/hx711-spi-driver). For problems using bit banging, see e. g. [here](https://github.com/tatobari/hx711py)
 
 ## Usage
 
