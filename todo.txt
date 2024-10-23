@@ -1,1 +1,2 @@
 # create using the syntax at: https://github.com/todotxt/todo.txt
+ (A) validate against other implementations +test @Lab
