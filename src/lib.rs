@@ -5,6 +5,7 @@
 use bitmatch::bitmatch;
 use core::unimplemented;
 use embedded_hal as hal;
+use embedded_hal_async::spi::SpiBus as AsyncSpiBus;
 use hal::spi::SpiBus;
 //
 // saturation
@@ -94,6 +95,37 @@ impl<SPIERROR> From<SPIERROR> for Hx711Error<SPIERROR> {
 }
 
 impl<SPI> Hx711<SPI>
+{
+    #[inline]
+    /// Get the current mode.
+    pub fn mode(&mut self) -> Mode {
+        self.mode
+    }
+
+    /// To power down the chip the PD_SCK line has to be held in a 'high' state. To do this we
+    /// would need to write a constant stream of binary '1' to the `SPI` bus which would totally defy
+    /// the purpose. Therefore it's not implemented.
+    // If the SDO pin would be idle high (and at least some MCU's seem to do that in mode 1) then the chip would automatically
+    // power down if not used. Cool!
+    pub fn disable(&mut self) -> ! {
+        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
+        // When PD_SCK returns to low, chip will reset and enter normal operation mode.
+        // this can't be implemented with SPI because we would have to write a constant stream
+        // of binary '1' which would block the process
+        unimplemented!("power_down is not possible with this driver implementation");
+    }
+
+    /// Power up / down is not implemented (see disable)
+    pub fn enable(&mut self) -> ! {
+        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
+        // When PD_SCK returns to low, chip will reset and enter normal operation mode.
+        // this can't be implemented with SPI because we would have to write a constant stream
+        // of binary '1' which would block the process
+        unimplemented!("power_down is not possible with this driver implementation");
+    }
+}
+
+impl<SPI> Hx711<SPI>
 where
     SPI: SpiBus,
 {
@@ -171,33 +203,83 @@ where
         self.read()?; // read writes Mode for the next read()
         Ok(m)
     }
+}
 
+impl<SPI> Hx711<SPI>
+where
+    SPI: AsyncSpiBus,
+{
+    /// opens a connection to a HX711 on a specified `SPI`.
+    ///
+    /// The data sheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range,
+    /// therefore bus speed has to be between 5 MHz and 20 kHz.
+    pub fn new_async(spi: SPI) -> Self {
+        Hx711 {
+            spi,
+            mode: Mode::ChAGain128,
+        }
+    }
+
+    /// reads a value from the HX711 and returns it
+    /// # Errors
+    /// Returns `SPI` errors
+    pub async fn read_async(&mut self) -> Result<i32, SPI::Error> {
+        // check if data is ready
+        // When output data is not ready for retrieval, digital output pin DOUT is high.
+        // Serial clock input PD_SCK should be low. When DOUT goes
+        // to low, it indicates data is ready for retrieval.
+        let mut txrx: [u8; 1] = [SIGNAL_LOW];
+
+        while txrx[0] != 0x00 {
+            self.spi.transfer_in_place(&mut txrx).await?;
+        }
+
+        let mut buffer: [u8; 7] = [CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, self.mode as u8];
+
+        self.spi.transfer_in_place(&mut buffer).await?;
+
+        Ok(decode_output(&buffer)) // value should be in range 0x800000 - 0x7fffff according to datasheet
+    }
+
+    /// Reset the chip to it's default state. Mode is set to convert channel A with a gain factor of 128.
+    /// # Errors
+    /// Returns `SPI` errors
     #[inline]
-    /// Get the current mode.
-    pub fn mode(&mut self) -> Mode {
-        self.mode
+    pub async fn reset_async(&mut self) -> Result<(), SPI::Error> {
+        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
+        // HX711 enters power down mode.
+        // When PD_SCK returns to low, chip will reset and enter normal operation mode.
+        // speed is the raw SPI speed -> half bits per second.
+
+        // max SPI clock frequency should be 5 MHz to satisfy the 0.2 us limit for the pulse length
+        // we have to output more than 300 bytes to keep the line for at least 60 us high.
+
+        let mut buffer: [u8; 301] = RESET_SIGNAL;
+
+        self.spi.transfer_in_place(&mut buffer).await?;
+        self.mode = Mode::ChAGain128; // this is the default mode after reset
+
+        Ok(())
     }
 
-    /// To power down the chip the PD_SCK line has to be held in a 'high' state. To do this we
-    /// would need to write a constant stream of binary '1' to the `SPI` bus which would totally defy
-    /// the purpose. Therefore it's not implemented.
-    // If the SDO pin would be idle high (and at least some MCU's seem to do that in mode 1) then the chip would automatically
-    // power down if not used. Cool!
-    pub fn disable(&mut self) -> Result<(), Hx711Error<SPI::Error>> {
-        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
-        // When PD_SCK returns to low, chip will reset and enter normal operation mode.
-        // this can't be implemented with SPI because we would have to write a constant stream
-        // of binary '1' which would block the process
-        unimplemented!("power_down is not possible with this driver implementation");
-    }
-
-    /// Power up / down is not implemented (see disable)
-    pub fn enable(&mut self) -> Result<(), Hx711Error<SPI::Error>> {
-        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
-        // When PD_SCK returns to low, chip will reset and enter normal operation mode.
-        // this can't be implemented with SPI because we would have to write a constant stream
-        // of binary '1' which would block the process
-        unimplemented!("power_down is not possible with this driver implementation");
+    /// Set the mode to the value specified.
+    /// see the Mode struct for possible values
+    /// # Usage
+    ///
+    /// ```rust
+    /// my_hx711.set_mode_async(Mode::ChAGain128).await?;
+    /// value1_chanel_a = my_hx711.read_async().await?
+    /// value2_chanel_a = my_hx711.read_async().await?
+    /// my_hx711.set_mode_async(Mode::ChBGain32).await?;
+    /// value_chanel_b = my_hx711.read_async().await?
+    ///```
+    /// # Errors
+    /// Returns `SPI` errors
+    #[inline]
+    pub async fn set_mode_async(&mut self, m: Mode) -> Result<Mode, SPI::Error> {
+        self.mode = m;
+        self.read_async().await?; // read writes Mode for the next read()
+        Ok(m)
     }
 }
 
