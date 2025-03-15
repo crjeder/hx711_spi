@@ -94,8 +94,7 @@ impl<SPIERROR> From<SPIERROR> for Hx711Error<SPIERROR> {
     }
 }
 
-impl<SPI> Hx711<SPI>
-{
+impl<SPI> Hx711<SPI> {
     #[inline]
     /// Get the current mode.
     pub fn mode(&mut self) -> Mode {
