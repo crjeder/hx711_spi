@@ -265,12 +265,12 @@ where
     /// see the Mode struct for possible values
     /// # Usage
     ///
-    /// ```rust
+    /// ```text
     /// my_hx711.set_mode_async(Mode::ChAGain128).await?;
-    /// value1_chanel_a = my_hx711.read_async().await?
-    /// value2_chanel_a = my_hx711.read_async().await?
+    /// value1_chanel_a = my_hx711.read_async().await?;
+    /// value2_chanel_a = my_hx711.read_async().await?;
     /// my_hx711.set_mode_async(Mode::ChBGain32).await?;
-    /// value_chanel_b = my_hx711.read_async().await?
+    /// value_chanel_b = my_hx711.read_async().await?;
     ///```
     /// # Errors
     /// Returns `SPI` errors
