@@ -28,7 +28,7 @@ jobs:
     
     - name: Update
       run: |
-        rustup default nightly
+#        rustup default nightly
         rustup update     
     
     - name: rustfmt
