@@ -50,11 +50,10 @@ jobs:
         cargo install cargo-binstall
 # curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
-# not for libraries
-#    - name: Check Semver
-#      run: |
-#        cargo binstall --no-confirm cargo-semver-checks
-#        cargo semver-checks
+    - name: Check Semver
+      run: |
+        cargo binstall --no-confirm cargo-semver-checks
+        cargo semver-checks
 
     - name: audit
       run: |
