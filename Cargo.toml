@@ -27,4 +27,4 @@ invert-sdo = []
 [dev-dependencies]
 test-case = "3.3"
 # for the Raspberry Pi example
-rppal = { version = "0.17.1", features = ["hal"] }
+rppal = { version = "0.22.1", features = ["hal"] }
