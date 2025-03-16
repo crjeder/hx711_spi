@@ -51,8 +51,8 @@ Power down functions exist just for compatibility. Implementation is not possibl
 - [X] `[no_std]`
 - [X] make it re-entrant / thread safe  
 - [ ] validate against other libraries (bit banging, python, ..) 
-- [ ] async
-- [ ] use emedded HAL v1
+- [X] async
+- [X] use emedded HAL v1
 - [ ] use compile-time dimensional analysis 
 
 ## Examples
