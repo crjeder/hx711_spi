@@ -43,7 +43,7 @@ Power down functions exist just for compatibility. Implementation is not possibl
   - [x] STM32
   - [x] ESP32
   - [x] nrf52840  
-  - [ ] RP2040
+  - [x] RP2040
   - [ ] Teensy
 - [X] Power Save (functions exist just for compatibility. Implementation is not possible with SPI)
 - [X] Reset
