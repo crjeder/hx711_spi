@@ -9,11 +9,8 @@ readme = "README.md"
 documentation = "https://docs.rs/hx711_spi"
 license = "MIT OR Apache-2.0"
 edition = "2021"
-version = "0.7.0"
+version = "0.7.1"
 include = ["src/lib.rs", "LICENSE", "README.md", "CHANGELOG.md"]
-
-[future-incompat-report]
-frequency = "always"
 
 [dependencies]
 embedded-hal = "1.0"
@@ -27,4 +24,4 @@ invert-sdo = []
 [dev-dependencies]
 test-case = "3.3"
 # for the Raspberry Pi example
-rppal = { version = "0.17.1", features = ["hal"] }
+rppal = { version = "0.22.1", features = ["hal"] }

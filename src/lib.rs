@@ -3,19 +3,13 @@
 #![no_std]
 
 use bitmatch::bitmatch;
-use core::unimplemented;
 use embedded_hal as hal;
 use embedded_hal_async::spi::SpiBus as AsyncSpiBus;
 use hal::spi::SpiBus;
-//
-// saturation
-// values above maximum and below minimum are wrong
+/// The absolute minimum reading. A lesser value should be clamped.
 pub const HX711_MINIMUM: i32 = -(2i32.saturating_pow(24 - 1));
-/// The absolute maximum readings. A greater value should be clamped.
+/// The absolute maximum reading. A greater value should be clamped.
 pub const HX711_MAXIMUM: i32 = 2i32.saturating_pow(24 - 1) - 1;
-// if signed < HX711_MINIMUM {
-//    signed = HX711_MINIMUM;
-//} else if signed > HX711_MAXIMUM {
 
 // Bit pattern definitions for the communication with the hx711. All have to be bitwise negated
 // for the ```invert-sdo``` feature
@@ -95,10 +89,22 @@ impl<SPIERROR> From<SPIERROR> for Hx711Error<SPIERROR> {
 }
 
 impl<SPI> Hx711<SPI> {
-    #[inline]
     /// Get the current mode.
-    pub fn mode(&mut self) -> Mode {
+    #[inline]
+    pub fn mode(&self) -> Mode {
         self.mode
+    }
+
+    /// Construct a new `Hx711` with the default mode (`ChAGain128`).
+    pub fn new(spi: SPI) -> Self {
+        Hx711 {
+            spi,
+            mode: Mode::ChAGain128,
+        }
+    }
+
+    fn mode_buffer(&self) -> [u8; 7] {
+        [CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, self.mode as u8]
     }
 
     /// To power down the chip the PD_SCK line has to be held in a 'high' state. To do this we
@@ -114,13 +120,9 @@ impl<SPI> Hx711<SPI> {
         unimplemented!("power_down is not possible with this driver implementation");
     }
 
-    /// Power up / down is not implemented (see disable)
+    /// Power up is not implemented (see `disable`).
     pub fn enable(&mut self) -> ! {
-        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs, HX711 enters power down mode
-        // When PD_SCK returns to low, chip will reset and enter normal operation mode.
-        // this can't be implemented with SPI because we would have to write a constant stream
-        // of binary '1' which would block the process
-        unimplemented!("power_down is not possible with this driver implementation");
+        unimplemented!("power_up is not possible with this driver implementation");
     }
 }
 
@@ -128,58 +130,30 @@ impl<SPI> Hx711<SPI>
 where
     SPI: SpiBus,
 {
-    /// opens a connection to a HX711 on a specified `SPI`.
-    ///
-    /// The data sheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range,
-    /// therefore bus speed has to be between 5 MHz and 20 kHz.
-    pub fn new(spi: SPI) -> Self {
-        Hx711 {
-            spi,
-            mode: Mode::ChAGain128,
-        }
-    }
-
     /// reads a value from the HX711 and returns it
     /// # Errors
-    /// Returns `SPI` errors and `nb`::Error::`WouldBlock` if data isn't ready to be read from hx711
+    /// Returns `Hx711Error::DataNotReady` if data isn't ready, or `Hx711Error::Spi` on bus errors.
     pub fn read(&mut self) -> Result<i32, Hx711Error<SPI::Error>> {
-        // check if data is ready
-        // When output data is not ready for retrieval, digital output pin DOUT is high.
-        // Serial clock input PD_SCK should be low. When DOUT goes
-        // to low, it indicates data is ready for retrieval.
         let mut txrx: [u8; 1] = [SIGNAL_LOW];
-
         self.spi.transfer_in_place(&mut txrx)?;
 
-        if txrx[0] == 0x00 {
-            let mut buffer: [u8; 7] = [CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, self.mode as u8];
-
+        if txrx[0] == SIGNAL_LOW {
+            let mut buffer = self.mode_buffer();
             self.spi.transfer_in_place(&mut buffer)?;
-
-            Ok(decode_output(&buffer)) // value should be in range 0x800000 - 0x7fffff according to datasheet
+            Ok(decode_output(&buffer))
         } else {
             Err(Hx711Error::DataNotReady)
         }
     }
 
-    /// Reset the chip to it's default state. Mode is set to convert channel A with a gain factor of 128.
+    /// Reset the chip to its default state. Mode is set to `ChAGain128`.
     /// # Errors
     /// Returns `SPI` errors
     #[inline]
     pub fn reset(&mut self) -> Result<(), Hx711Error<SPI::Error>> {
-        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
-        // HX711 enters power down mode.
-        // When PD_SCK returns to low, chip will reset and enter normal operation mode.
-        // speed is the raw SPI speed -> half bits per second.
-
-        // max SPI clock frequency should be 5 MHz to satisfy the 0.2 us limit for the pulse length
-        // we have to output more than 300 bytes to keep the line for at least 60 us high.
-
         let mut buffer: [u8; 301] = RESET_SIGNAL;
-
         self.spi.transfer_in_place(&mut buffer)?;
-        self.mode = Mode::ChAGain128; // this is the default mode after reset
-
+        self.mode = Mode::ChAGain128;
         Ok(())
     }
 
@@ -187,7 +161,7 @@ where
     /// see the Mode struct for possible values
     /// # Usage
     ///
-    /// ```text
+    /// ```rust,ignore
     /// my_hx711.set_mode(Mode::ChAGain128);
     /// value1_chanel_a = my_hx711.read()?
     /// value2_chanel_a = my_hx711.read()?
@@ -208,56 +182,30 @@ impl<SPI> Hx711<SPI>
 where
     SPI: AsyncSpiBus,
 {
-    /// opens a connection to a HX711 on a specified `SPI`.
-    ///
-    /// The data sheet specifies PD_SCK high time and PD_SCK low time to be in the 0.2 to 50 us range,
-    /// therefore bus speed has to be between 5 MHz and 20 kHz.
-    pub fn new_async(spi: SPI) -> Self {
-        Hx711 {
-            spi,
-            mode: Mode::ChAGain128,
-        }
-    }
-
-    /// reads a value from the HX711 and returns it
+    /// Polls until data is ready, then reads and returns the value.
     /// # Errors
     /// Returns `SPI` errors
     pub async fn read_async(&mut self) -> Result<i32, SPI::Error> {
-        // check if data is ready
-        // When output data is not ready for retrieval, digital output pin DOUT is high.
-        // Serial clock input PD_SCK should be low. When DOUT goes
-        // to low, it indicates data is ready for retrieval.
-        let mut txrx: [u8; 1] = [SIGNAL_LOW];
-
-        while txrx[0] != 0x00 {
+        let mut txrx = [SIGNAL_LOW];
+        loop {
             self.spi.transfer_in_place(&mut txrx).await?;
+            if txrx[0] == SIGNAL_LOW { break; }
+            txrx[0] = SIGNAL_LOW; // restore probe value for next iteration
         }
 
-        let mut buffer: [u8; 7] = [CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, CLOCK, self.mode as u8];
-
+        let mut buffer = self.mode_buffer();
         self.spi.transfer_in_place(&mut buffer).await?;
-
-        Ok(decode_output(&buffer)) // value should be in range 0x800000 - 0x7fffff according to datasheet
+        Ok(decode_output(&buffer))
     }
 
-    /// Reset the chip to it's default state. Mode is set to convert channel A with a gain factor of 128.
+    /// Reset the chip to its default state. Mode is set to `ChAGain128`.
     /// # Errors
     /// Returns `SPI` errors
     #[inline]
     pub async fn reset_async(&mut self) -> Result<(), SPI::Error> {
-        // when PD_SCK pin changes from low to high and stays at high for longer than 60µs,
-        // HX711 enters power down mode.
-        // When PD_SCK returns to low, chip will reset and enter normal operation mode.
-        // speed is the raw SPI speed -> half bits per second.
-
-        // max SPI clock frequency should be 5 MHz to satisfy the 0.2 us limit for the pulse length
-        // we have to output more than 300 bytes to keep the line for at least 60 us high.
-
         let mut buffer: [u8; 301] = RESET_SIGNAL;
-
         self.spi.transfer_in_place(&mut buffer).await?;
-        self.mode = Mode::ChAGain128; // this is the default mode after reset
-
+        self.mode = Mode::ChAGain128;
         Ok(())
     }
 
@@ -265,7 +213,7 @@ where
     /// see the Mode struct for possible values
     /// # Usage
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// my_hx711.set_mode_async(Mode::ChAGain128).await?;
     /// value1_chanel_a = my_hx711.read_async().await?
     /// value2_chanel_a = my_hx711.read_async().await?
@@ -302,18 +250,17 @@ fn decode_output(buffer: &[u8; 7]) -> i32 {
     #[bitmatch]
     let "f?f?f?f?" = buffer[5];
 
-    let mut raw: [u8; 4] = [0; 4];
-    raw[0] = bitpack!("aaaabbbb");
-    raw[1] = bitpack!("ccccdddd");
-    raw[2] = bitpack!("eeeeffff");
-    raw[3] = 0;
+    let raw: [u8; 4] = [
+        bitpack!("aaaabbbb"),
+        bitpack!("ccccdddd"),
+        bitpack!("eeeeffff"),
+        0,
+    ];
 
     i32::from_be_bytes(raw) / 0x100
 }
 
 #[cfg(test)]
-//#[macro_use]
-//extern crate std;
 mod tests {
     use super::*;
     use test_case::test_case;
@@ -324,6 +271,6 @@ mod tests {
     #[test_case(&[0b00100111, 0b00100111, 0b00100111, 0b00100111,
                   0b00100111, 0b00100111, 0b00100111] => 0b0000_0000_0101_0101_0101_0101_0101_0101i32; "test pattern")]
     fn test_decode(buffer: &[u8; 7]) -> i32 {
-        decode_output(&buffer)
+        decode_output(buffer)
     }
 }
