@@ -2,7 +2,6 @@
 
 [![Crate](https://img.shields.io/crates/v/hx711_spi?style=plastic)](https://crates.io/crates/hx711_spi)
 ![License](https://img.shields.io/crates/l/hx711_spi?style=plastic)
-![GitHub branch checks state](https://img.shields.io/github/checks-status/crjeder/hx711_spi/release?style=plastic)
 <!--![Docs](https://img.shields.io/docsrs/hx711_spi?style=plastic)-->
 <!--![LOC](https://img.shields.io/tokei/lines/github/crjeder/hx711_spi?style=plastic)-->
 ![Maintained](https://img.shields.io/maintenance/yes/2026?style=plastic)
@@ -11,7 +10,7 @@
 ![Crates.io](https://img.shields.io/crates/d/hx711_spi?style=plastic)
 <!-- [![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/hx711_spi_bb.png)](https://web.crev.dev/rust-reviews/crate/hx711_spi/)-->
 
-This is a platform agnostic driver to interface with the HX711 load cell IC ([break out board by Sparkfun](https://github.com/sparkfun/HX711-Load-Cell-Amplifier)) It uses SPI instead of bit banging.
+This is a platform agnostic driver to interface with the HX711 load cell IC ([break-out board by Sparkfun](https://github.com/sparkfun/HX711-Load-Cell-Amplifier)) It uses SPI instead of bit banging.
 This `[no_std]` driver is built using [`embedded-hal`][2] traits.
 It is developed on Raspberry PI and reported to work on STM32 and ESP32.
 It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-crev)
@@ -44,15 +43,15 @@ Power down functions exist just for compatibility. Implementation is not possibl
   - [x] STM32
   - [x] ESP32
   - [x] nrf52840  
-  - [ ] RP2040
+  - [x] RP2040
   - [ ] Teensy
 - [X] Power Save (functions exist just for compatibility. Implementation is not possible with SPI)
 - [X] Reset
 - [X] `[no_std]`
 - [X] make it re-entrant / thread safe  
 - [ ] validate against other libraries (bit banging, python, ..) 
-- [ ] async
-- [ ] use emedded HAL v1
+- [X] async
+- [X] use emedded HAL v1
 - [ ] use compile-time dimensional analysis 
 
 ## Examples
@@ -134,12 +133,33 @@ and ['anddreyk0'](https://github.com/andreyk0) for testing on STM32 and both for
 
 [3]: https://www.sparkfun.com/spi_signal_names
 
-## License
+## Licenses
 
-Licensed under either of
+# License
+This software is licensed under either of
 
 - Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or
   [here](http://www.apache.org/licenses/LICENSE-2.0))
 - MIT license ([LICENSE-MIT](LICENSE-MIT) or [here](http://opensource.org/licenses/MIT))
 
 at your option.
+
+# Dependent Liceses
+
+Copyright © 1991-2016 Unicode, Inc. All rights reserved. Distributed under the Terms of Use in http://www.unicode.org/copyright.html.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the " Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+MIT License
+
+The above copyright notice and this permission notice (including the next paragraph) shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Mozilla Public License 2.0
+
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+If it is not possible or desirable to put the notice in a particular file, then You may include the notice in a location (such as a LICENSE file in a relevant directory) where a recipient would be likely to look for such a notice.
+
+You may add additional accurate notices of copyright ownership.
