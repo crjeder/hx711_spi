@@ -4,7 +4,7 @@
 ![License](https://img.shields.io/crates/l/hx711_spi?style=plastic)
 <!--![Docs](https://img.shields.io/docsrs/hx711_spi?style=plastic)-->
 <!--![LOC](https://img.shields.io/tokei/lines/github/crjeder/hx711_spi?style=plastic)-->
-![Maintained](https://img.shields.io/maintenance/yes/2025?style=plastic)
+![Maintained](https://img.shields.io/maintenance/yes/2026?style=plastic)
 [![dependency status](https://deps.rs/repo/github/crjeder/hx711_spi/status.svg)](https://deps.rs/repo/github/crjeder/hx711_spi)
 ![GitHub Repo stars](https://img.shields.io/github/stars/crjeder/hx711_spi?style=plastic)
 ![Crates.io](https://img.shields.io/crates/d/hx711_spi?style=plastic)
