@@ -189,7 +189,9 @@ where
         let mut txrx = [SIGNAL_LOW];
         loop {
             self.spi.transfer_in_place(&mut txrx).await?;
-            if txrx[0] == SIGNAL_LOW { break; }
+            if txrx[0] == SIGNAL_LOW {
+                break;
+            }
             txrx[0] = SIGNAL_LOW; // restore probe value for next iteration
         }
 

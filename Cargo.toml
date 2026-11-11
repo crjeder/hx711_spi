@@ -16,7 +16,6 @@ include = ["src/lib.rs", "LICENSE", "README.md", "CHANGELOG.md"]
 embedded-hal = "1.0"
 bitmatch = "0.1.1"
 embedded-hal-async = "1.0.0"
-# dimensioned = "0.8.0" # Compile-time dimensional analysis for various unit systems using Rust's type system
 
 [features]
 invert-sdo = []
